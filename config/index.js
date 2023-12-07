@@ -422,7 +422,7 @@ const testCoinContract = {
 };
 
 const subnetLockContract = {
-  address: "0x1c880eF8B4AD49f615820f6fab33f9a6c8D36fb2",
+  address: "0xb287BA18fe513eb04ba7D2B605C22Dd12d100480",
   abi: [
     {
       inputs: [
