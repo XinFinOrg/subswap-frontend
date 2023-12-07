@@ -39,7 +39,7 @@ const Bridge = () => {
                 </div>
                 {">"}
                 <div className="w-full">
-                  <div className="text-center">to devnet</div>
+                  <div className="text-center">to mainnet</div>
                   <select className="select select-bordered w-full mt-2">
                     <option disabled selected>
                       {data.token}
@@ -52,10 +52,17 @@ const Bridge = () => {
                 type="number"
                 placeholder="0"
                 className="input input-bordered w-full mt-20"
+                onChange={(e) => {
+                  setData({ ...data, amount: e.target.value });
+                }}
               />
             </div>
 
-            <WriteButton {...send} className="m-auto" />
+            <div className="text-center">
+              You will receive {data.amount || 0} ({data.token}) in XDC Mainnet
+            </div>
+
+            <WriteButton {...send} className="m-auto mt-4" />
 
             <div
               className="btn my-4 m-auto w-[120px]"
