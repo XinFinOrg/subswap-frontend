@@ -9,6 +9,15 @@ const Navbar = () => {
         <div className="font-black ml-2">Subswap</div>
       </div>
       <div className="navbar-center">
+        <Link
+          href={""}
+          className="btn"
+          onClick={() => {
+            alert("Coming Soon");
+          }}
+        >
+          swap
+        </Link>
         <Link href={"/bridge"} className="btn">
           bridge
         </Link>

@@ -8,5 +8,9 @@ import { useRouter } from "next/router";
 export default function Home() {
   const router = useRouter();
   useEffect(() => {}, []);
-  return <></>;
+  return (
+    <>
+      <div className="text-center mt-32 text-5xl font-black">Subswap</div>
+    </>
+  );
 }
