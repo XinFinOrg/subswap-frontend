@@ -32,6 +32,8 @@ const Bridge = () => {
   const tokenBalance = reads0?.[0]?.result;
   const allowance = reads0?.[1]?.result;
 
+  
+
   const approve = {
     buttonName: "Approve",
     data: {
