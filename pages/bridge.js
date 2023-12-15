@@ -32,8 +32,6 @@ const Bridge = () => {
   const tokenBalance = reads0?.[0]?.result;
   const allowance = reads0?.[1]?.result;
 
-  
-
   const approve = {
     buttonName: "Approve",
     data: {
@@ -82,7 +80,7 @@ const Bridge = () => {
   }
   return (
     <>
-      {data?.token ? (
+      {
         <>
           <div className="mt-8 w-96 md:w-1/2 card m-auto shadow-2xl">
             <div className="card-body">
@@ -94,13 +92,13 @@ const Bridge = () => {
                       Subnet
                     </option>
                   </select>
-                  {chain.id !== xdcsubnet.id && (
+                  {chain?.id !== xdcsubnet.id && (
                     <div
                       className="btn"
                       onClick={() => {
                         switchNetwork?.(xdcsubnet.id);
                       }}
-                    >
+                    >ƒ
                       Swith to Subnet
                     </div>
                   )}
@@ -150,26 +148,7 @@ const Bridge = () => {
             </div>
           </div>
         </>
-      ) : (
-        <>
-          <div className="mt-8 w-96 md:w-1/2 card m-auto shadow-2xl">
-            <div className="card-body">
-              <div className="text-left mt-32"> Select Token</div>
-              <select
-                className="select select-bordered w-full max-w-xs m-auto mt-4"
-                onChange={(e) => {
-                  setData({ ...data, token: e.target.value });
-                }}
-              >
-                <option disabled selected>
-                  Select Token
-                </option>
-                <option value={"Token A"}>Token A</option>
-              </select>
-            </div>
-          </div>
-        </>
-      )}
+      }
       <div className="text-center my-2">Powered by XDC Zero</div>
     </>
   );
