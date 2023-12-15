@@ -197,15 +197,6 @@ const Bridge = () => {
             ) : (
               <WriteButton {...send} className="m-auto mt-4" />
             )}
-
-            <div
-              className="btn my-4 m-auto w-[120px]"
-              onClick={() => {
-                setData({});
-              }}
-            >
-              Back
-            </div>
           </div>
         </>
       }
