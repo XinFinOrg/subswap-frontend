@@ -193,9 +193,9 @@ const Bridge = () => {
             </div>
 
             {showApprove ? (
-              <WriteButton {...approve} className="m-auto mt-4" />
+              <WriteButton {...approve} className="m-auto my-4" />
             ) : (
-              <WriteButton {...send} className="m-auto mt-4" />
+              <WriteButton {...send} className="m-auto my-4" />
             )}
           </div>
         </>
