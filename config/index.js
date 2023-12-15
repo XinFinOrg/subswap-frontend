@@ -13,20 +13,20 @@ const xdcdevnet = {
   },
 };
 
-const xdcsubnet = {
-  id: 8851,
-  name: "XDC Subnet",
-  network: "XDC Subnet",
-  nativeCurrency: {
-    decimals: 18,
-    name: "XDC",
-    symbol: "XDC",
-  },
-  rpcUrls: {
-    public: { http: ["https://devnetstats.apothem.network/subnet"] },
-    default: { http: ["https://devnetstats.apothem.network/subnet"] },
-  },
-};
+// const xdcsubnet = {
+//   id: 8851,
+//   name: "XDC Subnet",
+//   network: "XDC Subnet",
+//   nativeCurrency: {
+//     decimals: 18,
+//     name: "XDC",
+//     symbol: "XDC",
+//   },
+//   rpcUrls: {
+//     public: { http: ["https://devnetstats.apothem.network/subnet"] },
+//     default: { http: ["https://devnetstats.apothem.network/subnet"] },
+//   },
+// };
 
 const testCoinContract = {
   address: "0xb739EaB0eE7e657245581c2E69fB3A68ED277f9e",
@@ -421,8 +421,6 @@ const testCoinContract = {
   ],
 };
 
-
-
 const subnetLockContract = {
   address: "0xb287BA18fe513eb04ba7D2B605C22Dd12d100480",
   abi: [
@@ -488,7 +486,6 @@ const subnetLockContract = {
 
 module.exports = {
   xdcdevnet,
-  xdcsubnet,
   testCoinContract,
   subnetLockContract,
 };
