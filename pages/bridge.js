@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useNetwork,
   useSwitchNetwork,
@@ -8,8 +8,25 @@ import {
 import { xdcsubnet, testCoinContract, subnetLockContract } from "@/config";
 import WriteButton from "@/components/WriteButton";
 import { useGlobalContext } from "@/components/Context";
+import { useRouter } from "next/router";
+import Loading from "@/components/Loading/Index";
 
 const Bridge = () => {
+  const [mount, setMount] = useState(false);
+  const router = useRouter();
+
+  const { rpcUrl, rpcName } = router.query;
+
+  useEffect(() => {
+    async function fetchData() {
+      if (rpcUrl && rpcName) {
+        await submitRpcUrl(rpcName, rpcUrl);
+      }
+      setMount(true);
+    }
+    fetchData();
+  }, [rpcUrl, rpcName]);
+
   const [render, serRender] = useState(0);
   const { address } = useAccount();
   const { chain } = useNetwork();
@@ -125,81 +142,86 @@ const Bridge = () => {
 
   return (
     <>
-      {
-        <>
-          <div className="mt-8 w-96 md:w-1/2 card m-auto shadow-2xl">
-            <div className="card-body">
-              <div className="flex gap-8">
-                <div className="w-full">
-                  <div className="text-center">from</div>
-                  {data.fromNetwork ? (
-                    <select className="select select-bordered w-full mt-2">
-                      <option disabled selected>
-                        {data.fromNetwork.name}
-                      </option>
-                    </select>
-                  ) : (
-                    <div
-                      className="btn btn-success w-full mt-2"
-                      onClick={() => {
-                        setData({
-                          ...data,
-                          customizeNetwork: !data.customizeNetwork,
-                        });
-                      }}
-                    >
-                      Add new network
-                    </div>
-                  )}
-
-                  {data.fromNetwork && chain?.id !== data.fromNetwork.id && (
-                    <div
-                      className="btn"
-                      onClick={() => {
-                        switchNetwork?.(data.fromNetwork.id);
-                      }}
-                    >
-                      Swith to {data.fromNetwork.name}
-                    </div>
-                  )}
-                  <div>
-                    Balance : {tokenBalance?.toString() / 1e18 || 0}{" "}
-                    {data.token} <WriteButton {...getTestCoin} />
-                  </div>
+      <div className="mt-8 w-96 md:w-1/2 card m-auto shadow-2xl">
+        <div className="card-body">
+          <div className="flex gap-8">
+            <div className="w-full">
+              <div className="text-center">from</div>
+              {data.fromNetwork ? (
+                <select className="select select-bordered w-full mt-2">
+                  <option disabled selected>
+                    {data.fromNetwork.name}
+                  </option>
+                </select>
+              ) : (
+                <div
+                  className="btn btn-success w-full mt-2"
+                  onClick={() => {
+                    setData({
+                      ...data,
+                      customizeNetwork: !data.customizeNetwork,
+                    });
+                  }}
+                >
+                  Add new network
                 </div>
-                {">"}
-                <div className="w-full">
-                  <div className="text-center">to</div>
-                  <select className="select select-bordered w-full mt-2">
-                    <option disabled selected>
-                      Mainnet
-                    </option>
-                  </select>
+              )}
+
+              {data.fromNetwork && chain?.id !== data.fromNetwork.id && (
+                <div
+                  className="btn"
+                  onClick={() => {
+                    switchNetwork?.(data.fromNetwork.id);
+                  }}
+                >
+                  Swith to {data.fromNetwork.name}
                 </div>
-              </div>
-
-              <input
-                type="number"
-                placeholder="0"
-                className="input input-bordered w-full mt-10"
-                onChange={(e) => {
-                  setData({ ...data, amount: e.target.value });
-                }}
-              />
+              )}
             </div>
-
-            <div className="text-center">
-              You will receive {data.amount || 0} ({data.token}) in XDC Mainnet
+            {">"}
+            <div className="w-full">
+              <div className="text-center">to</div>
+              <select className="select select-bordered w-full mt-2">
+                <option disabled selected>
+                  Mainnet
+                </option>
+              </select>
             </div>
-
-            {showApprove ? (
-              <WriteButton {...approve} className="m-auto my-4" />
-            ) : (
-              <WriteButton {...send} className="m-auto my-4" />
-            )}
           </div>
-        </>
-      }
+
+          <div
+            className="btn btn-success w-max mt-10"
+            onClick={() => {
+              setData({ ...data, selectToken: !data.selectToken });
+            }}
+          >
+            Select token
+          </div>
+          <input
+            type="number"
+            placeholder="0"
+            className="input input-bordered w-full"
+            onChange={(e) => {
+              setData({ ...data, amount: e.target.value });
+            }}
+          />
+          <div className="text-right">
+            Balance : {tokenBalance?.toString() / 1e18 || 0} {data.token}{" "}
+            <WriteButton {...getTestCoin} />
+          </div>
+        </div>
+
+        <div className="text-center">
+          You will receive {data.amount || 0} ({data.token}) in XDC Mainnet
+        </div>
+
+        {showApprove ? (
+          <WriteButton {...approve} className="m-auto my-4" />
+        ) : (
+          <WriteButton {...send} className="m-auto my-4" />
+        )}
+      </div>
+
       <div className="text-center my-2">Powered by XDC Zero</div>
       {/* Put this part before </body> tag */}
       <input
@@ -241,6 +263,43 @@ const Bridge = () => {
                 setData({
                   ...data,
                   customizeNetwork: !data.customizeNetwork,
+                });
+              }}
+            >
+              Close!
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Put this part before </body> tag */}
+      <input
+        type="checkbox"
+        className="modal-toggle"
+        checked={data?.selectToken}
+      />
+      <div className="modal" role="dialog">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Select a token</h3>
+          <div className="card cursor-pointer">
+            <div className="card-body">
+              <div>
+                <div className="float-left">A</div>
+                <div className="float-right">100</div>
+              </div>
+            </div>
+          </div>
+          <div className="modal-action">
+            <div className="btn btn-success" onClick={async () => {}}>
+              Select
+            </div>
+
+            <label
+              className="btn"
+              onClick={() => {
+                setData({
+                  ...data,
+                  selectToken: !data.selectToken,
                 });
               }}
             >

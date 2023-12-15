@@ -28,6 +28,19 @@ const xdcdevnet = {
 //   },
 // };
 
+//toChainId -> fromChainId -> [{name, address}]
+const crossChain = {
+  551: {
+    8851: [
+      {
+        name: "Token A",
+        fromAddress: "0xb739EaB0eE7e657245581c2E69fB3A68ED277f9e",
+        toAddress: "",
+        logo: "/vercel.svg",
+      },
+    ],
+  },
+};
 const testCoinContract = {
   address: "0xb739EaB0eE7e657245581c2E69fB3A68ED277f9e",
   abi: [
