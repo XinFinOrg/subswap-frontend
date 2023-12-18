@@ -195,7 +195,7 @@ const Bridge = () => {
               setData({ ...data, selectToken: !data.selectToken });
             }}
           >
-            Select token
+            {data.token ? data.token : "Select a token"}
           </div>
           <input
             type="number"
@@ -243,7 +243,7 @@ const Bridge = () => {
           <input
             type="text"
             placeholder="rpc endpoint url"
-            className="input input-bordered w-full max-w-xs"
+            className="input input-bordered w-full max-w-xs mt-2"
             onChange={(e) => {
               setData({ ...data, rpcUrl: e.target.value });
             }}
@@ -281,7 +281,16 @@ const Bridge = () => {
       <div className="modal" role="dialog">
         <div className="modal-box">
           <h3 className="font-bold text-lg">Select a token</h3>
-          <div className="card cursor-pointer">
+          <div
+            className="card cursor-pointer"
+            onClick={() => {
+              setData({
+                ...data,
+                token: "Token A",
+                selectToken: !data.selectToken,
+              });
+            }}
+          >
             <div className="card-body">
               <div>
                 <div className="float-left">A</div>
