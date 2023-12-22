@@ -169,8 +169,6 @@ const Bridge = () => {
     };
   });
 
-  console.log(tokenMapping);
-
   const { data: reads1 } = useContractReads({ contracts: tokenBalanceReads });
   const { data: reads2 } = useContractReads({ contracts: tokenDecimalsReads });
 
