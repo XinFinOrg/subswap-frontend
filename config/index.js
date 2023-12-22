@@ -13,36 +13,20 @@ const xdcdevnet = {
   },
 };
 
-// const xdcsubnet = {
-//   id: 8851,
-//   name: "XDC Subnet",
-//   network: "XDC Subnet",
-//   nativeCurrency: {
-//     decimals: 18,
-//     name: "XDC",
-//     symbol: "XDC",
-//   },
-//   rpcUrls: {
-//     public: { http: ["https://devnetstats.apothem.network/subnet"] },
-//     default: { http: ["https://devnetstats.apothem.network/subnet"] },
-//   },
-// };
-
 //toChainId -> fromChainId -> [{name, address}]
-const crossChain = {
+const crossChainTokenMapping = {
   551: {
     8851: [
       {
         name: "Token A",
-        fromAddress: "0xb739EaB0eE7e657245581c2E69fB3A68ED277f9e",
-        toAddress: "",
+        fromChainAddress: "0x1606C3211936fE0b596d4230129FAeA00D76A78A",
+        toChainAddress: "",
         logo: "/vercel.svg",
       },
     ],
   },
 };
-const testCoinContract = {
-  address: "0xb739EaB0eE7e657245581c2E69fB3A68ED277f9e",
+const tokenContract = {
   abi: [
     {
       inputs: [
@@ -498,7 +482,8 @@ const subnetLockContract = {
 };
 
 module.exports = {
+  crossChainTokenMapping,
   xdcdevnet,
-  testCoinContract,
   subnetLockContract,
+  tokenContract,
 };

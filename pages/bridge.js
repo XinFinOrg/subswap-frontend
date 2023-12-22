@@ -5,11 +5,15 @@ import {
   useAccount,
   useContractReads,
 } from "wagmi";
-import { xdcsubnet, testCoinContract, subnetLockContract } from "@/config";
+import {
+  subnetLockContract,
+  crossChainTokenMapping,
+  xdcdevnet,
+  tokenContract,
+} from "@/config";
 import WriteButton from "@/components/WriteButton";
 import { useGlobalContext } from "@/components/Context";
 import { useRouter } from "next/router";
-import Loading from "@/components/Loading/Index";
 
 const Bridge = () => {
   const [mount, setMount] = useState(false);
@@ -34,11 +38,16 @@ const Bridge = () => {
   const { switchNetwork } = useSwitchNetwork();
   const [context, setContext] = useGlobalContext();
 
+  const tokenInstance = {
+    address: data?.token?.fromChainAddress,
+    abi: tokenContract?.abi,
+  };
+
   const { data: reads0 } = useContractReads({
     contracts: [
-      { ...testCoinContract, functionName: "balanceOf", args: [address] },
+      { ...tokenInstance, functionName: "balanceOf", args: [address] },
       {
-        ...testCoinContract,
+        ...tokenInstance,
         functionName: "allowance",
         args: [address, subnetLockContract.address],
       },
@@ -52,7 +61,7 @@ const Bridge = () => {
   const approve = {
     buttonName: "Approve",
     data: {
-      ...testCoinContract,
+      ...tokenInstance,
       functionName: "approve",
       args: [subnetLockContract.address, 2 ** 254],
     },
@@ -68,7 +77,7 @@ const Bridge = () => {
     data: {
       ...subnetLockContract,
       functionName: "lock",
-      args: [testCoinContract.address, data.amount * 1e18],
+      args: [tokenInstance.address, data.amount * 1e18],
     },
     callback: (confirmed) => {
       if (confirmed) {
@@ -80,7 +89,7 @@ const Bridge = () => {
   const getTestCoin = {
     buttonName: "get test coin",
     data: {
-      ...testCoinContract,
+      ...tokenInstance,
       functionName: "mint",
       args: [address, "1000000000000000000000000"],
     },
@@ -140,6 +149,39 @@ const Bridge = () => {
     setData({ ...data, fromNetwork: fromNetwork, customizeNetwork: false });
   };
 
+  const tokenMapping =
+    crossChainTokenMapping?.[xdcdevnet?.id]?.[data?.fromNetwork?.id];
+  const tokenBalanceReads = tokenMapping?.map((token) => {
+    return {
+      abi: tokenInstance.abi,
+      address: token.fromChainAddress,
+      functionName: "balanceOf",
+      args: [address],
+      scopeKey: token.fromChainAddress,
+    };
+  });
+  const tokenDecimalsReads = tokenMapping?.map((token) => {
+    return {
+      abi: tokenInstance.abi,
+      address: token.fromChainAddress,
+      functionName: "decimals",
+      scopeKey: token.fromChainAddress,
+    };
+  });
+
+  console.log(tokenMapping);
+
+  const { data: reads1 } = useContractReads({ contracts: tokenBalanceReads });
+  const { data: reads2 } = useContractReads({ contracts: tokenDecimalsReads });
+
+  const tokenBalances = tokenMapping?.map((token, index) => {
+    return {
+      ...token,
+      balance: reads1?.[index]?.result,
+      decimals: reads2?.[index]?.result,
+    };
+  });
+
   return (
     <>
       <div className="mt-8 w-96 md:w-1/2 card m-auto shadow-2xl">
@@ -195,7 +237,7 @@ const Bridge = () => {
               setData({ ...data, selectToken: !data.selectToken });
             }}
           >
-            {data.token ? data.token : "Select a token"}
+            {data.token ? data.token?.name : "Select a token"}
           </div>
           <input
             type="number"
@@ -206,13 +248,14 @@ const Bridge = () => {
             }}
           />
           <div className="text-right">
-            Balance : {tokenBalance?.toString() / 1e18 || 0} {data.token}{" "}
+            Balance : {tokenBalance?.toString() / 1e18 || 0} {data.token?.name}{" "}
             <WriteButton {...getTestCoin} />
           </div>
         </div>
 
         <div className="text-center">
-          You will receive {data.amount || 0} ({data.token}) in XDC Mainnet
+          You will receive {data.amount || 0} ({data.token?.name}) in XDC
+          Mainnet
         </div>
 
         {showApprove ? (
@@ -281,23 +324,33 @@ const Bridge = () => {
       <div className="modal" role="dialog">
         <div className="modal-box">
           <h3 className="font-bold text-lg">Select a token</h3>
-          <div
-            className="card cursor-pointer"
-            onClick={() => {
-              setData({
-                ...data,
-                token: "Token A",
-                selectToken: !data.selectToken,
-              });
-            }}
-          >
-            <div className="card-body">
-              <div>
-                <div className="float-left">A</div>
-                <div className="float-right">100</div>
+          {tokenBalances?.map((token, index) => {
+            return (
+              <div
+                key={index}
+                className="card cursor-pointer"
+                onClick={() => {
+                  setData({
+                    ...data,
+                    token: token,
+                    selectToken: !data.selectToken,
+                  });
+                }}
+              >
+                <div className="card-body">
+                  <div>
+                    <div className="float-left">{token.name}</div>
+                    <div className="float-right">
+                      {token.balance
+                        ? token.balance / 10n ** token.decimals
+                        : 0}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            );
+          })}
+
           <div className="modal-action">
             <div className="btn btn-success" onClick={async () => {}}>
               Select
