@@ -16,13 +16,17 @@ const xdcdevnet = {
   },
 };
 
+const applications = {
+  mints: { 551: "0x1606C3211936fE0b596d4230129FAeA00D76A78A" },
+  locks: { 8851: "0x1606C3211936fE0b596d4230129FAeA00D76A78A" },
+};
+
 const crossChainTokens = [
   {
     name: "Token A",
     fromChainId: 8851,
     toChainId: 551,
-    sua: "0x1606C3211936fE0b596d4230129FAeA00D76A78A",
-    rua: "0xeDAAAC4C676181449bC5CAE8EA61Be9D91d207c8",
+    fromChainContract: "0x1606C3211936fE0b596d4230129FAeA00D76A78A",
     logo: "/vercel.svg",
   },
 ];
@@ -37,14 +41,19 @@ const getTokens = (fromChainId, toChainId) => {
   return tokens;
 };
 
-const lockContract = {
-  address: "0xb287BA18fe513eb04ba7D2B605C22Dd12d100480",
-  abi: lockABI,
+const getLock = (chainId) => {
+  return applications.locks[chainId];
+};
+
+const getMint = (chainId) => {
+  return applications.mints[chainId];
 };
 
 module.exports = {
   xdcdevnet,
-  lockContract,
   treasuryTokenABI,
+  lockABI,
   getTokens,
+  getLock,
+  getMint,
 };

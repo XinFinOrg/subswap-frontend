@@ -6,10 +6,12 @@ import {
   useContractReads,
 } from "wagmi";
 import {
-  lockContract,
   xdcdevnet,
   getTokens,
   treasuryTokenABI,
+  getLock,
+  getMint,
+  lockABI,
 } from "@/config";
 import WriteButton from "@/components/WriteButton";
 import { useGlobalContext } from "@/components/Context";
@@ -45,7 +47,7 @@ const Bridge = () => {
   const tokens = getTokens(fromNetwork?.id, toNetwork?.id);
 
   const tokenInstance = {
-    address: data?.token?.sua,
+    address: data?.token?.fromChainContract,
     abi: treasuryTokenABI,
   };
 
@@ -55,7 +57,7 @@ const Bridge = () => {
       {
         ...tokenInstance,
         functionName: "allowance",
-        args: [address, lockContract.address],
+        args: [address],
       },
     ],
     scopeKey: render,
@@ -64,12 +66,14 @@ const Bridge = () => {
   const tokenBalance = reads0?.[0]?.result;
   const allowance = reads0?.[1]?.result;
 
+  const lock = getLock(fromNetwork?.id);
+
   const approve = {
     buttonName: "Approve",
     data: {
       ...tokenInstance,
       functionName: "approve",
-      args: [lockContract.address, 2 ** 254],
+      args: [lock, 2 ** 254],
     },
     callback: (confirmed) => {
       if (confirmed) {
@@ -80,12 +84,13 @@ const Bridge = () => {
 
   const selectedToNetwork = data?.token?.toNetwork;
 
-  const selectedRua = data?.token?.rua;
+  const selectedRua = getMint(selectedToNetwork?.id);
 
   const send = {
     buttonName: "Send",
     data: {
-      ...lockContract,
+      address: lock,
+      abi: lockABI,
       functionName: "lock",
       args: [
         selectedToNetwork?.id,
@@ -168,7 +173,7 @@ const Bridge = () => {
   const tokenBalanceReads = tokens?.map((token) => {
     return {
       abi: tokenInstance.abi,
-      address: token.sua,
+      address: token.fromChainContract,
       functionName: "balanceOf",
       args: [address],
     };
@@ -176,7 +181,7 @@ const Bridge = () => {
   const tokenDecimalsReads = tokens?.map((token) => {
     return {
       abi: tokenInstance.abi,
-      address: token.sua,
+      address: token.fromChainContract,
       functionName: "decimals",
     };
   });
