@@ -5,13 +5,13 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 
 import { publicProvider } from "wagmi/providers/public";
-import { xdcdevnet } from "@/config";
+import { xdcparentnet } from "@/config";
 import { useEffect, useState } from "react";
 import { useGlobalContext } from "@/components/Context";
 import { ContextProvider } from "@/components/Context";
 
 export default function App({ Component, pageProps }) {
-  const [context, setContext] = useState({ rpcs: [xdcdevnet] });
+  const [context, setContext] = useState({ rpcs: [xdcparentnet] });
 
   const { chains, publicClient } = configureChains(context.rpcs, [
     publicProvider(),

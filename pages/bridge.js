@@ -6,12 +6,13 @@ import {
   useContractReads,
 } from "wagmi";
 import {
-  xdcdevnet,
+  xdcparentnet,
   getTokens,
   treasuryTokenABI,
   getLock,
   getMint,
   lockABI,
+  getNetwork,
 } from "@/config";
 import WriteButton from "@/components/WriteButton";
 import { useGlobalContext } from "@/components/Context";
@@ -28,7 +29,7 @@ const Bridge = () => {
       if (rpcUrl && rpcName) {
         await submitRpcUrl(rpcName, rpcUrl);
       }
-      setData({ ...data, toNetwork: xdcdevnet });
+      setData({ ...data, toNetwork: xdcparentnet });
       setMount(true);
     }
     fetchData();
@@ -135,34 +136,7 @@ const Bridge = () => {
       alert("rpc url is required");
       return;
     }
-    const res = await fetch(rpcUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        method: "eth_chainId",
-        params: [],
-        id: 1,
-      }),
-    });
-
-    const json = await res.json();
-    const chainId = Number(json.result);
-
-    const fromNetwork = {
-      id: chainId,
-      name: rpcName,
-      network: rpcName,
-      nativeCurrency: {
-        decimals: 18,
-        name: "XDC",
-        symbol: "XDC",
-      },
-      rpcUrls: {
-        public: { http: [rpcUrl] },
-        default: { http: [rpcUrl] },
-      },
-    };
+    const fromNetwork = await getNetwork(rpcName, rpcUrl);
     context.rpcs.push(fromNetwork);
     setContext({
       ...context,

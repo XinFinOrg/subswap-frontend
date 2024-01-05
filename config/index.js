@@ -1,7 +1,7 @@
 import treasuryTokenABI from "../abi/treasuryTokenABI.json";
 import lockABI from "../abi/lockABI.json";
 
-const xdcdevnet = {
+const xdcparentnet = {
   id: 551,
   name: "XDC Devnet",
   network: "XDC Devnet",
@@ -49,10 +49,43 @@ const getMint = (chainId) => {
   return applications.mints[chainId];
 };
 
+const getNetwork = async (rpcName, rpcUrl) => {
+  const res = await fetch(rpcUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      method: "eth_chainId",
+      params: [],
+      id: 1,
+    }),
+  });
+
+  const json = await res.json();
+  const chainId = Number(json.result);
+  const network = {
+    id: chainId,
+    name: rpcName,
+    network: rpcName,
+    nativeCurrency: {
+      decimals: 18,
+      name: "XDC",
+      symbol: "XDC",
+    },
+    rpcUrls: {
+      public: { http: [rpcUrl] },
+      default: { http: [rpcUrl] },
+    },
+  };
+
+  return network;
+};
+
 module.exports = {
-  xdcdevnet,
+  xdcparentnet,
   treasuryTokenABI,
   lockABI,
+  getNetwork,
   getTokens,
   getLock,
   getMint,
