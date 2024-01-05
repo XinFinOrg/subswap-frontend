@@ -38,6 +38,7 @@ const Bridge = () => {
   const [render, serRender] = useState(0);
   const { address } = useAccount();
   const { chain } = useNetwork();
+
   const [data, setData] = useState({});
   const { switchNetwork } = useSwitchNetwork();
   const [context, setContext] = useGlobalContext();
@@ -83,9 +84,7 @@ const Bridge = () => {
     },
   };
 
-  const selectedToNetwork = data?.token?.toNetwork;
-
-  const selectedRua = getMint(selectedToNetwork?.id);
+  const selectedRua = getMint(toNetwork?.id);
 
   const send = {
     buttonName: "Send",
@@ -94,7 +93,7 @@ const Bridge = () => {
       abi: lockABI,
       functionName: "lock",
       args: [
-        selectedToNetwork?.id,
+        toNetwork?.id,
         selectedRua,
         tokenInstance.address,
         data.amount * 1e18,
