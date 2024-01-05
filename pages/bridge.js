@@ -6,10 +6,10 @@ import {
   useContractReads,
 } from "wagmi";
 import {
-  subnetLockContract,
-  crossChainTokenMapping,
+  lockContract,
   xdcdevnet,
-  tokenContract,
+  getTokens,
+  treasuryTokenABI,
 } from "@/config";
 import WriteButton from "@/components/WriteButton";
 import { useGlobalContext } from "@/components/Context";
@@ -26,6 +26,7 @@ const Bridge = () => {
       if (rpcUrl && rpcName) {
         await submitRpcUrl(rpcName, rpcUrl);
       }
+      setData({ ...data, toNetwork: xdcdevnet });
       setMount(true);
     }
     fetchData();
@@ -38,9 +39,14 @@ const Bridge = () => {
   const { switchNetwork } = useSwitchNetwork();
   const [context, setContext] = useGlobalContext();
 
+  const fromNetwork = data?.fromNetwork;
+  const toNetwork = data?.toNetwork;
+
+  const tokens = getTokens(fromNetwork?.id, toNetwork?.id);
+
   const tokenInstance = {
-    address: data?.token?.fromChainAddress,
-    abi: tokenContract?.abi,
+    address: data?.token?.sua,
+    abi: treasuryTokenABI,
   };
 
   const { data: reads0 } = useContractReads({
@@ -49,7 +55,7 @@ const Bridge = () => {
       {
         ...tokenInstance,
         functionName: "allowance",
-        args: [address, subnetLockContract.address],
+        args: [address, lockContract.address],
       },
     ],
     scopeKey: render,
@@ -63,7 +69,7 @@ const Bridge = () => {
     data: {
       ...tokenInstance,
       functionName: "approve",
-      args: [subnetLockContract.address, 2 ** 254],
+      args: [lockContract.address, 2 ** 254],
     },
     callback: (confirmed) => {
       if (confirmed) {
@@ -72,12 +78,22 @@ const Bridge = () => {
     },
   };
 
+  const selectedToNetwork = data?.token?.toNetwork;
+
+  const selectedRua = data?.token?.rua;
+
   const send = {
     buttonName: "Send",
     data: {
-      ...subnetLockContract,
+      ...lockContract,
       functionName: "lock",
-      args: [tokenInstance.address, data.amount * 1e18],
+      args: [
+        selectedToNetwork?.id,
+        selectedRua,
+        tokenInstance.address,
+        data.amount * 1e18,
+        address,
+      ],
     },
     callback: (confirmed) => {
       if (confirmed) {
@@ -149,30 +165,32 @@ const Bridge = () => {
     setData({ ...data, fromNetwork: fromNetwork, customizeNetwork: false });
   };
 
-  const tokenMapping =
-    crossChainTokenMapping?.[xdcdevnet?.id]?.[data?.fromNetwork?.id];
-  const tokenBalanceReads = tokenMapping?.map((token) => {
+  const tokenBalanceReads = tokens?.map((token) => {
     return {
       abi: tokenInstance.abi,
-      address: token.fromChainAddress,
+      address: token.sua,
       functionName: "balanceOf",
       args: [address],
-      scopeKey: token.fromChainAddress,
     };
   });
-  const tokenDecimalsReads = tokenMapping?.map((token) => {
+  const tokenDecimalsReads = tokens?.map((token) => {
     return {
       abi: tokenInstance.abi,
-      address: token.fromChainAddress,
+      address: token.sua,
       functionName: "decimals",
-      scopeKey: token.fromChainAddress,
     };
   });
 
-  const { data: reads1 } = useContractReads({ contracts: tokenBalanceReads });
-  const { data: reads2 } = useContractReads({ contracts: tokenDecimalsReads });
+  const { data: reads1 } = useContractReads({
+    contracts: tokenBalanceReads,
+    scopeKey: render,
+  });
+  const { data: reads2 } = useContractReads({
+    contracts: tokenDecimalsReads,
+    scopeKey: render,
+  });
 
-  const tokenBalances = tokenMapping?.map((token, index) => {
+  const tokenBalances = tokens?.map((token, index) => {
     return {
       ...token,
       balance: reads1?.[index]?.result,
