@@ -88,6 +88,7 @@ const Bridge = () => {
   let send;
   let approve;
 
+  //subnet to parentnet
   if (bridgeMode == 1) {
     const lock = getLock(fromNetwork?.id);
     const mint = getMint(toNetwork?.id);
@@ -126,6 +127,7 @@ const Bridge = () => {
         }
       },
     };
+    //parentnet to subnet
   } else if (bridgeMode == 2) {
     const mint = getMint(fromNetwork?.id);
     const lock = getLock(toNetwork?.id);
