@@ -48,16 +48,17 @@ const Bridge = () => {
 
   const tokens = getTokens(fromNetwork?.id, toNetwork?.id);
 
-  const tokenInstance = {
-    address: data?.token?.fromChainContract,
-    abi: treasuryTokenABI,
-  };
-
   const { data: reads0 } = useContractReads({
     contracts: [
-      { ...tokenInstance, functionName: "balanceOf", args: [address] },
       {
-        ...tokenInstance,
+        abi: treasuryTokenABI,
+        address: data?.token?.fromChainContract,
+        functionName: "balanceOf",
+        args: [address],
+      },
+      {
+        abi: treasuryTokenABI,
+        address: data?.token?.fromChainContract,
         functionName: "allowance",
         args: [address],
       },
@@ -73,7 +74,8 @@ const Bridge = () => {
   const approve = {
     buttonName: "Approve",
     data: {
-      ...tokenInstance,
+      abi: treasuryTokenABI,
+      address: data?.token?.fromChainContract,
       functionName: "approve",
       args: [lock, 2 ** 254],
     },
@@ -84,7 +86,7 @@ const Bridge = () => {
     },
   };
 
-  const selectedRua = getMint(toNetwork?.id);
+  const rua = getMint(toNetwork?.id);
 
   const send = {
     buttonName: "Send",
@@ -94,8 +96,8 @@ const Bridge = () => {
       functionName: "lock",
       args: [
         toNetwork?.id,
-        selectedRua,
-        tokenInstance.address,
+        rua,
+        data?.token?.fromChainContract,
         data.amount * 1e18,
         address,
       ],
@@ -110,7 +112,8 @@ const Bridge = () => {
   const getTestCoin = {
     buttonName: "get test coin",
     data: {
-      ...tokenInstance,
+      abi: treasuryTokenABI,
+      address: data?.token?.fromChainContract,
       functionName: "mint",
       args: [address, "1000000000000000000000000"],
     },
@@ -145,7 +148,7 @@ const Bridge = () => {
 
   const tokenBalanceReads = tokens?.map((token) => {
     return {
-      abi: tokenInstance.abi,
+      abi: treasuryTokenABI,
       address: token.fromChainContract,
       functionName: "balanceOf",
       args: [address],
@@ -153,7 +156,7 @@ const Bridge = () => {
   });
   const tokenDecimalsReads = tokens?.map((token) => {
     return {
-      abi: tokenInstance.abi,
+      abi: treasuryTokenABI,
       address: token.fromChainContract,
       functionName: "decimals",
     };
