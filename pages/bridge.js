@@ -47,21 +47,35 @@ const Bridge = () => {
   const fromNetwork = data?.fromNetwork;
   const toNetwork = data?.toNetwork;
 
-  const tokens = getTokens(fromNetwork?.id, toNetwork?.id);
+  const subnet = fromNetwork?.id == xdcparentnet.id ? toNetwork : fromNetwork;
+
+  const bridgeMode = fromNetwork?.id == xdcparentnet.id ? 2 : 1;
+
+  const tokens = getTokens(subnet?.id, xdcparentnet.id, bridgeMode);
+
+  const selectedToken = data?.token;
+
+  const parentnetMint = getMint(xdcparentnet.id);
 
   const { data: reads0 } = useContractReads({
     contracts: [
       {
         abi: tokenABI,
-        address: data?.token?.originalToken,
+        address: selectedToken?.originalToken,
         functionName: "balanceOf",
         args: [address],
       },
       {
         abi: tokenABI,
-        address: data?.token?.originalToken,
+        address: selectedToken?.originalToken,
         functionName: "allowance",
         args: [address],
+      },
+      {
+        abi: mintABI,
+        address: parentnetMint,
+        functionName: "treasuryMapping",
+        args: [subnet?.id, selectedToken?.originalToken],
       },
     ],
     scopeKey: render,
@@ -69,28 +83,29 @@ const Bridge = () => {
 
   const tokenBalance = reads0?.[0]?.result;
   const allowance = reads0?.[1]?.result;
-  const mode = data?.token?.mode;
-
-  const approve = {
-    buttonName: "Approve",
-    data: {
-      abi: tokenABI,
-      address: data?.token?.originalToken,
-      functionName: "approve",
-      args: [lock, 2 ** 254],
-    },
-    callback: (confirmed) => {
-      if (confirmed) {
-        serRender(render + 1);
-      }
-    },
-  };
+  const parentnetToken = reads0?.[2]?.result;
 
   let send;
+  let approve;
 
-  if (mode == 1) {
+  if (bridgeMode == 1) {
     const lock = getLock(fromNetwork?.id);
     const mint = getMint(toNetwork?.id);
+
+    approve = {
+      buttonName: "Approve",
+      data: {
+        abi: tokenABI,
+        address: selectedToken?.originalToken,
+        functionName: "approve",
+        args: [lock, 2 ** 254],
+      },
+      callback: (confirmed) => {
+        if (confirmed) {
+          serRender(render + 1);
+        }
+      },
+    };
     send = {
       buttonName: "Send",
       data: {
@@ -100,7 +115,7 @@ const Bridge = () => {
         args: [
           toNetwork?.id,
           mint,
-          data?.token?.originalToken,
+          selectedToken?.originalToken,
           data.amount * 1e18,
           address,
         ],
@@ -111,9 +126,23 @@ const Bridge = () => {
         }
       },
     };
-  } else if (mode == 2) {
+  } else if (bridgeMode == 2) {
     const mint = getMint(fromNetwork?.id);
     const lock = getLock(toNetwork?.id);
+    approve = {
+      buttonName: "Approve",
+      data: {
+        abi: tokenABI,
+        address: parentnetToken,
+        functionName: "approve",
+        args: [mint, 2 ** 254],
+      },
+      callback: (confirmed) => {
+        if (confirmed) {
+          serRender(render + 1);
+        }
+      },
+    };
     send = {
       buttonName: "Send",
       data: {
@@ -123,8 +152,8 @@ const Bridge = () => {
         args: [
           toNetwork?.id,
           lock,
-          data?.token?.originalToken,
-          "",
+          selectedToken?.originalToken,
+          parentnetToken,
           data.amount * 1e18,
           address,
         ],
@@ -141,7 +170,7 @@ const Bridge = () => {
     buttonName: "get test coin",
     data: {
       abi: tokenABI,
-      address: data?.token?.originalToken,
+      address: selectedToken?.originalToken,
       functionName: "mint",
       args: [address, "1000000000000000000000000"],
     },

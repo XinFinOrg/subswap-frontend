@@ -24,18 +24,22 @@ const applications = {
 const crossChainTokens = [
   {
     name: "Token A",
-    fromChainId: 8851,
-    toChainId: 551,
+    subnetChainId: 8851,
+    parentnetChainId: 551,
     originalToken: "0x1606C3211936fE0b596d4230129FAeA00D76A78A",
     logo: "/vercel.svg",
-    mode: "1", // 1 lock =>mint, 2 burn => unlock
+    mode: "1", // 1 only subnet to parentnet, 2 only parentnet to subnet, 3 both
   },
 ];
 
-const getTokens = (fromChainId, toChainId) => {
+const getTokens = (subnetChainId, parentnetChainId, bridgeMode) => {
   const tokens = [];
   for (const token of crossChainTokens) {
-    if (token.fromChainId === fromChainId && token.toChainId === toChainId) {
+    if (
+      token.subnetChainId === subnetChainId &&
+      token.parentnetChainId === parentnetChainId &&
+      (token.mode == 3 || bridgeMode == token.mode)
+    ) {
       tokens.push(token);
     }
   }
