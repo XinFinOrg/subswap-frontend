@@ -1,6 +1,6 @@
-import treasuryTokenABI from "../abi/treasuryTokenABI.json";
+import tokenABI from "../abi/tokenABI.json";
 import lockABI from "../abi/lockABI.json";
-
+import mintABI from "../abi/mintABI.json";
 const xdcparentnet = {
   id: 551,
   name: "XDC Devnet",
@@ -26,8 +26,9 @@ const crossChainTokens = [
     name: "Token A",
     fromChainId: 8851,
     toChainId: 551,
-    fromChainContract: "0x1606C3211936fE0b596d4230129FAeA00D76A78A",
+    originalToken: "0x1606C3211936fE0b596d4230129FAeA00D76A78A",
     logo: "/vercel.svg",
+    mode: "1", // 1 lock =>mint, 2 burn => unlock
   },
 ];
 
@@ -83,8 +84,9 @@ const getNetwork = async (rpcName, rpcUrl) => {
 
 module.exports = {
   xdcparentnet,
-  treasuryTokenABI,
+  tokenABI,
   lockABI,
+  mintABI,
   getNetwork,
   getTokens,
   getLock,

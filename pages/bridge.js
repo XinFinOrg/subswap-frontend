@@ -8,10 +8,11 @@ import {
 import {
   xdcparentnet,
   getTokens,
-  treasuryTokenABI,
+  tokenABI,
   getLock,
   getMint,
   lockABI,
+  mintABI,
   getNetwork,
 } from "@/config";
 import WriteButton from "@/components/WriteButton";
@@ -51,14 +52,14 @@ const Bridge = () => {
   const { data: reads0 } = useContractReads({
     contracts: [
       {
-        abi: treasuryTokenABI,
-        address: data?.token?.fromChainContract,
+        abi: tokenABI,
+        address: data?.token?.originalToken,
         functionName: "balanceOf",
         args: [address],
       },
       {
-        abi: treasuryTokenABI,
-        address: data?.token?.fromChainContract,
+        abi: tokenABI,
+        address: data?.token?.originalToken,
         functionName: "allowance",
         args: [address],
       },
@@ -68,14 +69,13 @@ const Bridge = () => {
 
   const tokenBalance = reads0?.[0]?.result;
   const allowance = reads0?.[1]?.result;
-
-  const lock = getLock(fromNetwork?.id);
+  const mode = data?.token?.mode;
 
   const approve = {
     buttonName: "Approve",
     data: {
-      abi: treasuryTokenABI,
-      address: data?.token?.fromChainContract,
+      abi: tokenABI,
+      address: data?.token?.originalToken,
       functionName: "approve",
       args: [lock, 2 ** 254],
     },
@@ -86,34 +86,62 @@ const Bridge = () => {
     },
   };
 
-  const rua = getMint(toNetwork?.id);
+  let send;
 
-  const send = {
-    buttonName: "Send",
-    data: {
-      address: lock,
-      abi: lockABI,
-      functionName: "lock",
-      args: [
-        toNetwork?.id,
-        rua,
-        data?.token?.fromChainContract,
-        data.amount * 1e18,
-        address,
-      ],
-    },
-    callback: (confirmed) => {
-      if (confirmed) {
-        serRender(render + 1);
-      }
-    },
-  };
+  if (mode == 1) {
+    const lock = getLock(fromNetwork?.id);
+    const mint = getMint(toNetwork?.id);
+    send = {
+      buttonName: "Send",
+      data: {
+        address: lock,
+        abi: lockABI,
+        functionName: "lock",
+        args: [
+          toNetwork?.id,
+          mint,
+          data?.token?.originalToken,
+          data.amount * 1e18,
+          address,
+        ],
+      },
+      callback: (confirmed) => {
+        if (confirmed) {
+          serRender(render + 1);
+        }
+      },
+    };
+  } else if (mode == 2) {
+    const mint = getMint(fromNetwork?.id);
+    const lock = getLock(toNetwork?.id);
+    send = {
+      buttonName: "Send",
+      data: {
+        address: mint,
+        abi: mintABI,
+        functionName: "burn",
+        args: [
+          toNetwork?.id,
+          lock,
+          data?.token?.originalToken,
+          "",
+          data.amount * 1e18,
+          address,
+        ],
+      },
+      callback: (confirmed) => {
+        if (confirmed) {
+          serRender(render + 1);
+        }
+      },
+    };
+  }
 
   const getTestCoin = {
     buttonName: "get test coin",
     data: {
-      abi: treasuryTokenABI,
-      address: data?.token?.fromChainContract,
+      abi: tokenABI,
+      address: data?.token?.originalToken,
       functionName: "mint",
       args: [address, "1000000000000000000000000"],
     },
@@ -148,16 +176,16 @@ const Bridge = () => {
 
   const tokenBalanceReads = tokens?.map((token) => {
     return {
-      abi: treasuryTokenABI,
-      address: token.fromChainContract,
+      abi: tokenABI,
+      address: token.originalToken,
       functionName: "balanceOf",
       args: [address],
     };
   });
   const tokenDecimalsReads = tokens?.map((token) => {
     return {
-      abi: treasuryTokenABI,
-      address: token.fromChainContract,
+      abi: tokenABI,
+      address: token.originalToken,
       functionName: "decimals",
     };
   });
