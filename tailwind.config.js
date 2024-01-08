@@ -1,5 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  theme: {
+    fontFamily: {
+      "nunito-sans": ['Nunito Sans', 'sans-serif'],
+    },
+  },
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",

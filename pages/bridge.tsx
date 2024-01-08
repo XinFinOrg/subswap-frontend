@@ -7,6 +7,7 @@ import {
   Chain
 } from "wagmi";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 import {
   xdcparentnet,
@@ -40,7 +41,7 @@ const Bridge = () => {
     }
 
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rpcUrl, rpcName]);
 
   const [render, serRender] = useState(0);
@@ -272,7 +273,16 @@ const Bridge = () => {
         <div className="card-body">
           <div className="flex gap-8">
             <div className="w-full">
-              <div className="text-center">from</div>
+              <div className="flex items-center">
+                <div className="font-bold">From</div>
+                <Image
+                  src="/arrow.png"
+                  width={30}
+                  height={30}
+                  alt="Right Arrow"
+                  className="ml-3"
+                />
+              </div>
               {data.fromNetwork ? (
                 <select className="select select-bordered w-full mt-2">
                   <option disabled selected>
@@ -305,9 +315,16 @@ const Bridge = () => {
                 </button>
               )}
             </div>
-            {">"}
             <div className="w-full">
-              <div className="text-center">to</div>
+              <div className="flex items-center">
+                <Image
+                  src="/arrow.png"
+                  width={30}
+                  height={30}
+                  alt="Right Arrow"
+                />
+                <div className="ml-3 font-bold">to</div>
+              </div>
               <select className="select select-bordered w-full mt-2">
                 <option disabled selected>
                   Mainnet
