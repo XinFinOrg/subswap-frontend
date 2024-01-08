@@ -3,8 +3,10 @@ import {
   useNetwork,
   useSwitchNetwork,
   useAccount,
-  useContractReads,
+  useContractReads
 } from "wagmi";
+import { useRouter } from "next/router";
+
 import {
   xdcparentnet,
   getTokens,
@@ -13,11 +15,10 @@ import {
   getMint,
   lockABI,
   mintABI,
-  getNetwork,
+  getNetwork
 } from "@/config";
-import WriteButton from "@/components/WriteButton";
 import { useGlobalContext } from "@/components/Context";
-import { useRouter } from "next/router";
+import WriteButton from "@/components/WriteButton";
 
 const Bridge = () => {
   const [mount, setMount] = useState(false);
@@ -63,22 +64,22 @@ const Bridge = () => {
         abi: tokenABI,
         address: selectedToken?.originalToken,
         functionName: "balanceOf",
-        args: [address],
+        args: [address]
       },
       {
         abi: tokenABI,
         address: selectedToken?.originalToken,
         functionName: "allowance",
-        args: [address],
+        args: [address]
       },
       {
         abi: mintABI,
         address: parentnetMint,
         functionName: "treasuryMapping",
-        args: [subnet?.id, selectedToken?.originalToken],
-      },
+        args: [subnet?.id, selectedToken?.originalToken]
+      }
     ],
-    scopeKey: render,
+    scopeKey: render
   });
 
   const tokenBalance = reads0?.[0]?.result;
@@ -99,13 +100,13 @@ const Bridge = () => {
         abi: tokenABI,
         address: selectedToken?.originalToken,
         functionName: "approve",
-        args: [lock, 2 ** 254],
+        args: [lock, 2 ** 254]
       },
       callback: (confirmed) => {
         if (confirmed) {
           serRender(render + 1);
         }
-      },
+      }
     };
     send = {
       buttonName: "Send",
@@ -118,14 +119,14 @@ const Bridge = () => {
           mint,
           selectedToken?.originalToken,
           data.amount * 1e18,
-          address,
-        ],
+          address
+        ]
       },
       callback: (confirmed) => {
         if (confirmed) {
           serRender(render + 1);
         }
-      },
+      }
     };
     //parentnet to subnet
   } else if (bridgeMode == 2) {
@@ -137,13 +138,13 @@ const Bridge = () => {
         abi: tokenABI,
         address: parentnetToken,
         functionName: "approve",
-        args: [mint, 2 ** 254],
+        args: [mint, 2 ** 254]
       },
       callback: (confirmed) => {
         if (confirmed) {
           serRender(render + 1);
         }
-      },
+      }
     };
     send = {
       buttonName: "Send",
@@ -157,14 +158,14 @@ const Bridge = () => {
           selectedToken?.originalToken,
           parentnetToken,
           data.amount * 1e18,
-          address,
-        ],
+          address
+        ]
       },
       callback: (confirmed) => {
         if (confirmed) {
           serRender(render + 1);
         }
-      },
+      }
     };
   }
 
@@ -174,13 +175,13 @@ const Bridge = () => {
       abi: tokenABI,
       address: selectedToken?.originalToken,
       functionName: "mint",
-      args: [address, "1000000000000000000000000"],
+      args: [address, "1000000000000000000000000"]
     },
     callback: (confirmed) => {
       if (confirmed) {
         serRender(render + 1);
       }
-    },
+    }
   };
 
   let showApprove = false;
@@ -200,7 +201,7 @@ const Bridge = () => {
     const fromNetwork = await getNetwork(rpcName, rpcUrl);
     context.rpcs.push(fromNetwork);
     setContext({
-      ...context,
+      ...context
     });
     setData({ ...data, fromNetwork: fromNetwork, customizeNetwork: false });
   };
@@ -210,31 +211,31 @@ const Bridge = () => {
       abi: tokenABI,
       address: token.originalToken,
       functionName: "balanceOf",
-      args: [address],
+      args: [address]
     };
   });
   const tokenDecimalsReads = tokens?.map((token) => {
     return {
       abi: tokenABI,
       address: token.originalToken,
-      functionName: "decimals",
+      functionName: "decimals"
     };
   });
 
   const { data: reads1 } = useContractReads({
     contracts: tokenBalanceReads,
-    scopeKey: render,
+    scopeKey: render
   });
   const { data: reads2 } = useContractReads({
     contracts: tokenDecimalsReads,
-    scopeKey: render,
+    scopeKey: render
   });
 
   const tokenBalances = tokens?.map((token, index) => {
     return {
       ...token,
       balance: reads1?.[index]?.result,
-      decimals: reads2?.[index]?.result,
+      decimals: reads2?.[index]?.result
     };
   });
 
@@ -257,7 +258,7 @@ const Bridge = () => {
                   onClick={() => {
                     setData({
                       ...data,
-                      customizeNetwork: !data.customizeNetwork,
+                      customizeNetwork: !data.customizeNetwork
                     });
                   }}
                 >
@@ -361,7 +362,7 @@ const Bridge = () => {
               onClick={() => {
                 setData({
                   ...data,
-                  customizeNetwork: !data.customizeNetwork,
+                  customizeNetwork: !data.customizeNetwork
                 });
               }}
             >
@@ -389,7 +390,7 @@ const Bridge = () => {
                   setData({
                     ...data,
                     token: token,
-                    selectToken: !data.selectToken,
+                    selectToken: !data.selectToken
                   });
                 }}
               >
@@ -417,7 +418,7 @@ const Bridge = () => {
               onClick={() => {
                 setData({
                   ...data,
-                  selectToken: !data.selectToken,
+                  selectToken: !data.selectToken
                 });
               }}
             >

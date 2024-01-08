@@ -1,36 +1,35 @@
-import "@/styles/globals.css";
-import Layout from "../components/Layout";
-import "@rainbow-me/rainbowkit/styles.css";
+import { useState } from "react";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-
+import "@rainbow-me/rainbowkit/styles.css";
 import { publicProvider } from "wagmi/providers/public";
-import { xdcparentnet } from "@/config";
-import { useEffect, useState } from "react";
-import { useGlobalContext } from "@/components/Context";
-import { ContextProvider } from "@/components/Context";
 
-export default function App({ Component, pageProps }) {
+import { xdcparentnet } from "@/config";
+import Layout from "@/components/Layout";
+import { ContextProvider } from "@/components/Context";
+import "@/styles/globals.css";
+
+export default function App({ Component, pageProps }: any) {
   const [context, setContext] = useState({ rpcs: [xdcparentnet] });
 
   const { chains, publicClient } = configureChains(context.rpcs, [
-    publicProvider(),
+    publicProvider()
   ]);
   const { connectors } = getDefaultWallets({
     appName: "App",
     projectId: "2a612b9a18e81ce3fda2f82787eb6a4a",
-    chains,
+    chains
   });
 
   const wagmiConfig = createConfig({
     autoConnect: true,
     connectors,
-    publicClient,
+    publicClient
   });
   const rainbowKitConfig = {
     chains: chains,
     showRecentTransactions: true,
-    coolMode: true,
+    coolMode: true
   };
 
   return (
