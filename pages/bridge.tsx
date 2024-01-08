@@ -189,7 +189,7 @@ const Bridge = () => {
     showApprove = true;
   }
 
-  const submitRpcUrl = async (rpcName, rpcUrl) => {
+  const submitRpcUrl = async (rpcName: string, rpcUrl: string) => {
     if (!rpcName) {
       alert("rpc name is required");
       return;

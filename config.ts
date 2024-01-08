@@ -2,7 +2,30 @@ export { default as tokenABI } from "./abi/tokenABI.json";
 export { default as lockABI } from "./abi/lockABI.json";
 export { default as mintABI } from "./abi/mintABI.json";
 
-export const xdcparentnet = {
+interface NativeCurrency {
+  decimals: number;
+  name: string;
+  symbol: string;
+}
+
+interface RpcUrls {
+  public: {
+    http: string[];
+  };
+  default: {
+    http: string[];
+  };
+}
+
+interface NetworkConfig {
+  id: number;
+  name: string;
+  network: string;
+  nativeCurrency: NativeCurrency;
+  rpcUrls: RpcUrls;
+}
+
+export const xdcparentnet: NetworkConfig = {
   id: 551,
   name: "XDC Devnet",
   network: "XDC Devnet",
@@ -17,33 +40,50 @@ export const xdcparentnet = {
   },
 };
 
-const applications: { [x: string]: { [y: number]: string; }; } = {
+interface Applications {
+  mints: { [x: number]: string; };
+  locks: { [x: number]: string; };
+}
+
+const applications: Applications = {
   mints: { 551: "0x1606C3211936fE0b596d4230129FAeA00D76A78A" },
   locks: { 8851: "0x1606C3211936fE0b596d4230129FAeA00D76A78A" },
 };
 
-const crossChainTokens = [
+interface CrossChainToken {
+  name: string;
+  subnetChainId: number;
+  parentnetChainId: number;
+  originalToken: string;
+  logo: string;
+  // 1: only subnet to parentnet, 2: only parentnet to subnet, 3: both way
+  mode: 1 | 2 | 3;
+}
+
+const crossChainTokens: CrossChainToken[] = [
   {
     name: "Token A",
     subnetChainId: 8851,
     parentnetChainId: 551,
     originalToken: "0x1606C3211936fE0b596d4230129FAeA00D76A78A",
     logo: "/vercel.svg",
-    mode: 1, // 1 only subnet to parentnet, 2 only parentnet to subnet, 3 both
+    mode: 1
   },
 ];
 
 export const getTokens = (subnetChainId: number, parentnetChainId: number, bridgeMode: number) => {
   const tokens = [];
+
   for (const token of crossChainTokens) {
     if (
       token.subnetChainId === subnetChainId &&
       token.parentnetChainId === parentnetChainId &&
-      (token.mode == 3 || bridgeMode == token.mode)
+      (token.mode == 3 || bridgeMode === token.mode)
     ) {
       tokens.push(token);
     }
   }
+
   return tokens;
 };
 
@@ -56,7 +96,7 @@ export const getMint = (chainId: number) => {
 };
 
 export const getNetwork = async (rpcName: string, rpcUrl: string) => {
-  const res = await fetch(rpcUrl, {
+  const response = await fetch(rpcUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -67,7 +107,7 @@ export const getNetwork = async (rpcName: string, rpcUrl: string) => {
     }),
   });
 
-  const json = await res.json();
+  const json = await response.json();
   const chainId = Number(json.result);
   const network = {
     id: chainId,

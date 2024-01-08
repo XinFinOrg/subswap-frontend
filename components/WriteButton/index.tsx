@@ -4,7 +4,6 @@ import { Notify } from "notiflix/build/notiflix-notify-aio";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useRouter } from "next/router";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
-import lang from "../../lang/index";
 const WriteButton = (props) => {
   const { locale, locales, defaultLocale, asPath } = useRouter();
   const addRecentTransaction = useAddRecentTransaction();
@@ -19,14 +18,14 @@ const WriteButton = (props) => {
     ...props?.data,
     onError(error) {
       Notify.failure(error.message);
-    },
+    }
   });
   const { isSuccess: confirmed, isLoading: confirming } = useWaitForTransaction(
     {
       ...tx,
       onError(error) {
         Notify.failure(error.message);
-      },
+      }
     }
   );
 
@@ -55,7 +54,7 @@ const WriteButton = (props) => {
                 try {
                   addRecentTransaction({
                     hash: tx,
-                    description: props?.buttonName,
+                    description: props?.buttonName
                   });
                 } catch (e) {}
               }
@@ -67,7 +66,7 @@ const WriteButton = (props) => {
               </>
             )}
 
-            {confirming ? lang[locale]?.confirming : props?.buttonName}
+            {props?.buttonName}
           </button>
         }
       </div>
