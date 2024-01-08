@@ -3,7 +3,8 @@ import {
   useNetwork,
   useSwitchNetwork,
   useAccount,
-  useContractReads
+  useContractReads,
+  Chain
 } from "wagmi";
 import { useRouter } from "next/router";
 
@@ -15,8 +16,7 @@ import {
   getMint,
   lockABI,
   mintABI,
-  getNetwork,
-  NetworkConfig
+  getNetwork
 } from "@/config";
 import { useGlobalContext } from "@/components/Context";
 import WriteButton from "@/components/WriteButton";
@@ -40,6 +40,7 @@ const Bridge = () => {
     }
 
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rpcUrl, rpcName]);
 
   const [render, serRender] = useState(0);
@@ -47,9 +48,9 @@ const Bridge = () => {
   const { chain } = useNetwork();
 
   interface BridgeData {
-    fromNetwork?: NetworkConfig;
-    toNetwork?: NetworkConfig;
-    customizeNetwork?: any;
+    fromNetwork?: Chain;
+    toNetwork?: Chain;
+    customizeNetwork?: boolean;
     token?: any;
     selectToken?: any;
     amount?: number;
@@ -209,12 +210,15 @@ const Bridge = () => {
     showApprove = true;
   }
 
-  const submitRpcUrl = async (rpcName: string | undefined, rpcUrl: string | undefined) => {
+  const submitRpcUrl = async (
+    rpcName: string | undefined,
+    rpcUrl: string | undefined
+  ) => {
     if (!rpcName) {
       alert("rpc name is required");
       return;
     }
-    
+
     if (!rpcUrl) {
       alert("rpc url is required");
       return;

@@ -1,31 +1,10 @@
+import { Chain } from 'wagmi';
+
 export { default as tokenABI } from "./abi/tokenABI.json";
 export { default as lockABI } from "./abi/lockABI.json";
 export { default as mintABI } from "./abi/mintABI.json";
 
-interface NativeCurrency {
-  decimals: number;
-  name: string;
-  symbol: string;
-}
-
-interface RpcUrls {
-  public: {
-    http: string[];
-  };
-  default: {
-    http: string[];
-  };
-}
-
-export interface NetworkConfig {
-  id: number;
-  name: string;
-  network: string;
-  nativeCurrency: NativeCurrency;
-  rpcUrls: RpcUrls;
-}
-
-export const xdcparentnet: NetworkConfig = {
+export const xdcparentnet: Chain = {
   id: 551,
   name: "XDC Devnet",
   network: "XDC Devnet",

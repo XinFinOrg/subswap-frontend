@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import "@rainbow-me/rainbowkit/styles.css";
+import { Chain, configureChains, createConfig, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
+import "@rainbow-me/rainbowkit/styles.css";
 
 import { xdcparentnet } from "@/config";
 import Layout from "@/components/Layout";
@@ -10,11 +10,14 @@ import { ContextProvider } from "@/components/Context";
 import "@/styles/globals.css";
 
 export default function App({ Component, pageProps }: any) {
-  const [context, setContext] = useState({ rpcs: [xdcparentnet] });
+  const [context, setContext] = useState<{ rpcs: Chain[] }>({
+    rpcs: [xdcparentnet]
+  });
 
   const { chains, publicClient } = configureChains(context.rpcs, [
     publicProvider()
   ]);
+
   const { connectors } = getDefaultWallets({
     appName: "App",
     projectId: "2a612b9a18e81ce3fda2f82787eb6a4a",
@@ -26,6 +29,7 @@ export default function App({ Component, pageProps }: any) {
     connectors,
     publicClient
   });
+
   const rainbowKitConfig = {
     chains: chains,
     showRecentTransactions: true,
