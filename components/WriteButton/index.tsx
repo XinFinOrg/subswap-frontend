@@ -4,8 +4,7 @@ import { Notify } from "notiflix/build/notiflix-notify-aio";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useRouter } from "next/router";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
-const WriteButton = (props) => {
-  const { locale, locales, defaultLocale, asPath } = useRouter();
+const WriteButton = (props: any) => {
   const addRecentTransaction = useAddRecentTransaction();
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
@@ -35,12 +34,12 @@ const WriteButton = (props) => {
 
   return (
     mounted && (
-      <div className={props.className}>
+      <div className={`${props.className} w-full`}>
         {
           <button
             className={
               (props?.disabled || !write || confirming ? "btn-disabled " : "") +
-              "btn btn-primary btn-outline text-xs "
+              "btn btn-primary btn-outline text-xs w-full rounded-3xl"
             }
             // disabled={props?.disabled || !write || confirming}
             style={{ minWidth: 112 }}

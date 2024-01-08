@@ -21,6 +21,8 @@ import {
 } from "@/config";
 import { useGlobalContext } from "@/components/Context";
 import WriteButton from "@/components/WriteButton";
+import RightArrow from "@/components/RightArrow";
+import { LiaExchangeAltSolid } from "react-icons/lia";
 
 const Bridge = () => {
   const router = useRouter();
@@ -192,7 +194,7 @@ const Bridge = () => {
   }
 
   const getTestCoin = {
-    buttonName: "get test coin",
+    buttonName: "Get test coin",
     data: {
       abi: tokenABI,
       address: selectedToken?.originalToken,
@@ -269,29 +271,31 @@ const Bridge = () => {
 
   return (
     <>
-      <div className="mt-8 w-96 md:w-1/2 card m-auto shadow-2xl">
+      <div className="mt-8 w-96 md:w-1/2 card m-auto shadow-2xl bg-custom-gradient">
+        <div className="card-title pl-8 pt-8 text-3xl text-card-title">
+          Bridge
+        </div>
         <div className="card-body">
-          <div className="flex gap-8">
+          <div className="flex border p-4 border-border rounded-3xl items-center">
             <div className="w-full">
+              {/* From -> */}
               <div className="flex items-center">
-                <div className="font-bold">From</div>
-                <Image
-                  src="/arrow.png"
-                  width={30}
-                  height={30}
-                  alt="Right Arrow"
-                  className="ml-3"
-                />
+                <div className="font-bold text-light-grey text-sm">From</div>
+                <div className="ml-3">
+                  <RightArrow />
+                </div>
               </div>
+
+              {/* Select ?  */}
               {data.fromNetwork ? (
-                <select className="select select-bordered w-full mt-2">
+                <select className="select select-bordered w-full mt-2 bg-light/10 rounded-3xl">
                   <option disabled selected>
                     {data.fromNetwork.name}
                   </option>
                 </select>
               ) : (
                 <div
-                  className="btn btn-success w-full mt-2"
+                  className="btn rounded-3xl w-full mt-2 bg-light/10 text-primary"
                   onClick={() => {
                     setData({
                       ...data,
@@ -314,22 +318,30 @@ const Bridge = () => {
                   Switch to {data.fromNetwork.name}
                 </button>
               )}
+              <button className="mt-2 px-2.5 py-1.5 text-sm text-bold text-primary bg-button-bg rounded-3xl">
+                Connect
+              </button>
             </div>
+
+            <div className="bg-light/10 p-1 rounded-full mx-2 -mt-2">
+              <LiaExchangeAltSolid size="16" color="white" />
+            </div>
+
+            {/* -> To */}
             <div className="w-full">
               <div className="flex items-center">
-                <Image
-                  src="/arrow.png"
-                  width={30}
-                  height={30}
-                  alt="Right Arrow"
-                />
-                <div className="ml-3 font-bold">to</div>
+                <RightArrow />
+                <div className="ml-3 font-bold text-light-grey text-sm">To</div>
               </div>
-              <select className="select select-bordered w-full mt-2">
+              <select className="select select-bordered w-full mt-2 rounded-3xl">
                 <option disabled selected>
                   Mainnet
                 </option>
               </select>
+              <div className="mt-3 ml-2 text-light-grey font-light text-sm h-6">
+                Balance: {Number(tokenBalance ?? 0) / 1e18 || 0}
+                {data.token?.name}{" "}
+              </div>
             </div>
           </div>
 
@@ -349,31 +361,30 @@ const Bridge = () => {
               setData({ ...data, amount: Number(e.target.value) });
             }}
           />
-          <div className="text-right">
-            Balance : {Number(tokenBalance ?? 0) / 1e18 || 0} {data.token?.name}{" "}
+          <div className="text-right mt-2">
             <WriteButton {...getTestCoin} />
           </div>
+
+          <div className="text-center">
+            You will receive {data.amount || 0} ({data.token?.name}) in XDC
+            Mainnet
+          </div>
+
+          {showApprove ? (
+            <WriteButton {...approve} className="m-auto my-4" />
+          ) : (
+            <WriteButton {...send} className="m-auto my-4" />
+          )}
+          <div className="text-center my-2">Powered by XDC-Zero</div>
         </div>
 
-        <div className="text-center">
-          You will receive {data.amount || 0} ({data.token?.name}) in XDC
-          Mainnet
-        </div>
-
-        {showApprove ? (
-          <WriteButton {...approve} className="m-auto my-4" />
-        ) : (
-          <WriteButton {...send} className="m-auto my-4" />
-        )}
+        {/* Put this part before </body> tag */}
+        <input
+          type="checkbox"
+          className="modal-toggle"
+          checked={data?.customizeNetwork}
+        />
       </div>
-
-      <div className="text-center my-2">Powered by XDC Zero</div>
-      {/* Put this part before </body> tag */}
-      <input
-        type="checkbox"
-        className="modal-toggle"
-        checked={data?.customizeNetwork}
-      />
       <div className="modal" role="dialog">
         <div className="modal-box">
           <h3 className="font-bold text-lg">Add new network</h3>
