@@ -22,7 +22,6 @@ import { useGlobalContext } from "@/components/Context";
 import WriteButton from "@/components/WriteButton";
 
 const Bridge = () => {
-  const [_mounted, setMounted] = useState(false);
   const router = useRouter();
 
   const { rpcUrl, rpcName } = router.query;
@@ -38,8 +37,8 @@ const Bridge = () => {
       }
 
       setData({ ...data, toNetwork: xdcparentnet });
-      setMounted(true);
     }
+
     fetchData();
   }, [rpcUrl, rpcName]);
 
@@ -53,7 +52,7 @@ const Bridge = () => {
     customizeNetwork?: any;
     token?: any;
     selectToken?: any;
-    amount: number;
+    amount?: number;
     rpcName?: string;
     rpcUrl?: string;
   }
@@ -136,7 +135,7 @@ const Bridge = () => {
           toNetwork?.id,
           mint,
           selectedToken?.originalToken,
-          data.amount * 1e18,
+          data.amount ?? 0 * 1e18,
           address
         ]
       },
@@ -177,7 +176,7 @@ const Bridge = () => {
           lock,
           selectedToken?.originalToken,
           parentnetToken,
-          data.amount * 1e18,
+          data.amount ?? 0 * 1e18,
           address
         ]
       },
@@ -206,7 +205,7 @@ const Bridge = () => {
   };
 
   let showApprove = false;
-  if (allowance < data.amount * 1e18) {
+  if (allowance < (data.amount ?? 0) * 1e18) {
     showApprove = true;
   }
 
