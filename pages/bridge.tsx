@@ -15,13 +15,14 @@ import {
   getMint,
   lockABI,
   mintABI,
-  getNetwork
+  getNetwork,
+  NetworkConfig
 } from "@/config";
 import { useGlobalContext } from "@/components/Context";
 import WriteButton from "@/components/WriteButton";
 
 const Bridge = () => {
-  const [mount, setMount] = useState(false);
+  const [_mounted, setMounted] = useState(false);
   const router = useRouter();
 
   const { rpcUrl, rpcName } = router.query;
@@ -29,10 +30,15 @@ const Bridge = () => {
   useEffect(() => {
     async function fetchData() {
       if (rpcUrl && rpcName) {
+        if (Array.isArray(rpcUrl) || Array.isArray(rpcName)) {
+          return;
+        }
+
         await submitRpcUrl(rpcName, rpcUrl);
       }
+
       setData({ ...data, toNetwork: xdcparentnet });
-      setMount(true);
+      setMounted(true);
     }
     fetchData();
   }, [rpcUrl, rpcName]);
@@ -41,16 +47,27 @@ const Bridge = () => {
   const { address } = useAccount();
   const { chain } = useNetwork();
 
-  const [data, setData] = useState({});
+  interface BridgeData {
+    fromNetwork?: NetworkConfig;
+    toNetwork?: NetworkConfig;
+    customizeNetwork?: any;
+    token?: any;
+    selectToken?: any;
+    amount: number;
+    rpcName?: string;
+    rpcUrl?: string;
+  }
+
+  const [data, setData] = useState<BridgeData>({});
   const { switchNetwork } = useSwitchNetwork();
   const [context, setContext] = useGlobalContext();
 
   const fromNetwork = data?.fromNetwork;
   const toNetwork = data?.toNetwork;
 
-  const subnet = fromNetwork?.id == xdcparentnet.id ? toNetwork : fromNetwork;
+  const subnet = fromNetwork?.id === xdcparentnet.id ? toNetwork : fromNetwork;
 
-  const bridgeMode = fromNetwork?.id == xdcparentnet.id ? 2 : 1;
+  const bridgeMode = fromNetwork?.id === xdcparentnet.id ? 2 : 1;
 
   const tokens = getTokens(subnet?.id, xdcparentnet.id, bridgeMode);
 
@@ -83,11 +100,11 @@ const Bridge = () => {
   });
 
   const tokenBalance = reads0?.[0]?.result;
-  const allowance = reads0?.[1]?.result;
+  const allowance = reads0?.[1]?.result as number;
   const parentnetToken = reads0?.[2]?.result;
 
-  let send;
   let approve;
+  let send;
 
   //subnet to parentnet
   if (bridgeMode == 1) {
@@ -102,12 +119,13 @@ const Bridge = () => {
         functionName: "approve",
         args: [lock, 2 ** 254]
       },
-      callback: (confirmed) => {
+      callback: (confirmed: boolean) => {
         if (confirmed) {
           serRender(render + 1);
         }
       }
     };
+
     send = {
       buttonName: "Send",
       data: {
@@ -122,7 +140,7 @@ const Bridge = () => {
           address
         ]
       },
-      callback: (confirmed) => {
+      callback: (confirmed: boolean) => {
         if (confirmed) {
           serRender(render + 1);
         }
@@ -132,6 +150,7 @@ const Bridge = () => {
   } else if (bridgeMode == 2) {
     const mint = getMint(fromNetwork?.id);
     const lock = getLock(toNetwork?.id);
+
     approve = {
       buttonName: "Approve",
       data: {
@@ -140,12 +159,13 @@ const Bridge = () => {
         functionName: "approve",
         args: [mint, 2 ** 254]
       },
-      callback: (confirmed) => {
+      callback: (confirmed: boolean) => {
         if (confirmed) {
           serRender(render + 1);
         }
       }
     };
+
     send = {
       buttonName: "Send",
       data: {
@@ -161,7 +181,8 @@ const Bridge = () => {
           address
         ]
       },
-      callback: (confirmed) => {
+
+      callback: (confirmed: boolean) => {
         if (confirmed) {
           serRender(render + 1);
         }
@@ -177,7 +198,7 @@ const Bridge = () => {
       functionName: "mint",
       args: [address, "1000000000000000000000000"]
     },
-    callback: (confirmed) => {
+    callback: (confirmed: boolean) => {
       if (confirmed) {
         serRender(render + 1);
       }
@@ -189,15 +210,17 @@ const Bridge = () => {
     showApprove = true;
   }
 
-  const submitRpcUrl = async (rpcName: string, rpcUrl: string) => {
+  const submitRpcUrl = async (rpcName: string | undefined, rpcUrl: string | undefined) => {
     if (!rpcName) {
       alert("rpc name is required");
       return;
     }
+    
     if (!rpcUrl) {
       alert("rpc url is required");
       return;
     }
+
     const fromNetwork = await getNetwork(rpcName, rpcUrl);
     context.rpcs.push(fromNetwork);
     setContext({
@@ -226,6 +249,7 @@ const Bridge = () => {
     contracts: tokenBalanceReads,
     scopeKey: render
   });
+
   const { data: reads2 } = useContractReads({
     contracts: tokenDecimalsReads,
     scopeKey: render
@@ -267,14 +291,15 @@ const Bridge = () => {
               )}
 
               {data.fromNetwork && chain?.id !== data.fromNetwork.id && (
-                <div
+                <button
                   className="btn"
                   onClick={() => {
-                    switchNetwork?.(data.fromNetwork.id);
+                    switchNetwork?.(data.fromNetwork?.id);
                   }}
+                  disabled={!data.fromNetwork}
                 >
-                  Swith to {data.fromNetwork.name}
-                </div>
+                  Switch to {data.fromNetwork.name}
+                </button>
               )}
             </div>
             {">"}
@@ -301,11 +326,11 @@ const Bridge = () => {
             placeholder="0"
             className="input input-bordered w-full"
             onChange={(e) => {
-              setData({ ...data, amount: e.target.value });
+              setData({ ...data, amount: Number(e.target.value) });
             }}
           />
           <div className="text-right">
-            Balance : {tokenBalance?.toString() / 1e18 || 0} {data.token?.name}{" "}
+            Balance : {Number(tokenBalance ?? 0) / 1e18 || 0} {data.token?.name}{" "}
             <WriteButton {...getTestCoin} />
           </div>
         </div>
@@ -398,9 +423,8 @@ const Bridge = () => {
                   <div>
                     <div className="float-left">{token.name}</div>
                     <div className="float-right">
-                      {token.balance
-                        ? token.balance / 10n ** token.decimals
-                        : 0}
+                      {/* (token.balance) / 10n ** token.decimals */}
+                      <>{token.balance ?? 0}</>
                     </div>
                   </div>
                 </div>
@@ -422,7 +446,7 @@ const Bridge = () => {
                 });
               }}
             >
-              Close!
+              Close
             </label>
           </div>
         </div>

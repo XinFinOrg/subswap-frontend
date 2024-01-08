@@ -17,7 +17,7 @@ interface RpcUrls {
   };
 }
 
-interface NetworkConfig {
+export interface NetworkConfig {
   id: number;
   name: string;
   network: string;
@@ -71,7 +71,7 @@ const crossChainTokens: CrossChainToken[] = [
   },
 ];
 
-export const getTokens = (subnetChainId: number, parentnetChainId: number, bridgeMode: number) => {
+export const getTokens = (subnetChainId: number | undefined, parentnetChainId: number, bridgeMode: number) => {
   const tokens = [];
 
   for (const token of crossChainTokens) {
@@ -87,11 +87,19 @@ export const getTokens = (subnetChainId: number, parentnetChainId: number, bridg
   return tokens;
 };
 
-export const getLock = (chainId: number) => {
+export const getLock = (chainId: number | undefined) => {
+  if (!chainId) {
+    return;
+  }
+
   return applications.locks[chainId];
 };
 
-export const getMint = (chainId: number) => {
+export const getMint = (chainId: number | undefined) => {
+  if (!chainId) {
+    return;
+  }
+
   return applications.mints[chainId];
 };
 

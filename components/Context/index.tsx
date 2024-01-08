@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 
-const GlobalContext = createContext({});
+const GlobalContext = createContext<any>({});
 
 export function ContextProvider({ children, state }: any) {
   return (
