@@ -7,7 +7,6 @@ import {
   Chain
 } from "wagmi";
 import { useRouter } from "next/router";
-import Image from "next/image";
 
 import {
   xdcparentnet,
@@ -29,6 +28,7 @@ const Bridge = () => {
 
   const { rpcUrl, rpcName } = router.query;
 
+  // When query changed, we get network from query 
   useEffect(() => {
     async function fetchData() {
       if (rpcUrl && rpcName) {
@@ -81,16 +81,16 @@ const Bridge = () => {
   const { data: reads0 } = useContractReads({
     contracts: [
       {
-        abi: tokenABI,
+        abi: tokenABI as any,
         address: selectedToken?.originalToken,
         functionName: "balanceOf",
-        args: [address]
+        args: [address] as any,
       },
       {
         abi: tokenABI,
         address: selectedToken?.originalToken,
         functionName: "allowance",
-        args: [address]
+        args: [address] as any,
       },
       {
         abi: mintABI,
@@ -99,7 +99,7 @@ const Bridge = () => {
         args: [subnet?.id, selectedToken?.originalToken]
       }
     ],
-    scopeKey: render
+    scopeKey: render.toString(),
   });
 
   const tokenBalance = reads0?.[0]?.result;
@@ -235,7 +235,7 @@ const Bridge = () => {
     setData({ ...data, fromNetwork: fromNetwork, customizeNetwork: false });
   };
 
-  const tokenBalanceReads = tokens?.map((token) => {
+  const tokenBalanceReads = tokens?.map<any>((token) => {
     return {
       abi: tokenABI,
       address: token.originalToken,
@@ -243,7 +243,8 @@ const Bridge = () => {
       args: [address]
     };
   });
-  const tokenDecimalsReads = tokens?.map((token) => {
+
+  const tokenDecimalsReads = tokens?.map<any>((token) => {
     return {
       abi: tokenABI,
       address: token.originalToken,
@@ -253,12 +254,12 @@ const Bridge = () => {
 
   const { data: reads1 } = useContractReads({
     contracts: tokenBalanceReads,
-    scopeKey: render
+    scopeKey: render.toString()
   });
 
   const { data: reads2 } = useContractReads({
     contracts: tokenDecimalsReads,
-    scopeKey: render
+    scopeKey: render.toString()
   });
 
   const tokenBalances = tokens?.map((token, index) => {
@@ -464,7 +465,7 @@ const Bridge = () => {
           })}
 
           <div className="modal-action">
-            <div className="btn btn-success" onClick={async () => {}}>
+            <div className="btn btn-success" onClick={async () => { }}>
               Select
             </div>
 
