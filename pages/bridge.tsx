@@ -189,10 +189,7 @@ const Bridge = () => {
     }
   };
 
-  let showApprove = false;
-  if (allowance < (data.amount ?? 0) * 1e18) {
-    showApprove = true;
-  }
+  const showApprove = allowance < (data.amount ?? 0) * 1e18;
 
   const submitRpcUrl = async (
     rpcName: string | undefined,
@@ -404,7 +401,7 @@ const Bridge = () => {
                 });
               }}
             >
-              Close!
+              Close
             </label>
           </div>
         </div>
