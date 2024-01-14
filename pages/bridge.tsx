@@ -60,7 +60,7 @@ namespace OperationObject {
 }
 
 const Bridge = () => {
-  const [data, setData] = useState<BridgeData>({});
+  const [bridgeViewData, setBridgeViewData] = useState<BridgeData>({});
   const [render, serRender] = useState(0);
 
   const router = useRouter();
@@ -80,20 +80,20 @@ const Bridge = () => {
         await submitRpcUrl(rpcName, rpcUrl);
       }
 
-      setData({ ...data, toNetwork: xdcparentnet });
+      setBridgeViewData({ ...bridgeViewData, toNetwork: xdcparentnet });
     }
 
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rpcUrl, rpcName]);
 
-  const fromNetwork = data?.fromNetwork;
-  const toNetwork = data?.toNetwork;
+  const fromNetwork = bridgeViewData?.fromNetwork;
+  const toNetwork = bridgeViewData?.toNetwork;
 
   const subnet = fromNetwork?.id === xdcparentnet.id ? toNetwork : fromNetwork;
   const bridgeMode = fromNetwork?.id === xdcparentnet.id ? 2 : 1;
   const tokens = getTokens(subnet?.id, xdcparentnet.id, bridgeMode);
-  const selectedToken = data?.token;
+  const selectedToken = bridgeViewData?.token;
 
   // TODO: Specify what reads0 is
   const { tokenBalance, allowance, parentnetToken } = useGetReads0(selectedToken, address, subnet, xdcparentnet.id, render);
@@ -136,10 +136,10 @@ const Bridge = () => {
 
     if (bridgeMode == 1) {
       approve = createOperationObject("Approve", createOperationData(tokenABI, selectedToken?.originalToken, "approve", [lock, 2 ** 254]), commonCallback);
-      send = createOperationObject("Send", createOperationData(lockABI, lock, "lock", [toNetwork?.id, mint, selectedToken?.originalToken, data.amount ?? 0 * 1e18, address]), commonCallback);
+      send = createOperationObject("Send", createOperationData(lockABI, lock, "lock", [toNetwork?.id, mint, selectedToken?.originalToken, bridgeViewData.amount ?? 0 * 1e18, address]), commonCallback);
     } else if (bridgeMode == 2) {
       approve = createOperationObject("Approve", createOperationData(tokenABI, parentnetToken, "approve", [mint, 2 ** 254]), commonCallback);
-      send = createOperationObject("Send", createOperationData(mintABI, mint, "burn", [toNetwork?.id, lock, selectedToken?.originalToken, parentnetToken, data.amount ?? 0 * 1e18, address]), commonCallback);
+      send = createOperationObject("Send", createOperationData(mintABI, mint, "burn", [toNetwork?.id, lock, selectedToken?.originalToken, parentnetToken, bridgeViewData.amount ?? 0 * 1e18, address]), commonCallback);
     } else {
       throw new Error("Invalid bridge mode");
     }
@@ -162,7 +162,7 @@ const Bridge = () => {
   //   }
   // };
 
-  const showApprove = allowance < (data.amount ?? 0) * 1e18;
+  const showApprove = allowance < (bridgeViewData.amount ?? 0) * 1e18;
 
   const submitRpcUrl = async (
     rpcName: string | undefined,
@@ -183,7 +183,7 @@ const Bridge = () => {
     setContext({
       ...context
     });
-    setData({ ...data, fromNetwork: fromNetwork, customizeNetwork: false });
+    setBridgeViewData({ ...bridgeViewData, fromNetwork: fromNetwork, customizeNetwork: false });
   };
 
   return (
@@ -194,14 +194,14 @@ const Bridge = () => {
         </div>
 
         <div className="card-body">
-          <SourceTargetSelect data={data} setData={setData} tokenBalance={tokenBalance} />
-          <TokenSelect data={data} setData={setData} />
+          <SourceTargetSelect data={bridgeViewData} setData={setBridgeViewData} tokenBalance={tokenBalance} />
+          <TokenSelect data={bridgeViewData} setData={setBridgeViewData} />
           <input
             type="number"
             placeholder="0"
             className="input input-bordered w-full"
             onChange={(e) => {
-              setData({ ...data, amount: Number(e.target.value) });
+              setBridgeViewData({ ...bridgeViewData, amount: Number(e.target.value) });
             }}
           />
           {/* <div className="text-right mt-2">
@@ -226,12 +226,12 @@ const Bridge = () => {
         <input
           type="checkbox"
           className="modal-toggle"
-          checked={data?.customizeNetwork}
+          checked={bridgeViewData?.customizeNetwork}
         />
       </div>
 
       {/* Dialog to add network */}
-      <AddNetWorkDialog setData={setData} data={data} submitRpcUrl={submitRpcUrl} />
+      <AddNetWorkDialog setData={setBridgeViewData} data={bridgeViewData} submitRpcUrl={submitRpcUrl} />
 
       {/* Note: No idea what this does, please check */}
       {/* Put this part before </body> tag */}
@@ -239,11 +239,11 @@ const Bridge = () => {
         id="test"
         type="checkbox"
         className="modal-toggle"
-        checked={data?.selectToken}
+        checked={bridgeViewData?.selectToken}
       />
 
       {/* Dialog to select token */}
-      <SelectTokenDialog setData={setData} data={data} tokens={tokens} address={address} render={render} />
+      <SelectTokenDialog setData={setBridgeViewData} data={bridgeViewData} tokens={tokens} address={address} render={render} />
     </>
   );
 };
