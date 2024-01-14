@@ -19,16 +19,52 @@ import {
   getNetwork
 } from "@/config";
 import { useGlobalContext } from "@/components/Context";
-import WriteButton from "@/components/WriteButton";
+import SubmitButton from "@/components/SubmitButton";
 import RightArrow from "@/components/RightArrow";
 import { LiaExchangeAltSolid } from "react-icons/lia";
-import { EllipseBgs } from '../components/Background/EllipseBgs';
+
+interface BridgeData {
+  fromNetwork?: Chain;
+  toNetwork?: Chain;
+  customizeNetwork?: boolean;
+  token?: any;
+  selectToken?: any;
+  amount?: number;
+  rpcName?: string;
+  rpcUrl?: string;
+}
+
+interface OperationObject {
+  buttonName: OperationObject.ButtonName;
+  data: OperationObject.Data;
+  callback: (confirmed: boolean) => void;
+}
+
+namespace OperationObject {
+  export type ButtonName = 'Approve' | 'Send';
+  export interface Data {
+    abi: any; // Replace 'any' with the specific type of 'tokenABI'
+    address: string | undefined;
+    functionName: Data.FunctionName;
+    args: Array<number | string | undefined>;
+  };
+
+  export namespace Data {
+    export type FunctionName = 'approve' | 'lock' | 'burn';
+  }
+}
 
 const Bridge = () => {
+  const [data, setData] = useState<BridgeData>({});
+  const [render, serRender] = useState(0);
+
   const router = useRouter();
+  const { address } = useAccount();
+  const { chain } = useNetwork();
+  const { switchNetwork } = useSwitchNetwork();
+  const [context, setContext] = useGlobalContext();
 
   const { rpcUrl, rpcName } = router.query;
-
   // When query changed, we get network from query 
   useEffect(() => {
     async function fetchData() {
@@ -46,25 +82,6 @@ const Bridge = () => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rpcUrl, rpcName]);
-
-  const [render, serRender] = useState(0);
-  const { address } = useAccount();
-  const { chain } = useNetwork();
-
-  interface BridgeData {
-    fromNetwork?: Chain;
-    toNetwork?: Chain;
-    customizeNetwork?: boolean;
-    token?: any;
-    selectToken?: any;
-    amount?: number;
-    rpcName?: string;
-    rpcUrl?: string;
-  }
-
-  const [data, setData] = useState<BridgeData>({});
-  const { switchNetwork } = useSwitchNetwork();
-  const [context, setContext] = useGlobalContext();
 
   const fromNetwork = data?.fromNetwork;
   const toNetwork = data?.toNetwork;
@@ -105,93 +122,56 @@ const Bridge = () => {
 
   const tokenBalance = reads0?.[0]?.result;
   const allowance = reads0?.[1]?.result as number;
-  const parentnetToken = reads0?.[2]?.result;
+  const parentnetToken = reads0?.[2]?.result as any;
 
-  let approve;
-  let send;
+  const { approve, send } = handleTokenOperations();
 
-  //subnet to parentnet
-  if (bridgeMode == 1) {
-    const lock = getLock(fromNetwork?.id);
-    const mint = getMint(toNetwork?.id);
-
-    approve = {
-      buttonName: "Approve",
-      data: {
-        abi: tokenABI,
-        address: selectedToken?.originalToken,
-        functionName: "approve",
-        args: [lock, 2 ** 254]
-      },
-      callback: (confirmed: boolean) => {
-        if (confirmed) {
-          serRender(render + 1);
-        }
-      }
+  function createOperationObject(
+    buttonName: OperationObject.ButtonName,
+    data: OperationObject.Data,
+    callback: (confirmed: boolean) => void
+  ): OperationObject {
+    return {
+      buttonName,
+      data,
+      callback
     };
+  }
 
-    send = {
-      buttonName: "Send",
-      data: {
-        address: lock,
-        abi: lockABI,
-        functionName: "lock",
-        args: [
-          toNetwork?.id,
-          mint,
-          selectedToken?.originalToken,
-          data.amount ?? 0 * 1e18,
-          address
-        ]
-      },
-      callback: (confirmed: boolean) => {
-        if (confirmed) {
-          serRender(render + 1);
-        }
-      }
-    };
-    //parentnet to subnet
-  } else if (bridgeMode == 2) {
-    const mint = getMint(fromNetwork?.id);
-    const lock = getLock(toNetwork?.id);
+  function commonCallback(confirmed: boolean) {
+    if (confirmed) {
+      serRender(render + 1);
+    }
+  }
 
-    approve = {
-      buttonName: "Approve",
-      data: {
-        abi: tokenABI,
-        address: parentnetToken,
-        functionName: "approve",
-        args: [mint, 2 ** 254]
-      },
-      callback: (confirmed: boolean) => {
-        if (confirmed) {
-          serRender(render + 1);
-        }
-      }
-    };
+  function createOperationData(
+    abi: any,
+    address: string | undefined,
+    functionName: OperationObject.Data.FunctionName,
+    args: any[]
+  ): OperationObject.Data {
+    return { abi, address, functionName, args };
+  }
 
-    send = {
-      buttonName: "Send",
-      data: {
-        address: mint,
-        abi: mintABI,
-        functionName: "burn",
-        args: [
-          toNetwork?.id,
-          lock,
-          selectedToken?.originalToken,
-          parentnetToken,
-          data.amount ?? 0 * 1e18,
-          address
-        ]
-      },
+  function handleTokenOperations() {
+    let approve: OperationObject;
+    let send: OperationObject;
 
-      callback: (confirmed: boolean) => {
-        if (confirmed) {
-          serRender(render + 1);
-        }
-      }
-    };
+    // Common lock and mint calculations
+    const lock = getLock(bridgeMode == 1 ? fromNetwork?.id : toNetwork?.id);
+    const mint = getMint(bridgeMode == 1 ? toNetwork?.id : fromNetwork?.id);
+
+    if (bridgeMode == 1) {
+      approve = createOperationObject("Approve", createOperationData(tokenABI, selectedToken?.originalToken, "approve", [lock, 2 ** 254]), commonCallback);
+      send = createOperationObject("Send", createOperationData(lockABI, lock, "lock", [toNetwork?.id, mint, selectedToken?.originalToken, data.amount ?? 0 * 1e18, address]), commonCallback);
+    } else if (bridgeMode == 2) {
+      approve = createOperationObject("Approve", createOperationData(tokenABI, parentnetToken, "approve", [mint, 2 ** 254]), commonCallback);
+      send = createOperationObject("Send", createOperationData(mintABI, mint, "burn", [toNetwork?.id, lock, selectedToken?.originalToken, parentnetToken, data.amount ?? 0 * 1e18, address]), commonCallback);
+    } else {
+      throw new Error("Invalid bridge mode");
+    }
+
+    return { approve, send };
   }
 
   const getTestCoin = {
@@ -364,7 +344,7 @@ const Bridge = () => {
             }}
           />
           <div className="text-right mt-2">
-            <WriteButton {...getTestCoin} />
+            <SubmitButton {...getTestCoin} />
           </div>
 
           <div className="text-center">
@@ -373,9 +353,9 @@ const Bridge = () => {
           </div>
 
           {showApprove ? (
-            <WriteButton {...approve} className="m-auto my-4" />
+            <SubmitButton {...approve} className="m-auto my-4" />
           ) : (
-            <WriteButton {...send} className="m-auto my-4" />
+            <SubmitButton {...send} className="m-auto my-4" />
           )}
           <div className="text-center my-2">Powered by XDC-Zero</div>
         </div>

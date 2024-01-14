@@ -1,24 +1,19 @@
-import { useAccount, useContractWrite, useWaitForTransaction } from "wagmi";
 import { useEffect, useState } from "react";
+import { useAccount, useContractWrite, useWaitForTransaction } from "wagmi";
 import { Notify } from "notiflix/build/notiflix-notify-aio";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useRouter } from "next/router";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
-const WriteButton = (props: any) => {
-  const addRecentTransaction = useAddRecentTransaction();
+
+const SubmitButton = (props: any) => {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
+  const addRecentTransaction = useAddRecentTransaction();
   const { isConnected } = useAccount();
-
   const { data: tx, write } = useContractWrite({
     ...props?.data,
     onError(error) {
       Notify.failure(error.message);
     }
   });
+
   const { isSuccess: confirmed, isLoading: confirming } = useWaitForTransaction(
     {
       ...tx,
@@ -29,7 +24,12 @@ const WriteButton = (props: any) => {
   );
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     props?.callback?.(confirmed);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [confirmed]);
 
   return (
@@ -45,23 +45,24 @@ const WriteButton = (props: any) => {
             style={{ minWidth: 112 }}
             onClick={() => {
               if (!isConnected) {
-                alert("please connect wallet");
+                alert("Please connect wallet before sending transaction");
                 return;
               }
+
               write?.();
               if (tx) {
                 try {
                   addRecentTransaction({
-                    hash: tx,
+                    hash: tx.hash,
                     description: props?.buttonName
                   });
-                } catch (e) {}
+                } catch (e) { }
               }
             }}
           >
             {confirming && (
               <>
-                <span className="loading loading-spinner"></span>loading
+                <span className="loading loading-spinner"></span>Loading
               </>
             )}
 
@@ -73,4 +74,4 @@ const WriteButton = (props: any) => {
   );
 };
 
-export default WriteButton;
+export default SubmitButton;
