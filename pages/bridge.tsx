@@ -16,7 +16,8 @@ import {
   getMint,
   lockABI,
   mintABI,
-  getNetwork
+  getNetwork,
+  CrossChainToken
 } from "@/config";
 import { useGlobalContext } from "@/components/Context";
 import SubmitButton from "@/components/SubmitButton";
@@ -43,7 +44,7 @@ interface OperationObject {
 namespace OperationObject {
   export type ButtonName = 'Approve' | 'Send';
   export interface Data {
-    abi: any; // Replace 'any' with the specific type of 'tokenABI'
+    abi: any;
     address: string | undefined;
     functionName: Data.FunctionName;
     args: Array<number | string | undefined>;
@@ -63,6 +64,7 @@ const Bridge = () => {
   const [context, setContext] = useGlobalContext();
 
   const { rpcUrl, rpcName } = router.query;
+
   // When query changed, we get network from query 
   useEffect(() => {
     async function fetchData() {
@@ -85,39 +87,13 @@ const Bridge = () => {
   const toNetwork = data?.toNetwork;
 
   const subnet = fromNetwork?.id === xdcparentnet.id ? toNetwork : fromNetwork;
-
   const bridgeMode = fromNetwork?.id === xdcparentnet.id ? 2 : 1;
-
   const tokens = getTokens(subnet?.id, xdcparentnet.id, bridgeMode);
-
   const selectedToken = data?.token;
 
-  const parentnetMint = getMint(xdcparentnet.id);
-
-  const { data: reads0 } = useContractReads({
-    contracts: [
-      {
-        abi: tokenABI as any,
-        address: selectedToken?.originalToken,
-        functionName: "balanceOf",
-        args: [address] as any,
-      },
-      {
-        abi: tokenABI,
-        address: selectedToken?.originalToken,
-        functionName: "allowance",
-        args: [address] as any,
-      },
-      {
-        abi: mintABI,
-        address: parentnetMint,
-        functionName: "treasuryMapping",
-        args: [subnet?.id, selectedToken?.originalToken]
-      }
-    ],
-    scopeKey: render.toString(),
-  });
-
+  // TODO: Specify what reads0 is
+  const reads0 = useGetReads0(selectedToken, address, subnet, xdcparentnet.id, render);
+  const tokenBalance = reads0?.[0]?.result;
   const allowance = reads0?.[1]?.result as number;
   const parentnetToken = reads0?.[2]?.result as any;
 
@@ -171,20 +147,20 @@ const Bridge = () => {
     return { approve, send };
   }
 
-  const getTestCoin = {
-    buttonName: "Get test coin",
-    data: {
-      abi: tokenABI,
-      address: selectedToken?.originalToken,
-      functionName: "mint",
-      args: [address, "1000000000000000000000000"]
-    },
-    callback: (confirmed: boolean) => {
-      if (confirmed) {
-        serRender(render + 1);
-      }
-    }
-  };
+  // const getTestCoin = {
+  //   buttonName: "Get test coin",
+  //   data: {
+  //     abi: tokenABI,
+  //     address: selectedToken?.originalToken,
+  //     functionName: "mint",
+  //     args: [address, "1000000000000000000000000"]
+  //   },
+  //   callback: (confirmed: boolean) => {
+  //     if (confirmed) {
+  //       serRender(render + 1);
+  //     }
+  //   }
+  // };
 
   const showApprove = allowance < (data.amount ?? 0) * 1e18;
 
@@ -210,42 +186,7 @@ const Bridge = () => {
     setData({ ...data, fromNetwork: fromNetwork, customizeNetwork: false });
   };
 
-  const tokenBalanceReads = tokens?.map<any>((token) => {
-    return {
-      abi: tokenABI,
-      address: token.originalToken,
-      functionName: "balanceOf",
-      args: [address]
-    };
-  });
-
-  const tokenDecimalsReads = tokens?.map<any>((token) => {
-    return {
-      abi: tokenABI,
-      address: token.originalToken,
-      functionName: "decimals"
-    };
-  });
-
-  const { data: reads1 } = useContractReads({
-    contracts: tokenBalanceReads,
-    scopeKey: render.toString()
-  });
-
-  const { data: reads2 } = useContractReads({
-    contracts: tokenDecimalsReads,
-    scopeKey: render.toString()
-  });
-
-  const tokenBalances = tokens?.map((token, index) => {
-    return {
-      ...token,
-      balance: reads1?.[index]?.result,
-      decimals: reads2?.[index]?.result
-    };
-  });
-
-  const tokenBalance = reads0?.[0]?.result;
+  const tokenBalances = useGetTokenBalances(tokens, address, render);
 
   return (
     <>
@@ -311,8 +252,86 @@ const Bridge = () => {
 
 export default Bridge;
 
-// Components for bridge page
+// hooks 
+const useGetReads0 = (
+  selectedToken: any,
+  address: string | undefined,
+  subnet: Chain | undefined,
+  xdcparentnetId: number,
+  render: number
+) => {
+  const parentnetMint = getMint(xdcparentnetId);
 
+  const { data } = useContractReads({
+    contracts: [
+      {
+        abi: tokenABI as any,
+        address: selectedToken?.originalToken,
+        functionName: "balanceOf",
+        args: [address] as any,
+      },
+      {
+        abi: tokenABI,
+        address: selectedToken?.originalToken,
+        functionName: "allowance",
+        args: [address] as any,
+      },
+      {
+        abi: mintABI,
+        address: parentnetMint,
+        functionName: "treasuryMapping",
+        args: [subnet?.id, selectedToken?.originalToken]
+      }
+    ],
+    scopeKey: render.toString(),
+  });
+
+  return data;
+};
+
+const useGetReads1 = (tokens: CrossChainToken[], address: string | undefined, render: number) => {
+  const tokenBalanceReads = tokens?.map<any>((token) => {
+    return {
+      abi: tokenABI,
+      address: token.originalToken,
+      functionName: "balanceOf",
+      args: [address]
+    };
+  });
+
+  const { data } = useContractReads({
+    contracts: tokenBalanceReads,
+    scopeKey: render.toString()
+  });
+
+  return data;
+};
+
+const useGetTokenBalances = (tokens: CrossChainToken[], address: string | undefined, render: number) => {
+  const reads1 = useGetReads1(tokens, address, render);
+  const tokenDecimalsReads = tokens?.map<any>((token) => {
+    return {
+      abi: tokenABI,
+      address: token.originalToken,
+      functionName: "decimals"
+    };
+  });
+
+  const { data: reads2 } = useContractReads({
+    contracts: tokenDecimalsReads,
+    scopeKey: render.toString()
+  });
+
+  return tokens?.map((token, index) => {
+    return {
+      ...token,
+      balance: reads1?.[index]?.result,
+      decimals: reads2?.[index]?.result
+    };
+  });
+};
+
+// Components for bridge page
 type AddNetWorkDialogProps = {
   setData: Dispatch<SetStateAction<BridgeData>>;
   data: BridgeData;
@@ -461,6 +480,7 @@ function SourceTargetSelect({ data, setData, tokenBalance }: SourceTargetSelectP
         </div>
 
         {/* Select ? */}
+        {/* TODO: use selected if there is one in local storage, but this should still able to change/add new network */}
         {data.fromNetwork ? (
           <select className="select select-bordered w-full mt-2 bg-light/10 rounded-3xl">
             <option disabled selected>

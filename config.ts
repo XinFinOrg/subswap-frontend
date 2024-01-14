@@ -29,7 +29,7 @@ const applications: Applications = {
   locks: { 8851: "0x1606C3211936fE0b596d4230129FAeA00D76A78A" },
 };
 
-interface CrossChainToken {
+export interface CrossChainToken {
   name: string;
   subnetChainId: number;
   parentnetChainId: number;
