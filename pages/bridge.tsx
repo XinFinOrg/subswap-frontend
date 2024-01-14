@@ -92,11 +92,7 @@ const Bridge = () => {
   const selectedToken = data?.token;
 
   // TODO: Specify what reads0 is
-  const reads0 = useGetReads0(selectedToken, address, subnet, xdcparentnet.id, render);
-  const tokenBalance = reads0?.[0]?.result;
-  const allowance = reads0?.[1]?.result as number;
-  const parentnetToken = reads0?.[2]?.result as any;
-
+  const { tokenBalance, allowance, parentnetToken } = useGetReads0(selectedToken, address, subnet, xdcparentnet.id, render);
   const { approve, send } = handleTokenOperations();
 
   function createOperationObject(
@@ -186,8 +182,6 @@ const Bridge = () => {
     setData({ ...data, fromNetwork: fromNetwork, customizeNetwork: false });
   };
 
-  const tokenBalances = useGetTokenBalances(tokens, address, render);
-
   return (
     <>
       <div className="mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-black-2">
@@ -245,7 +239,7 @@ const Bridge = () => {
       />
 
       {/* Dialog to select token */}
-      <SelectTokenDialog setData={setData} data={data} tokenBalances={tokenBalances} />
+      <SelectTokenDialog setData={setData} data={data} tokens={tokens} address={address} render={render} />
     </>
   );
 };
@@ -286,7 +280,11 @@ const useGetReads0 = (
     scopeKey: render.toString(),
   });
 
-  return data;
+  const tokenBalance = data?.[0]?.result;
+  const allowance = data?.[1]?.result as number;
+  const parentnetToken = data?.[2]?.result as any;
+
+  return { tokenBalance, allowance, parentnetToken };
 };
 
 const useGetReads1 = (tokens: CrossChainToken[], address: string | undefined, render: number) => {
@@ -341,10 +339,14 @@ type AddNetWorkDialogProps = {
 type SelectTokenDialogProps = {
   setData: Dispatch<SetStateAction<BridgeData>>;
   data: BridgeData;
-  tokenBalances: { balance: unknown; decimals: unknown; name: string; subnetChainId: number; parentnetChainId: number; originalToken: string; logo: string; mode: 2 | 1 | 3; }[];
+  address: string | undefined;
+  render: number;
+  tokens: CrossChainToken[];
 };
 
-function SelectTokenDialog({ data, setData, tokenBalances }: SelectTokenDialogProps) {
+function SelectTokenDialog({ data, setData, address, render, tokens }: SelectTokenDialogProps) {
+  const tokenBalances = useGetTokenBalances(tokens, address, render);
+
   return (
     <div className="modal" role="dialog">
       <div className="modal-box">
