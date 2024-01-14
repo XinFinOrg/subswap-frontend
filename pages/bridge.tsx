@@ -273,7 +273,7 @@ const Bridge = () => {
 
   return (
     <>
-      <div className="mt-8 w-96 md:w-1/2 card m-auto shadow-dialog bg-black-2">
+      <div className="mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-black-2">
         <div className="card-title pl-8 pt-8 text-3xl text-card-title">
           Bridge
         </div>
