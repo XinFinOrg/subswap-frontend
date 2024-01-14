@@ -22,6 +22,7 @@ import { useGlobalContext } from "@/components/Context";
 import WriteButton from "@/components/WriteButton";
 import RightArrow from "@/components/RightArrow";
 import { LiaExchangeAltSolid } from "react-icons/lia";
+import { EllipseBgs } from '../components/Background/EllipseBgs';
 
 const Bridge = () => {
   const router = useRouter();
@@ -272,7 +273,7 @@ const Bridge = () => {
 
   return (
     <>
-      <div className="mt-8 w-96 md:w-1/2 card m-auto shadow-2xl bg-custom-gradient">
+      <div className="mt-8 w-96 md:w-1/2 card m-auto shadow-dialog bg-black-2">
         <div className="card-title pl-8 pt-8 text-3xl text-card-title">
           Bridge
         </div>

@@ -1,7 +1,13 @@
+import { PropsWithChildren } from 'react';
 import Navbar from "../Navbar";
-const Layout = ({ children }) => {
+import { EllipseBgs } from '../Background/EllipseBgs';
+
+type LayoutProps = PropsWithChildren;
+
+const Layout = ({ children }: LayoutProps) => {
   return (
-    <main>
+    <main className='bg-black-4 min-h-screen relative overflow-hidden'>
+      <EllipseBgs />
       <Navbar />
       {children}
     </main>

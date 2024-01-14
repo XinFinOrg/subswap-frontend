@@ -16,7 +16,6 @@ module.exports = {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-        "custom-gradient": "linear-gradient(132deg, #111B33 -38.77%, #340D2D 156.78%)"
       },
 
       colors: {
@@ -25,8 +24,19 @@ module.exports = {
         "border": "rgba(143, 141, 149, 0.20)",
         "button-bg": "rgba(78, 128, 238, 0.15)",
         "card-title": "#FBFAFC",
-        "primary": "#4E80EE"
+        "primary": {
+          DEFAULT: "#4E80EE",
+          6: "#4E80EE",
+        },
+        "black": {
+          2: "#151D33",
+          4: "#111729",
+        }
       },
+
+      boxShadow: {
+        "dialog": "4px 7px 24px 0px rgba(0, 0, 0, 0.24)",
+      }
     },
   },
   plugins: [require("daisyui")],
