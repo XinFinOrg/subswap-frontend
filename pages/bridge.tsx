@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   useNetwork,
   useSwitchNetwork,
@@ -60,8 +60,6 @@ const Bridge = () => {
 
   const router = useRouter();
   const { address } = useAccount();
-  const { chain } = useNetwork();
-  const { switchNetwork } = useSwitchNetwork();
   const [context, setContext] = useGlobalContext();
 
   const { rpcUrl, rpcName } = router.query;
@@ -120,7 +118,6 @@ const Bridge = () => {
     scopeKey: render.toString(),
   });
 
-  const tokenBalance = reads0?.[0]?.result;
   const allowance = reads0?.[1]?.result as number;
   const parentnetToken = reads0?.[2]?.result as any;
 
@@ -248,90 +245,18 @@ const Bridge = () => {
     };
   });
 
+  const tokenBalance = reads0?.[0]?.result;
+
   return (
     <>
       <div className="mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-black-2">
         <div className="card-title pl-8 pt-8 text-3xl text-card-title">
           Bridge
         </div>
+
         <div className="card-body">
-          <div className="flex border p-4 border-border rounded-3xl items-center">
-            <div className="w-full">
-              {/* From -> */}
-              <div className="flex items-center">
-                <div className="font-bold text-light-grey text-sm">From</div>
-                <div className="ml-3">
-                  <RightArrow />
-                </div>
-              </div>
-
-              {/* Select ?  */}
-              {data.fromNetwork ? (
-                <select className="select select-bordered w-full mt-2 bg-light/10 rounded-3xl">
-                  <option disabled selected>
-                    {data.fromNetwork.name}
-                  </option>
-                </select>
-              ) : (
-                <div
-                  className="btn rounded-3xl w-full mt-2 bg-light/10 text-primary"
-                  onClick={() => {
-                    setData({
-                      ...data,
-                      customizeNetwork: !data.customizeNetwork
-                    });
-                  }}
-                >
-                  Add new network
-                </div>
-              )}
-
-              {data.fromNetwork && chain?.id !== data.fromNetwork.id && (
-                <button
-                  className="btn"
-                  onClick={() => {
-                    switchNetwork?.(data.fromNetwork?.id);
-                  }}
-                  disabled={!data.fromNetwork}
-                >
-                  Switch to {data.fromNetwork.name}
-                </button>
-              )}
-              <button className="mt-2 px-2.5 py-1.5 text-sm text-bold text-primary bg-button-bg rounded-3xl">
-                Switch
-              </button>
-            </div>
-
-            <div className="bg-light/10 p-1 rounded-full mx-2 -mt-2">
-              <LiaExchangeAltSolid size="16" color="white" />
-            </div>
-
-            {/* -> To */}
-            <div className="w-full">
-              <div className="flex items-center">
-                <RightArrow />
-                <div className="ml-3 font-bold text-light-grey text-sm">To</div>
-              </div>
-              <select className="select select-bordered w-full mt-2 rounded-3xl">
-                <option disabled selected>
-                  Mainnet
-                </option>
-              </select>
-              <div className="mt-3 ml-2 text-light-grey font-light text-sm h-6">
-                Balance: {Number(tokenBalance ?? 0) / 1e18 || 0}
-                {data.token?.name}{" "}
-              </div>
-            </div>
-          </div>
-
-          <div
-            className="btn btn-success w-max mt-10"
-            onClick={() => {
-              setData({ ...data, selectToken: !data.selectToken });
-            }}
-          >
-            {data.token ? data.token?.name : "Select a token"}
-          </div>
+          <SourceTargetSelect data={data} setData={setData} tokenBalance={tokenBalance} />
+          <SelectToken data={data} setData={setData} />
           <input
             type="number"
             placeholder="0"
@@ -340,9 +265,9 @@ const Bridge = () => {
               setData({ ...data, amount: Number(e.target.value) });
             }}
           />
-          <div className="text-right mt-2">
+          {/* <div className="text-right mt-2">
             <SubmitButton {...getTestCoin} />
-          </div>
+          </div> */}
 
           <div className="text-center">
             You will receive {data.amount || 0} ({data.token?.name}) in XDC
@@ -357,6 +282,7 @@ const Bridge = () => {
           <div className="text-center my-2">Powered by XDC-Zero</div>
         </div>
 
+        {/* Note: No idea what this does, please check */}
         {/* Put this part before </body> tag */}
         <input
           type="checkbox"
@@ -364,105 +290,233 @@ const Bridge = () => {
           checked={data?.customizeNetwork}
         />
       </div>
-      <div className="modal" role="dialog">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Add new network</h3>
-          <input
-            type="text"
-            placeholder="rpc name"
-            className="input input-bordered w-full max-w-xs"
-            onChange={(e) => {
-              setData({ ...data, rpcName: e.target.value });
-            }}
-          />
-          <input
-            type="text"
-            placeholder="rpc endpoint url"
-            className="input input-bordered w-full max-w-xs mt-2"
-            onChange={(e) => {
-              setData({ ...data, rpcUrl: e.target.value });
-            }}
-          />
-          <div className="modal-action">
-            <div
-              className="btn btn-success"
-              onClick={async () => {
-                await submitRpcUrl(data.rpcName, data.rpcUrl);
-              }}
-            >
-              Add
-            </div>
-            <label
-              className="btn"
-              onClick={() => {
-                setData({
-                  ...data,
-                  customizeNetwork: !data.customizeNetwork
-                });
-              }}
-            >
-              Close
-            </label>
-          </div>
-        </div>
-      </div>
 
+      {/* Dialog to add network */}
+      <AddNetWorkDialog setData={setData} data={data} submitRpcUrl={submitRpcUrl} />
+
+      {/* Note: No idea what this does, please check */}
       {/* Put this part before </body> tag */}
       <input
+        id="test"
         type="checkbox"
         className="modal-toggle"
         checked={data?.selectToken}
       />
-      <div className="modal" role="dialog">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Select a token</h3>
-          {tokenBalances?.map((token, index) => {
-            return (
-              <div
-                key={index}
-                className="card cursor-pointer"
-                onClick={() => {
-                  setData({
-                    ...data,
-                    token: token,
-                    selectToken: !data.selectToken
-                  });
-                }}
-              >
-                <div className="card-body">
-                  <div>
-                    <div className="float-left">{token.name}</div>
-                    <div className="float-right">
-                      {/* (token.balance) / 10n ** token.decimals */}
-                      <>{token.balance ?? 0}</>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
 
-          <div className="modal-action">
-            <div className="btn btn-success" onClick={async () => { }}>
-              Select
-            </div>
-
-            <label
-              className="btn"
-              onClick={() => {
-                setData({
-                  ...data,
-                  selectToken: !data.selectToken
-                });
-              }}
-            >
-              Close
-            </label>
-          </div>
-        </div>
-      </div>
+      {/* Dialog to select token */}
+      <SelectTokenDialog setData={setData} data={data} tokenBalances={tokenBalances} />
     </>
   );
 };
 
 export default Bridge;
+
+// Components for bridge page
+
+type AddNetWorkDialogProps = {
+  setData: Dispatch<SetStateAction<BridgeData>>;
+  data: BridgeData;
+  submitRpcUrl: (rpcName: string | undefined, rpcUrl: string | undefined) => Promise<void>;
+};
+
+type SelectTokenDialogProps = {
+  setData: Dispatch<SetStateAction<BridgeData>>;
+  data: BridgeData;
+  tokenBalances: { balance: unknown; decimals: unknown; name: string; subnetChainId: number; parentnetChainId: number; originalToken: string; logo: string; mode: 2 | 1 | 3; }[];
+};
+
+function SelectTokenDialog({ data, setData, tokenBalances }: SelectTokenDialogProps) {
+  return (
+    <div className="modal" role="dialog">
+      <div className="modal-box">
+        <h3 className="font-bold text-lg">Select a token</h3>
+        {tokenBalances?.map((token, index) => {
+          return (
+            <div
+              key={index}
+              className="card cursor-pointer"
+              onClick={() => {
+                setData({
+                  ...data,
+                  token: token,
+                  selectToken: !data.selectToken
+                });
+              }}
+            >
+              <div className="card-body">
+                <div>
+                  <div className="float-left">{token.name}</div>
+                  <div className="float-right">
+                    {/* (token.balance) / 10n ** token.decimals */}
+                    <>{token.balance ?? 0}</>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+
+        <div className="modal-action">
+          <div className="btn btn-success" onClick={async () => { }}>
+            Select
+          </div>
+
+          <label
+            className="btn"
+            onClick={() => {
+              setData({
+                ...data,
+                selectToken: !data.selectToken
+              });
+            }}
+          >
+            Close
+          </label>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AddNetWorkDialog({ setData, data, submitRpcUrl }: AddNetWorkDialogProps) {
+  return (
+    <div className="modal" role="dialog">
+      <div className="modal-box">
+        <h3 className="font-bold text-lg">Add new network</h3>
+        <input
+          type="text"
+          placeholder="rpc name"
+          className="input input-bordered w-full max-w-xs"
+          onChange={(e) => {
+            setData({ ...data, rpcName: e.target.value });
+          }} />
+        <input
+          type="text"
+          placeholder="rpc endpoint url"
+          className="input input-bordered w-full max-w-xs mt-2"
+          onChange={(e) => {
+            setData({ ...data, rpcUrl: e.target.value });
+          }} />
+        <div className="modal-action">
+          <div
+            className="btn btn-success"
+            onClick={async () => {
+              await submitRpcUrl(data.rpcName, data.rpcUrl);
+            }}
+          >
+            Add
+          </div>
+          <label
+            className="btn"
+            onClick={() => {
+              setData({
+                ...data,
+                customizeNetwork: !data.customizeNetwork
+              });
+            }}
+          >
+            Close
+          </label>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type SelectTokenProps = {
+  data: BridgeData;
+  setData: Dispatch<SetStateAction<BridgeData>>;
+};
+
+function SelectToken({ data, setData }: SelectTokenProps) {
+  return <div
+    className="btn btn-success w-max mt-10"
+    onClick={() => {
+      setData({ ...data, selectToken: !data.selectToken });
+    }}
+  >
+    {data.token ? data.token?.name : "Select a token"}
+  </div>;
+}
+
+type SourceTargetSelectProps = {
+  data: BridgeData;
+  setData: Dispatch<SetStateAction<BridgeData>>;
+  tokenBalance: any;
+};
+
+function SourceTargetSelect({ data, setData, tokenBalance }: SourceTargetSelectProps) {
+  const { chain } = useNetwork();
+  const { switchNetwork } = useSwitchNetwork();
+
+  return (
+    <div className="flex border p-4 border-border rounded-3xl items-center">
+      <div className="w-full">
+        {/* From -> */}
+        <div className="flex items-center">
+          <div className="font-bold text-light-grey text-sm">From</div>
+          <div className="ml-3">
+            <RightArrow />
+          </div>
+        </div>
+
+        {/* Select ? */}
+        {data.fromNetwork ? (
+          <select className="select select-bordered w-full mt-2 bg-light/10 rounded-3xl">
+            <option disabled selected>
+              {data.fromNetwork.name}
+            </option>
+          </select>
+        ) : (
+          <div
+            className="btn rounded-3xl w-full mt-2 bg-light/10 text-primary"
+            onClick={() => {
+              setData({
+                ...data,
+                customizeNetwork: !data.customizeNetwork
+              });
+            }}
+          >
+            Add new network
+          </div>
+        )}
+
+        {data.fromNetwork && chain?.id !== data.fromNetwork.id && (
+          <button
+            className="btn"
+            onClick={() => {
+              switchNetwork?.(data.fromNetwork?.id);
+            }}
+            disabled={!data.fromNetwork}
+          >
+            Switch to {data.fromNetwork.name}
+          </button>
+        )}
+        <button className="mt-2 px-2.5 py-1.5 text-sm text-bold text-primary bg-button-bg rounded-3xl">
+          Switch
+        </button>
+      </div>
+
+      <div className="bg-light/10 p-1 rounded-full mx-2 -mt-2">
+        <LiaExchangeAltSolid size="16" color="white" />
+      </div>
+
+      {/* -> To */}
+      <div className="w-full">
+        <div className="flex items-center">
+          <RightArrow />
+          <div className="ml-3 font-bold text-light-grey text-sm">To</div>
+        </div>
+        <select className="select select-bordered w-full mt-2 rounded-3xl">
+          <option disabled selected>
+            Mainnet
+          </option>
+        </select>
+        <div className="mt-3 ml-2 text-light-grey font-light text-sm h-6">
+          Balance: {Number(tokenBalance ?? 0) / 1e18 || 0}
+          {data.token?.name}{" "}
+        </div>
+      </div>
+    </div>
+  );
+}
