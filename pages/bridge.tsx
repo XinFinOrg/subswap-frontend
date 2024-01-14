@@ -195,7 +195,7 @@ const Bridge = () => {
 
         <div className="card-body">
           <SourceTargetSelect data={data} setData={setData} tokenBalance={tokenBalance} />
-          <SelectToken data={data} setData={setData} />
+          <TokenSelect data={data} setData={setData} />
           <input
             type="number"
             placeholder="0"
@@ -453,7 +453,7 @@ type SelectTokenProps = {
   setData: Dispatch<SetStateAction<BridgeData>>;
 };
 
-function SelectToken({ data, setData }: SelectTokenProps) {
+function TokenSelect({ data, setData }: SelectTokenProps) {
   return <div
     className="btn btn-success w-max mt-10"
     onClick={() => {
