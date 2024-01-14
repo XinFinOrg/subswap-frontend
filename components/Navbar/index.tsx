@@ -16,10 +16,10 @@ const Navbar = () => {
             alert("Coming Soon");
           }}
         >
-          swap
+          Swap
         </Link>
         <Link href={"/bridge"} className="btn">
-          bridge
+          Bridge
         </Link>
       </div>
       <div className="navbar-end">

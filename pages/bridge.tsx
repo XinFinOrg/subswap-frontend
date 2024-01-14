@@ -321,7 +321,7 @@ const Bridge = () => {
                 </button>
               )}
               <button className="mt-2 px-2.5 py-1.5 text-sm text-bold text-primary bg-button-bg rounded-3xl">
-                Connect
+                Switch
               </button>
             </div>
 
