@@ -23,6 +23,7 @@ import { useGlobalContext } from "@/components/Context";
 import SubmitButton from "@/components/SubmitButton";
 import RightArrow from "@/components/RightArrow";
 import { LiaExchangeAltSolid } from "react-icons/lia";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const tokenABI = rawTokenABI as OperationObject.Data.Abi;
 
@@ -60,6 +61,7 @@ namespace OperationObject {
 }
 
 const Bridge = () => {
+  const { isConnected } = useAccount();
   const [bridgeViewData, setBridgeViewData] = useState<BridgeData>({});
   const [render, serRender] = useState(0);
 
@@ -179,10 +181,14 @@ const Bridge = () => {
     }
 
     const fromNetwork = await getNetwork(rpcName, rpcUrl);
+
+    // push fromNetwork to context rpcs
     context.rpcs.push(fromNetwork);
     setContext({
       ...context
     });
+
+    // set bridge view data
     setBridgeViewData({ ...bridgeViewData, fromNetwork: fromNetwork, customizeNetwork: false });
   };
 
@@ -193,32 +199,11 @@ const Bridge = () => {
           Bridge
         </div>
 
-        <div className="card-body">
-          <SourceTargetSelect data={bridgeViewData} setData={setBridgeViewData} tokenBalance={tokenBalance} />
-          <TokenSelect data={bridgeViewData} setData={setBridgeViewData} />
-          <input
-            type="number"
-            placeholder="0"
-            className="input input-bordered w-full"
-            onChange={(e) => {
-              setBridgeViewData({ ...bridgeViewData, amount: Number(e.target.value) });
-            }}
-          />
-          {/* <div className="text-right mt-2">
-            <SubmitButton {...getTestCoin} />
-          </div>
-
-          <div className="text-center">
-            You will receive {data.amount || 0} ({data.token?.name}) in XDC
-            Mainnet
-          </div> */}
-
-          {showApprove ? (
-            <SubmitButton {...approve} className="m-auto my-4" />
-          ) : (
-            <SubmitButton {...send} className="m-auto my-4" />
-          )}
-          <div className="text-center my-2">Powered by XDC-Zero</div>
+        <div className='card-body'>
+          {!isConnected
+            ? <ConnectWallet />
+            : <BridgeContent bridgeViewData={bridgeViewData} setBridgeViewData={setBridgeViewData} tokenBalance={tokenBalance} showApprove={showApprove} approve={approve} send={send} />
+          }
         </div>
 
         {/* Note: No idea what this does, please check */}
@@ -334,6 +319,57 @@ const useGetTokenBalances = (tokens: CrossChainToken[], address: string | undefi
 };
 
 // Components for bridge page
+type BridgeContentProps = {
+  bridgeViewData: BridgeData;
+  setBridgeViewData: Dispatch<SetStateAction<BridgeData>>;
+  tokenBalance: unknown;
+  showApprove: boolean;
+  approve: OperationObject;
+  send: OperationObject;
+};
+
+function BridgeContent({ bridgeViewData, setBridgeViewData, tokenBalance, showApprove, approve, send }: BridgeContentProps) {
+  return (
+    <>
+      <SourceTargetSelect data={bridgeViewData} setData={setBridgeViewData} tokenBalance={tokenBalance} />
+      <TokenSelect data={bridgeViewData} setData={setBridgeViewData} />
+      <input
+        type="number"
+        placeholder="0"
+        className="input input-bordered w-full"
+        onChange={(e) => {
+          setBridgeViewData({ ...bridgeViewData, amount: Number(e.target.value) });
+        }} />
+      {/* <div className="text-right mt-2">
+          <SubmitButton {...getTestCoin} />
+        </div>
+
+        <div className="text-center">
+          You will receive {data.amount || 0} ({data.token?.name}) in XDC
+          Mainnet
+        </div> */}
+
+      {showApprove ? (
+        <SubmitButton {...approve} className="m-auto my-4" />
+      ) : (
+        <SubmitButton {...send} className="m-auto my-4" />
+      )}
+      <div className="text-center my-2">Powered by XDC-Zero</div>
+    </>
+  );
+}
+
+function ConnectWallet() {
+  return (
+    <>
+      <h2 className='text-xl'>Please connect to wallet before using bridge.</h2>
+      <div className='mt-4'>
+        <ConnectButton />
+      </div>
+    </>
+  );
+}
+
 type AddNetWorkDialogProps = {
   setData: Dispatch<SetStateAction<BridgeData>>;
   data: BridgeData;
@@ -471,6 +507,7 @@ type SourceTargetSelectProps = {
 };
 
 function SourceTargetSelect({ data, setData, tokenBalance }: SourceTargetSelectProps) {
+  // TODO: After connect the wallet, we are able to use chain from wagmi useNetwork? 
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
 
