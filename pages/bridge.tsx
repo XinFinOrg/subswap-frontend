@@ -267,12 +267,12 @@ const Bridge = () => {
           />
           {/* <div className="text-right mt-2">
             <SubmitButton {...getTestCoin} />
-          </div> */}
+          </div>
 
           <div className="text-center">
             You will receive {data.amount || 0} ({data.token?.name}) in XDC
             Mainnet
-          </div>
+          </div> */}
 
           {showApprove ? (
             <SubmitButton {...approve} className="m-auto my-4" />
