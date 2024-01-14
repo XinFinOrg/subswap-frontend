@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 import {
   xdcparentnet,
   getTokens,
-  tokenABI,
+  tokenABI as rawTokenABI,
   getLock,
   getMint,
   lockABI,
@@ -23,6 +23,8 @@ import { useGlobalContext } from "@/components/Context";
 import SubmitButton from "@/components/SubmitButton";
 import RightArrow from "@/components/RightArrow";
 import { LiaExchangeAltSolid } from "react-icons/lia";
+
+const tokenABI = rawTokenABI as OperationObject.Data.Abi;
 
 interface BridgeData {
   fromNetwork?: Chain;
@@ -44,14 +46,16 @@ interface OperationObject {
 namespace OperationObject {
   export type ButtonName = 'Approve' | 'Send';
   export interface Data {
-    abi: any;
+    abi: Data.Abi;
     address: string | undefined;
     functionName: Data.FunctionName;
-    args: Array<number | string | undefined>;
+    args?: Data.Args;
   };
 
   export namespace Data {
-    export type FunctionName = 'approve' | 'lock' | 'burn';
+    export type Abi = any;
+    export type FunctionName = 'approve' | 'lock' | 'burn' | 'balanceOf' | 'decimals';
+    export type Args = Array<number | string | undefined>;
   }
 }
 
@@ -114,10 +118,10 @@ const Bridge = () => {
   }
 
   function createOperationData(
-    abi: any,
+    abi: OperationObject.Data.Abi,
     address: string | undefined,
     functionName: OperationObject.Data.FunctionName,
-    args: any[]
+    args: OperationObject.Data.Args
   ): OperationObject.Data {
     return { abi, address, functionName, args };
   }
@@ -259,16 +263,16 @@ const useGetReads0 = (
   const { data } = useContractReads({
     contracts: [
       {
-        abi: tokenABI as any,
+        abi: tokenABI,
         address: selectedToken?.originalToken,
         functionName: "balanceOf",
-        args: [address] as any,
+        args: [address] as any
       },
       {
         abi: tokenABI,
         address: selectedToken?.originalToken,
         functionName: "allowance",
-        args: [address] as any,
+        args: [address] as any
       },
       {
         abi: mintABI,
@@ -288,7 +292,7 @@ const useGetReads0 = (
 };
 
 const useGetReads1 = (tokens: CrossChainToken[], address: string | undefined, render: number) => {
-  const tokenBalanceReads = tokens?.map<any>((token) => {
+  const tokenBalanceReads = tokens?.map<OperationObject.Data>(token => {
     return {
       abi: tokenABI,
       address: token.originalToken,
@@ -298,7 +302,7 @@ const useGetReads1 = (tokens: CrossChainToken[], address: string | undefined, re
   });
 
   const { data } = useContractReads({
-    contracts: tokenBalanceReads,
+    contracts: tokenBalanceReads as any,
     scopeKey: render.toString()
   });
 
@@ -307,7 +311,7 @@ const useGetReads1 = (tokens: CrossChainToken[], address: string | undefined, re
 
 const useGetTokenBalances = (tokens: CrossChainToken[], address: string | undefined, render: number) => {
   const reads1 = useGetReads1(tokens, address, render);
-  const tokenDecimalsReads = tokens?.map<any>((token) => {
+  const tokenDecimalsReads = tokens?.map<OperationObject.Data>(token => {
     return {
       abi: tokenABI,
       address: token.originalToken,
@@ -316,7 +320,7 @@ const useGetTokenBalances = (tokens: CrossChainToken[], address: string | undefi
   });
 
   const { data: reads2 } = useContractReads({
-    contracts: tokenDecimalsReads,
+    contracts: tokenDecimalsReads as any,
     scopeKey: render.toString()
   });
 
