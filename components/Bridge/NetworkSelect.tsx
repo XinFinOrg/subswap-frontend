@@ -22,6 +22,12 @@ export function NetworkSelect({
   const hasAllDataToAddNewNetwork = networkName && networkRpcUrl;
 
   function addNewNetwork() {
+    // if exists the same name one, don't add
+    if (storedNetworks.find((network) => network.name === networkName) !== undefined) {
+      alert('Network already exists, please use different name');
+      return;
+    }
+
     if (hasAllDataToAddNewNetwork) {
       const newNetwork = { name: networkName, rpcUrl: networkRpcUrl };
       // add to localstorage
@@ -62,9 +68,8 @@ export function NetworkSelect({
 
       {/* Add new network */}
       <div
-        className={`border border-section-border ${
-          hasStoredNetworks ? "rounded-b-3xl" : "rounded-3xl"
-        }`}
+        className={`border border-section-border ${hasStoredNetworks ? "rounded-b-3xl" : "rounded-3xl"
+          }`}
       >
         <div className="px-4 pt-8 pb-4">
           <SectionTitle title="Add new network" className="pl-3" />
@@ -95,11 +100,10 @@ export function NetworkSelect({
           {/* add network button */}
           <div className="pt-8">
             <button
-              className={`w-full rounded-full p-4 font-bold text-base ${
-                hasAllDataToAddNewNetwork
-                  ? "bg-primary text-white"
-                  : "bg-button-disabled"
-              }`}
+              className={`w-full rounded-full p-4 font-bold text-base ${hasAllDataToAddNewNetwork
+                ? "bg-primary text-white"
+                : "bg-button-disabled"
+                }`}
               disabled={!hasAllDataToAddNewNetwork}
               onClick={addNewNetwork}
             >
@@ -131,9 +135,8 @@ function NetworkSelectList({
 
   return (
     <ul
-      className={`${
-        className ? className : ""
-      } rounded-3xl bg-light/10 max-h-[180px] overflow-y-auto`}
+      className={`${className ? className : ""
+        } rounded-3xl bg-light/10 max-h-[180px] overflow-y-auto`}
     >
       {networks.map((network, i) => (
         <NetworkSelectItem
