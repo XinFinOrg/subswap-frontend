@@ -33,7 +33,8 @@ module.exports = {
         },
         "grey": {
           9: "#FBFAFC"
-        }
+        },
+        "button-disabled": "#484B52"
       },
 
       boxShadow: {

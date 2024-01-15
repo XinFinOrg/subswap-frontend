@@ -233,6 +233,7 @@ const Bridge = () => {
       <>
         <CardTitle title={cardTitle} showGoBackIcon={showGoBackIcon} />
         <CardBody>{cardBodyContent}</CardBody>
+        <div className="text-center pt-6 pb-8 text-grey-9">Powered by XDC-Zero</div>
       </>
     );
   }
@@ -451,7 +452,6 @@ function BridgeContent({
       ) : (
         <SubmitButton {...send} className="m-auto my-4" />
       )}
-      <div className="text-center my-2">Powered by XDC-Zero</div>
     </>
   );
 }

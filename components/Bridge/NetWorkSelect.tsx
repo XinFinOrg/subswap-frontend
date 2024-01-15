@@ -21,6 +21,15 @@ export function NetWorkSelect() {
       <div className="border rounded-b-3xl border-section-border">
         <div className='px-4 pt-8 pb-4'>
           <SectionTitle title="Add new network" className='pl-3' />
+          <div className='pt-6'>
+            <input type='text' placeholder='Enter network name' className='w-full rounded-full bg-grey-9/10 p-4' />
+          </div>
+          <div className='pt-4'>
+            <input type='text' placeholder='Enter new rpc URL' className='w-full rounded-full bg-grey-9/10 p-4' />
+          </div>
+          <div className='pt-8'>
+            <button className={`bg-button-disabled w-full rounded-full p-4 font-bold text-base`}>Add</button>
+          </div>
         </div>
       </div>
     </div>
