@@ -19,11 +19,11 @@ import {
 import { useGlobalContext } from "@/components/Context";
 import SubmitButton from "@/components/SubmitButton";
 import { GoArrowLeft } from "react-icons/go";
-import { SelectNetWork } from '../components/Bridge/SelectNetWork';
+import { NetWorkSelect } from '../components/Bridge/NetWorkSelect';
 import { SourceTargetSelect } from '../components/Bridge/SourceTargetSelect';
 import { TokenSelect } from '../components/Bridge/TokenSelect';
 import { ConnectWallet } from '../components/Bridge/ConnectWallet';
-import { SelectTokenDialog } from '../components/Bridge/SelectTokenDialog';
+import { TokenSelectDialog } from '../components/Bridge/TokenSelectDialog';
 import { AddNetWorkDialog } from '../components/Bridge/AddNetWorkDialog';
 
 const tokenABI = rawTokenABI as OperationObject.Data.Abi;
@@ -212,7 +212,7 @@ const Bridge = () => {
       cardBodyContent = <ConnectWallet />;
     } else if (showSelectNetwork) {
       cardTitle = "Networks";
-      cardBodyContent = <SelectNetWork />;
+      cardBodyContent = <NetWorkSelect />;
       showGoBackIcon = true;
     } else {
       cardTitle = "Bridge";
@@ -342,7 +342,7 @@ const Bridge = () => {
       />
 
       {/* Dialog to select token */}
-      <SelectTokenDialog
+      <TokenSelectDialog
         setData={setBridgeViewData}
         data={bridgeViewData}
         tokens={tokens}

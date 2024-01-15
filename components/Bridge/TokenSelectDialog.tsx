@@ -3,7 +3,7 @@ import { CrossChainToken, tokenABI } from '../../config';
 import { BridgeData, OperationObject } from '../../pages/bridge';
 import { useContractReads } from 'wagmi';
 
-type SelectTokenDialogProps = {
+type TokenSelectDialogProps = {
   setData: Dispatch<SetStateAction<BridgeData>>;
   data: BridgeData;
   address: string | undefined;
@@ -11,13 +11,13 @@ type SelectTokenDialogProps = {
   tokens: CrossChainToken[];
 };
 
-export function SelectTokenDialog({
+export function TokenSelectDialog({
   data,
   setData,
   address,
   render,
   tokens
-}: SelectTokenDialogProps) {
+}: TokenSelectDialogProps) {
   const tokenBalances = useGetTokenBalances(tokens, address, render);
 
   return (

@@ -1,5 +1,32 @@
 import Image from 'next/image';
 
+export function NetWorkSelect() {
+  // TODO: networks that saved in local storage
+  const savedNetworks: SavedNetwork[] = [
+    { id: 1, name: 'Network1' },
+    { id: 2, name: 'Network2' },
+    { id: 3, name: 'Network3' },
+  ];
+
+  return (
+    <div className="gap-0">
+      <div className="border rounded-t-3xl border-section-border">
+        <div className='px-4 pt-8 pb-4'>
+          <SectionTitle title="Select Network" className='pl-3' />
+          <NetworkSelectList networks={savedNetworks} className="mt-6" />
+
+          <div className='text-center text-grey-9 pt-4'>or</div>
+        </div>
+      </div>
+      <div className="border rounded-b-3xl border-section-border">
+        <div className='px-4 pt-8 pb-4'>
+          <SectionTitle title="Add new network" className='pl-3' />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type NetworkSelectListProps = {
   networks: SavedNetwork[];
   className?: string;
@@ -42,30 +69,3 @@ type SavedNetwork = {
   id: number;
   name: string;
 };
-
-export function SelectNetWork() {
-  // TODO: networks that saved in local storage
-  const savedNetworks: SavedNetwork[] = [
-    { id: 1, name: 'Network1' },
-    { id: 2, name: 'Network2' },
-    { id: 3, name: 'Network3' },
-  ];
-
-  return (
-    <div className="gap-0">
-      <div className="border rounded-t-3xl border-section-border">
-        <div className='px-4 pt-8 pb-4'>
-          <SectionTitle title="Select Network" className='pl-3' />
-          <NetworkSelectList networks={savedNetworks} className="mt-6" />
-
-          <div className='text-center text-grey-9 pt-4'>or</div>
-        </div>
-      </div>
-      <div className="border rounded-b-3xl border-section-border">
-        <div className='px-4 pt-8 pb-4'>
-          <SectionTitle title="Add new network" className='pl-3' />
-        </div>
-      </div>
-    </div>
-  );
-}
