@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, PropsWithChildren, SetStateAction, useEffect, useState } from "react";
 import {
   useNetwork,
   useSwitchNetwork,
@@ -24,6 +24,7 @@ import SubmitButton from "@/components/SubmitButton";
 import RightArrow from "@/components/RightArrow";
 import { LiaExchangeAltSolid } from "react-icons/lia";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { GoArrowLeft } from "react-icons/go";
 
 const tokenABI = rawTokenABI as OperationObject.Data.Abi;
 
@@ -67,6 +68,7 @@ namespace OperationObject {
 
 const Bridge = () => {
   const { isConnected } = useAccount();
+  const [showSelectNetwork, setShowSelectNetwork] = useState(false);
   const [bridgeViewData, setBridgeViewData] = useState<BridgeData>({});
   const [render, serRender] = useState(0);
 
@@ -195,6 +197,68 @@ const Bridge = () => {
     return { approve, send };
   }
 
+  function getCardContent() {
+    let cardTitle: string;
+    let cardBodyContent: JSX.Element;
+    let showGoBackIcon = false;
+
+    if (!isConnected) {
+      cardTitle = "Bridge";
+      cardBodyContent = <ConnectWallet />;
+    } else if (showSelectNetwork) {
+      cardTitle = "Networks";
+      cardBodyContent = <SelectNetWork />;
+      showGoBackIcon = true;
+    } else {
+      cardTitle = "Bridge";
+      cardBodyContent = (
+        <BridgeContent
+          bridgeViewData={bridgeViewData}
+          setBridgeViewData={setBridgeViewData}
+          tokenBalance={tokenBalance}
+          showApprove={showApprove}
+          approve={approve}
+          send={send}
+          setShowSelectNetwork={setShowSelectNetwork}
+        />
+      );
+    }
+
+    return (
+      <>
+        <CardTitle title={cardTitle} showGoBackIcon={showGoBackIcon} />
+        <CardBody>{cardBodyContent}</CardBody>
+      </>
+    );
+  }
+
+  type CardTitleProps = {
+    title: string;
+    showGoBackIcon?: boolean;
+  };
+
+  function CardTitle({ title, showGoBackIcon }: CardTitleProps) {
+    return (
+      <div className="pl-8 pt-8">
+        {showGoBackIcon && (
+          <button
+            className="w-10 h-10 rounded-full bg-light/10 flex items-center justify-center"
+            onClick={() => setShowSelectNetwork(false)}
+          >
+            <GoArrowLeft color="bg-grey-9/50" size="20" />
+          </button>
+        )}
+        <div className="card-title text-3xl text-grey-9 mt-4">{title}</div>
+      </div>
+    );
+  }
+
+  type CardBodyProps = React.PropsWithChildren;
+
+  function CardBody({ children }: CardBodyProps) {
+    return <div className="card-body">{children}</div>;
+  }
+
   // const getTestCoin = {
   //   buttonName: "Get test coin",
   //   data: {
@@ -245,24 +309,7 @@ const Bridge = () => {
   return (
     <>
       <div className="mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-black-2">
-        <div className="card-title pl-8 pt-8 text-3xl text-card-title">
-          Bridge
-        </div>
-
-        <div className="card-body">
-          {!isConnected ? (
-            <ConnectWallet />
-          ) : (
-            <BridgeContent
-              bridgeViewData={bridgeViewData}
-              setBridgeViewData={setBridgeViewData}
-              tokenBalance={tokenBalance}
-              showApprove={showApprove}
-              approve={approve}
-              send={send}
-            />
-          )}
-        </div>
+        {getCardContent()}
 
         {/* Note: No idea what this does, please check */}
         {/* Put this part before </body> tag */}
@@ -402,6 +449,7 @@ type BridgeContentProps = {
   showApprove: boolean;
   approve: OperationObject;
   send: OperationObject;
+  setShowSelectNetwork: Dispatch<SetStateAction<boolean>>;
 };
 
 function BridgeContent({
@@ -410,7 +458,8 @@ function BridgeContent({
   tokenBalance,
   showApprove,
   approve,
-  send
+  send,
+  setShowSelectNetwork
 }: BridgeContentProps) {
   return (
     <>
@@ -418,6 +467,7 @@ function BridgeContent({
         data={bridgeViewData}
         setData={setBridgeViewData}
         tokenBalance={tokenBalance}
+        setShowSelectNetwork={setShowSelectNetwork}
       />
       <TokenSelect data={bridgeViewData} setData={setBridgeViewData} />
       <input
@@ -459,6 +509,53 @@ function ConnectWallet() {
       </div>
     </>
   );
+}
+
+function SelectNetWork() {
+  return (
+    <div className="gap-0">
+      <div className="border rounded-t-3xl border-section-border">
+        <SectionTitle title="Select Network" />
+        <SelectList />
+
+        <div className='text-center'>or</div>
+      </div>
+      <div className="border rounded-b-3xl border-section-border">
+        <SectionTitle title="Add new network" />
+      </div>
+    </div>
+  );
+}
+
+function SelectList() {
+  return (
+    <ul>
+      <SelectItem name="Network1" selected />
+      <SelectItem name="Network1" />
+      <SelectItem name="Network1" />
+    </ul>
+  );
+}
+
+type SelectItemProps = {
+  name: string;
+  selected?: boolean;
+};
+
+function SelectItem({ name, selected }: SelectItemProps) {
+  return (
+    <li className={`${selected ? "bg-light/10" : ""}`}>
+      {name}
+    </li>
+  );
+}
+
+type SectionTitleProps = {
+  title: string;
+};
+
+function SectionTitle({ title }: SectionTitleProps) {
+  return <div className="text-xl font-bold text-grey-9">{title}</div>;
 }
 
 type AddNetWorkDialogProps = {
@@ -608,23 +705,33 @@ function TokenSelect({ data, setData }: SelectTokenProps) {
   );
 }
 
+function Section({ children }: PropsWithChildren) {
+  return (
+    <div className="flex border p-4 border-section-border rounded-3xl items-center">
+      {children}
+    </div>
+  );
+}
+
 type SourceTargetSelectProps = {
   data: BridgeData;
   setData: Dispatch<SetStateAction<BridgeData>>;
   tokenBalance: any;
+  setShowSelectNetwork: Dispatch<SetStateAction<boolean>>;
 };
 
 function SourceTargetSelect({
   data,
   setData,
-  tokenBalance
+  tokenBalance,
+  setShowSelectNetwork
 }: SourceTargetSelectProps) {
   // TODO: After connect the wallet, we are able to use chain from wagmi useNetwork?
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
 
   return (
-    <div className="flex border p-4 border-border rounded-3xl items-center">
+    <Section>
       <div className="w-full">
         {/* From -> */}
         <div className="flex items-center">
@@ -650,6 +757,8 @@ function SourceTargetSelect({
                 ...data,
                 customizeNetwork: !data.customizeNetwork
               });
+
+              setShowSelectNetwork(true);
             }}
           >
             Add new network
@@ -692,6 +801,6 @@ function SourceTargetSelect({
           {data.token?.name}{" "}
         </div>
       </div>
-    </div>
+    </Section>
   );
 }

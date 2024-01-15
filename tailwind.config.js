@@ -21,9 +21,8 @@ module.exports = {
       colors: {
         "light": "#D8D6DB",
         "light-grey": "rgba(251, 250, 252, 0.50)",
-        "border": "rgba(143, 141, 149, 0.20)",
+        "section-border": "rgba(143, 141, 149, 0.20)",
         "button-bg": "rgba(78, 128, 238, 0.15)",
-        "card-title": "#FBFAFC",
         "primary": {
           DEFAULT: "#4E80EE",
           6: "#4E80EE",
@@ -31,6 +30,9 @@ module.exports = {
         "black": {
           2: "#151D33",
           4: "#111729",
+        },
+        "grey": {
+          9: "#FBFAFC"
         }
       },
 
