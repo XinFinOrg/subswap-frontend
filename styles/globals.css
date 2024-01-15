@@ -17,3 +17,13 @@ body {
   background-color: #8f8d95;
   border-radius: 9999px;
 }
+/* 
+.slider-thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 40px; 
+  height: 40px; 
+  background: #4b5563; /
+  border-radius: 50%;
+  cursor: pointer;
+} */

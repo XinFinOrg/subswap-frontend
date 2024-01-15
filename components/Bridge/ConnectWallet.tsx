@@ -4,9 +4,7 @@ export function ConnectWallet() {
   return (
     <>
       <h2 className="text-xl">Please connect to wallet before using bridge.</h2>
-      <div className="mt-4">
-        <ConnectButton />
-      </div>
+      <ConnectButton />
     </>
   );
 }

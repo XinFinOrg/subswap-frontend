@@ -19,7 +19,7 @@ type SourceTargetSelectProps = {
 export function SourceTargetSelect({
   data,
   setData,
-  tokenBalance,
+  // tokenBalance,
   selectedNetwork,
   setShowSelectNetwork
 }: SourceTargetSelectProps) {
@@ -38,35 +38,26 @@ export function SourceTargetSelect({
           </div>
         </div>
 
-        {/* Select ? */}
-        {/* TODO: use selected if there is one in local storage, but this should still able to change/add new network */}
-        {data.fromNetwork ? (
-          <select className="select select-bordered w-full mt-2 bg-light/10 rounded-3xl">
-            <option disabled selected>
-              {data.fromNetwork.name}
-            </option>
-          </select>
-        ) : (
-          <div
-            className="btn rounded-3xl w-full mt-2 bg-light/10 text-primary flex justify-between"
-            onClick={() => {
-              setData({
-                ...data,
-                customizeNetwork: !data.customizeNetwork
-              });
+        {/* Select network */}
+        <div
+          className="btn rounded-3xl w-full mt-2 bg-light/10 text-primary flex justify-between"
+          onClick={() => {
+            setData({
+              ...data,
+              customizeNetwork: !data.customizeNetwork
+            });
 
-              setShowSelectNetwork(true);
-            }}
-          >
-            <div className="flex items-center gap-2">
-              <Image src="/coin.svg" width="24" height="24" alt="Coin icon" />
-              {selectedNetwork?.name ?? "Add/select subnet"}
-            </div>
-            <div>
-              <RiArrowDownSLine size="20" />
-            </div>
+            setShowSelectNetwork(true);
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <Image src="/coin.svg" width="24" height="24" alt="Coin icon" />
+            {selectedNetwork?.name ?? "Add/Select subnet"}
           </div>
-        )}
+          <div>
+            <RiArrowDownSLine size="20" />
+          </div>
+        </div>
 
         {data.fromNetwork && chain?.id !== data.fromNetwork.id && (
           <button
