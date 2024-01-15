@@ -1,9 +1,9 @@
 import { Dispatch, SetStateAction } from 'react';
-import { BridgeData } from '../../pages/bridge';
+import { BridgeViewData } from '../../pages/bridge';
 
 type SelectTokenProps = {
-  data: BridgeData;
-  setData: Dispatch<SetStateAction<BridgeData>>;
+  data: BridgeViewData;
+  setData: Dispatch<SetStateAction<BridgeViewData>>;
 };
 
 export function TokenSelect({ data, setData }: SelectTokenProps) {

@@ -7,7 +7,7 @@ import {
 import { useRouter } from "next/router";
 
 import {
-  xdcparentnet,
+  xdcParentNet,
   getTokens,
   tokenABI as rawTokenABI,
   getLock,
@@ -21,7 +21,6 @@ import SubmitButton from "@/components/SubmitButton";
 import { GoArrowLeft } from "react-icons/go";
 import { NetworkSelect } from '../components/Bridge/NetworkSelect';
 import { SourceTargetSelect } from '../components/Bridge/SourceTargetSelect';
-import { TokenSelect } from '../components/Bridge/TokenSelect';
 import { ConnectWallet } from '../components/Bridge/ConnectWallet';
 import { TokenSelectDialog } from '../components/Bridge/TokenSelectDialog';
 import { AddNetWorkDialog } from '../components/Bridge/AddNetWorkDialog';
@@ -32,7 +31,7 @@ import RightArrow from '../components/RightArrow';
 
 const tokenABI = rawTokenABI as OperationObject.Data.Abi;
 
-export interface BridgeData {
+export interface BridgeViewData {
   fromNetwork?: Chain;
   toNetwork?: Chain;
   customizeNetwork?: boolean;
@@ -70,22 +69,21 @@ export namespace OperationObject {
   }
 }
 
-export type Network = {
+export type NetworkInfo = {
   name: string;
   rpcUrl: string;
 };
 
 const Bridge = () => {
-  const { isConnected } = useAccount();
+  // Show the select network UI in the card content area
   const [showSelectNetwork, setShowSelectNetwork] = useState(false);
-  const [bridgeViewData, setBridgeViewData] = useState<BridgeData>({});
+  const [bridgeViewData, setBridgeViewData] = useState<BridgeViewData>({});
   const [render, serRender] = useState(0);
-  const [selectedNetwork, setSelectedNetwork] = useState<Network>();
-  const [storedNetworks, setStoredNetworks] = useState<Network[]>([]);
+  const [storedNetworks, setStoredNetworks] = useState<NetworkInfo[]>([]);
   const [isWalletConnected, setIsWalletConnected] = useState(false);
 
   const router = useRouter();
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const [context, setContext] = useGlobalContext();
 
   const { rpcUrl, rpcName } = router.query;
@@ -96,36 +94,45 @@ const Bridge = () => {
 
   // Load existing data from localStorage when component mounts
   useEffect(() => {
-    let storedNetworks;
-    let storedSelectedNetwork;
+    async function setDefaultDataFromLocalStorage() {
+      try {
+        const networks = localStorage.getItem('networks');
+        const parsedNetworks = networks ? JSON.parse(networks) : [];
+        setStoredNetworks(parsedNetworks);
 
-    try {
-      const networks = localStorage.getItem('networks');
-      storedNetworks = networks ? JSON.parse(networks) : [];
+        const selectedNetworkInfo = localStorage.getItem('selectedNetwork');
+        const parsedSelectedNetwork = selectedNetworkInfo ? JSON.parse(selectedNetworkInfo) : null;
 
-      const network = localStorage.getItem('selectedNetwork');
-      storedSelectedNetwork = network ? JSON.parse(network) : null;
-    } catch (error) {
-      console.error("Error parsing data from localStorage", error);
-      storedNetworks = [];
+        const fromNetwork = await getNetwork(parsedSelectedNetwork.name, parsedSelectedNetwork.rpcUrl);
+        setBridgeViewData({ ...bridgeViewData, fromNetwork });
+      } catch (error) {
+        console.error("Error parsing data from localStorage", error);
+        setStoredNetworks([]);
+      }
+
     }
 
-    setStoredNetworks(storedNetworks);
-    setSelectedNetwork(storedSelectedNetwork);
+    setDefaultDataFromLocalStorage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // When query changed, we get network from query
   useEffect(() => {
     async function fetchData() {
-      if (rpcUrl && rpcName) {
-        if (Array.isArray(rpcUrl) || Array.isArray(rpcName)) {
-          return;
+      try {
+        if (rpcUrl && rpcName) {
+          if (Array.isArray(rpcUrl) || Array.isArray(rpcName)) {
+            return;
+          }
+
+          await submitRpcUrl(rpcName, rpcUrl);
         }
 
-        await submitRpcUrl(rpcName, rpcUrl);
+        setBridgeViewData({ ...bridgeViewData, toNetwork: xdcParentNet });
+      } catch (error) {
+        alert(error);
+        return;
       }
-
-      setBridgeViewData({ ...bridgeViewData, toNetwork: xdcparentnet });
     }
 
     fetchData();
@@ -135,9 +142,9 @@ const Bridge = () => {
   const fromNetwork = bridgeViewData?.fromNetwork;
   const toNetwork = bridgeViewData?.toNetwork;
 
-  const subnet = fromNetwork?.id === xdcparentnet.id ? toNetwork : fromNetwork;
-  const bridgeMode = fromNetwork?.id === xdcparentnet.id ? 2 : 1;
-  const tokens = getTokens(subnet?.id, xdcparentnet.id, bridgeMode);
+  const subnet = fromNetwork?.id === xdcParentNet.id ? toNetwork : fromNetwork;
+  const bridgeMode = fromNetwork?.id === xdcParentNet.id ? 2 : 1;
+  const tokens = getTokens(subnet?.id, xdcParentNet.id, bridgeMode);
   const selectedToken = bridgeViewData?.token;
 
   // TODO: Specify what reads0 is
@@ -145,7 +152,7 @@ const Bridge = () => {
     selectedToken,
     address,
     subnet,
-    xdcparentnet.id,
+    xdcParentNet.id,
     render
   );
   const { approve, send } = handleTokenOperations();
@@ -250,9 +257,10 @@ const Bridge = () => {
       cardTitle = "Networks";
       cardBodyContent = (
         <NetworkSelect
-          selectedNetwork={selectedNetwork}
+          submitRpcUrl={submitRpcUrl}
+          bridgeViewData={bridgeViewData}
+          setBridgeViewData={setBridgeViewData}
           storedNetworks={storedNetworks ?? []}
-          setSelectedNetwork={setSelectedNetwork}
           setStoredNetworks={setStoredNetworks}
         />
       );
@@ -267,7 +275,6 @@ const Bridge = () => {
           showApprove={showApprove}
           approve={approve}
           send={send}
-          selectedNetwork={selectedNetwork}
           setShowSelectNetwork={setShowSelectNetwork}
         />
       );
@@ -326,30 +333,36 @@ const Bridge = () => {
     rpcName: string | undefined,
     rpcUrl: string | undefined
   ) => {
-    if (!rpcName) {
-      alert("rpc name is required");
-      return;
+
+    try {
+      if (!rpcName) {
+        alert("rpc name is required");
+        return;
+      }
+
+      if (!rpcUrl) {
+        alert("rpc url is required");
+        return;
+      }
+
+      const fromNetwork = await getNetwork(rpcName, rpcUrl);
+
+      // push fromNetwork to context rpcs
+      context.rpcs.push(fromNetwork);
+      setContext({
+        ...context
+      });
+
+      // set bridge view data
+      setBridgeViewData({
+        ...bridgeViewData,
+        fromNetwork,
+        customizeNetwork: false
+      });
+
+    } catch (error) {
+      throw new Error("Fail to get network, please check if the rpc url is valid");
     }
-
-    if (!rpcUrl) {
-      alert("rpc url is required");
-      return;
-    }
-
-    const fromNetwork = await getNetwork(rpcName, rpcUrl);
-
-    // push fromNetwork to context rpcs
-    context.rpcs.push(fromNetwork);
-    setContext({
-      ...context
-    });
-
-    // set bridge view data
-    setBridgeViewData({
-      ...bridgeViewData,
-      fromNetwork: fromNetwork,
-      customizeNetwork: false
-    });
   };
 
   return (
@@ -440,13 +453,12 @@ const useGetReads0 = (
 
 // Components for bridge page
 type BridgeContentProps = {
-  bridgeViewData: BridgeData;
-  setBridgeViewData: Dispatch<SetStateAction<BridgeData>>;
+  bridgeViewData: BridgeViewData;
+  setBridgeViewData: Dispatch<SetStateAction<BridgeViewData>>;
   tokenBalance: unknown;
   showApprove: boolean;
   approve: OperationObject;
   send: OperationObject;
-  selectedNetwork?: Network;
   setShowSelectNetwork: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -457,20 +469,18 @@ function BridgeContent({
   showApprove,
   approve,
   send,
-  selectedNetwork,
   setShowSelectNetwork
 }: BridgeContentProps) {
   return (
     <>
       <SourceTargetSelect
-        data={bridgeViewData}
-        setData={setBridgeViewData}
+        bridgeViewData={bridgeViewData}
+        setBridgeViewData={setBridgeViewData}
         tokenBalance={tokenBalance}
-        selectedNetwork={selectedNetwork}
         setShowSelectNetwork={setShowSelectNetwork}
       />
 
-      {selectedNetwork && (
+      {bridgeViewData.fromNetwork && (
         <>
           <Section>
             <div className='flex flex-col w-full gap-4'>

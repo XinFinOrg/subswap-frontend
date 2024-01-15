@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { useNetwork, useSwitchNetwork } from "wagmi";
 import { Section } from "./Section";
-import { BridgeData, Network } from "../../pages/bridge";
+import { BridgeViewData, NetworkInfo } from "../../pages/bridge";
 import Image from "next/image";
 import { RiArrowDownSLine } from "react-icons/ri";
 
@@ -9,18 +9,16 @@ import RightArrow from "@/components/RightArrow";
 import { LiaExchangeAltSolid } from "react-icons/lia";
 
 type SourceTargetSelectProps = {
-  data: BridgeData;
-  setData: Dispatch<SetStateAction<BridgeData>>;
+  bridgeViewData: BridgeViewData;
+  setBridgeViewData: Dispatch<SetStateAction<BridgeViewData>>;
   tokenBalance: any;
   setShowSelectNetwork: Dispatch<SetStateAction<boolean>>;
-  selectedNetwork?: Network;
 };
 
 export function SourceTargetSelect({
-  data,
-  setData,
+  bridgeViewData,
+  setBridgeViewData,
   // tokenBalance,
-  selectedNetwork,
   setShowSelectNetwork
 }: SourceTargetSelectProps) {
   // TODO: After connect the wallet, we are able to use chain from wagmi useNetwork?
@@ -42,9 +40,9 @@ export function SourceTargetSelect({
         <div
           className="btn rounded-3xl w-full mt-2 bg-light/10 text-primary flex justify-between"
           onClick={() => {
-            setData({
-              ...data,
-              customizeNetwork: !data.customizeNetwork
+            setBridgeViewData({
+              ...bridgeViewData,
+              customizeNetwork: !bridgeViewData.customizeNetwork
             });
 
             setShowSelectNetwork(true);
@@ -52,22 +50,22 @@ export function SourceTargetSelect({
         >
           <div className="flex items-center gap-2">
             <Image src="/coin.svg" width="24" height="24" alt="Coin icon" />
-            {selectedNetwork?.name ?? "Add/Select subnet"}
+            {bridgeViewData.fromNetwork?.name ?? "Add/Select subnet"}
           </div>
           <div>
             <RiArrowDownSLine size="20" />
           </div>
         </div>
 
-        {data.fromNetwork && chain?.id !== data.fromNetwork.id && (
+        {bridgeViewData.fromNetwork && chain?.id !== bridgeViewData.fromNetwork.id && (
           <button
             className="btn"
             onClick={() => {
-              switchNetwork?.(data.fromNetwork?.id);
+              switchNetwork?.(bridgeViewData.fromNetwork?.id);
             }}
-            disabled={!data.fromNetwork}
+            disabled={!bridgeViewData.fromNetwork}
           >
-            Switch to {data.fromNetwork.name}
+            Switch to {bridgeViewData.fromNetwork.name}
           </button>
         )}
         <button className="mt-2 px-2.5 py-1.5 text-sm text-bold text-primary bg-button-bg rounded-3xl">

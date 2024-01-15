@@ -1,9 +1,9 @@
 import { Dispatch, SetStateAction } from 'react';
-import { BridgeData } from '../../pages/bridge';
+import { BridgeViewData } from '../../pages/bridge';
 
 type AddNetWorkDialogProps = {
-  setData: Dispatch<SetStateAction<BridgeData>>;
-  data: BridgeData;
+  setData: Dispatch<SetStateAction<BridgeViewData>>;
+  data: BridgeViewData;
   submitRpcUrl: (
     rpcName: string | undefined,
     rpcUrl: string | undefined

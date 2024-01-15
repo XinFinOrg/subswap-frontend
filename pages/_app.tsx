@@ -4,14 +4,14 @@ import { Chain, configureChains, createConfig, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import "@rainbow-me/rainbowkit/styles.css";
 
-import { xdcparentnet } from "@/config";
+import { xdcParentNet } from "@/config";
 import Layout from "@/components/Layout";
 import { ContextProvider } from "@/components/Context";
 import "@/styles/globals.css";
 
 export default function App({ Component, pageProps }: any) {
-  const [context, setContext] = useState<{ rpcs: Chain[] }>({
-    rpcs: [xdcparentnet]
+  const [context, setContext] = useState<{ rpcs: Chain[]; }>({
+    rpcs: [xdcParentNet]
   });
 
   const { chains, publicClient } = configureChains(context.rpcs, [

@@ -4,7 +4,7 @@ export { default as tokenABI } from "./abi/tokenABI.json";
 export { default as lockABI } from "./abi/lockABI.json";
 export { default as mintABI } from "./abi/mintABI.json";
 
-export const xdcparentnet: Chain = {
+export const xdcParentNet: Chain = {
   id: 551,
   name: "XDC Devnet",
   network: "XDC Devnet",
@@ -82,7 +82,7 @@ export const getMint = (chainId: number | undefined) => {
   return applications.mints[chainId];
 };
 
-export const getNetwork = async (rpcName: string, rpcUrl: string) => {
+export const getNetwork = async (rpcName: string, rpcUrl: string): Promise<Chain> => {
   const response = await fetch(rpcUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

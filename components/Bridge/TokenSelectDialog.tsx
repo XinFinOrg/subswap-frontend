@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction } from 'react';
 import { CrossChainToken, tokenABI } from '../../config';
-import { BridgeData, OperationObject } from '../../pages/bridge';
+import { BridgeViewData, OperationObject } from '../../pages/bridge';
 import { useContractReads } from 'wagmi';
 
 type TokenSelectDialogProps = {
-  setData: Dispatch<SetStateAction<BridgeData>>;
-  data: BridgeData;
+  setData: Dispatch<SetStateAction<BridgeViewData>>;
+  data: BridgeViewData;
   address: string | undefined;
   render: number;
   tokens: CrossChainToken[];

@@ -1,19 +1,25 @@
 import Image from "next/image";
-import { Network } from "../../pages/bridge";
+import { BridgeViewData, NetworkInfo } from "../../pages/bridge";
 import { useState } from "react";
+import { getNetwork } from '../../config';
 
 type NetworkSelectProps = {
-  selectedNetwork?: Network;
-  storedNetworks: Network[];
-  setSelectedNetwork: React.Dispatch<React.SetStateAction<Network | undefined>>;
-  setStoredNetworks: React.Dispatch<React.SetStateAction<Network[]>>;
+  storedNetworks: NetworkInfo[];
+  bridgeViewData: BridgeViewData;
+  setBridgeViewData: React.Dispatch<React.SetStateAction<BridgeViewData>>;
+  setStoredNetworks: React.Dispatch<React.SetStateAction<NetworkInfo[]>>;
+  submitRpcUrl: (
+    rpcName: string | undefined,
+    rpcUrl: string | undefined
+  ) => Promise<void>;
 };
 
 export function NetworkSelect({
-  selectedNetwork,
   storedNetworks,
-  setSelectedNetwork,
-  setStoredNetworks
+  bridgeViewData,
+  setBridgeViewData,
+  setStoredNetworks,
+  submitRpcUrl,
 }: NetworkSelectProps) {
   const [networkName, setNetworkName] = useState<string>();
   const [networkRpcUrl, setNetworkRpcUrl] = useState<string>();
@@ -21,29 +27,35 @@ export function NetworkSelect({
   const hasStoredNetworks = storedNetworks.length > 0;
   const hasAllDataToAddNewNetwork = networkName && networkRpcUrl;
 
-  function addNewNetwork() {
-    // if exists the same name one, don't add
-    if (storedNetworks.find((network) => network.name === networkName) !== undefined) {
-      alert('Network already exists, please use different name');
+  async function addNewNetwork() {
+    try {
+      // if exists the same name one, don't add
+      if (storedNetworks.find((network) => network.name === networkName) !== undefined) {
+        alert('Network already exists, please use different name');
+        return;
+      }
+
+      if (hasAllDataToAddNewNetwork) {
+        const newNetwork = { name: networkName, rpcUrl: networkRpcUrl };
+
+        // set to state
+        await submitRpcUrl(networkName, networkRpcUrl);
+        setStoredNetworks([newNetwork, ...storedNetworks]);
+
+        // add to localstorage
+        localStorage.setItem(
+          "networks",
+          JSON.stringify([...storedNetworks, newNetwork])
+        );
+        localStorage.setItem("selectedNetwork", JSON.stringify(newNetwork));
+
+        // reset input fields
+        setNetworkName('');
+        setNetworkRpcUrl('');
+      }
+    } catch (error) {
+      alert(error);
       return;
-    }
-
-    if (hasAllDataToAddNewNetwork) {
-      const newNetwork = { name: networkName, rpcUrl: networkRpcUrl };
-      // add to localstorage
-      localStorage.setItem(
-        "networks",
-        JSON.stringify([...storedNetworks, newNetwork])
-      );
-      localStorage.setItem("selectedNetwork", JSON.stringify(newNetwork));
-
-      // set to state
-      setStoredNetworks([...storedNetworks, newNetwork]);
-      setSelectedNetwork(newNetwork);
-
-      // reset input fields
-      setNetworkName(undefined);
-      setNetworkRpcUrl(undefined);
     }
   }
 
@@ -57,8 +69,8 @@ export function NetworkSelect({
             <NetworkSelectList
               networks={storedNetworks}
               className="mt-6"
-              selectedNetwork={selectedNetwork}
-              setSelectedNetwork={setSelectedNetwork}
+              bridgeViewData={bridgeViewData}
+              setBridgeViewData={setBridgeViewData}
             />
 
             <div className="text-center text-grey-9 pt-4">or</div>
@@ -79,6 +91,7 @@ export function NetworkSelect({
               type="text"
               placeholder="Enter network name"
               className="w-full rounded-full bg-grey-9/10 p-4"
+              value={networkName}
               onChange={(e) => {
                 setNetworkName(e.target.value);
               }}
@@ -91,6 +104,7 @@ export function NetworkSelect({
               type="text"
               placeholder="Enter new rpc URL"
               className="w-full rounded-full bg-grey-9/10 p-4"
+              value={networkRpcUrl}
               onChange={(e) => {
                 setNetworkRpcUrl(e.target.value);
               }}
@@ -117,20 +131,20 @@ export function NetworkSelect({
 }
 
 type NetworkSelectListProps = {
-  networks: Network[];
-  selectedNetwork?: Network;
-  setSelectedNetwork: React.Dispatch<React.SetStateAction<Network | undefined>>;
+  networks: NetworkInfo[];
+  bridgeViewData: BridgeViewData;
+  setBridgeViewData: React.Dispatch<React.SetStateAction<BridgeViewData>>;
   className?: string;
 };
 
 function NetworkSelectList({
   networks,
   className,
-  selectedNetwork,
-  setSelectedNetwork
+  bridgeViewData,
+  setBridgeViewData
 }: NetworkSelectListProps) {
-  function isSelected(network: Network) {
-    return network.name === selectedNetwork?.name;
+  function isSelected(network: NetworkInfo) {
+    return network.name === bridgeViewData.fromNetwork?.name;
   }
 
   return (
@@ -143,7 +157,8 @@ function NetworkSelectList({
           key={i}
           network={network}
           selected={isSelected(network)}
-          setSelectedNetwork={setSelectedNetwork}
+          bridgeViewData={bridgeViewData}
+          setBridgeViewData={setBridgeViewData}
         />
       ))}
     </ul>
@@ -151,19 +166,28 @@ function NetworkSelectList({
 }
 
 type NetworkSelectItemProps = {
-  network: Network;
+  network: NetworkInfo;
   selected?: boolean;
-  setSelectedNetwork: React.Dispatch<React.SetStateAction<Network | undefined>>;
+  bridgeViewData: BridgeViewData;
+  setBridgeViewData: React.Dispatch<React.SetStateAction<BridgeViewData>>;
 };
 
 function NetworkSelectItem({
   network,
   selected,
-  setSelectedNetwork
+  bridgeViewData,
+  setBridgeViewData
 }: NetworkSelectItemProps) {
-  function selectStoredNetwork(network: Network) {
+  async function selectStoredNetwork(network: NetworkInfo) {
     localStorage.setItem("selectedNetwork", JSON.stringify(network));
-    setSelectedNetwork(network);
+
+    try {
+      const fromNetwork = await getNetwork(network.name, network.rpcUrl);
+      setBridgeViewData({ ...bridgeViewData, fromNetwork });
+    } catch (error) {
+      alert(error);
+      return;
+    }
   }
 
   return (
