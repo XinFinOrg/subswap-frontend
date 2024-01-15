@@ -45,17 +45,22 @@ interface OperationObject {
 }
 
 namespace OperationObject {
-  export type ButtonName = 'Approve' | 'Send';
+  export type ButtonName = "Approve" | "Send";
   export interface Data {
     abi: Data.Abi;
     address: string | undefined;
     functionName: Data.FunctionName;
     args?: Data.Args;
-  };
+  }
 
   export namespace Data {
     export type Abi = any;
-    export type FunctionName = 'approve' | 'lock' | 'burn' | 'balanceOf' | 'decimals';
+    export type FunctionName =
+      | "approve"
+      | "lock"
+      | "burn"
+      | "balanceOf"
+      | "decimals";
     export type Args = Array<number | string | undefined>;
   }
 }
@@ -71,7 +76,7 @@ const Bridge = () => {
 
   const { rpcUrl, rpcName } = router.query;
 
-  // When query changed, we get network from query 
+  // When query changed, we get network from query
   useEffect(() => {
     async function fetchData() {
       if (rpcUrl && rpcName) {
@@ -98,7 +103,13 @@ const Bridge = () => {
   const selectedToken = bridgeViewData?.token;
 
   // TODO: Specify what reads0 is
-  const { tokenBalance, allowance, parentnetToken } = useGetReads0(selectedToken, address, subnet, xdcparentnet.id, render);
+  const { tokenBalance, allowance, parentnetToken } = useGetReads0(
+    selectedToken,
+    address,
+    subnet,
+    xdcparentnet.id,
+    render
+  );
   const { approve, send } = handleTokenOperations();
 
   function createOperationObject(
@@ -137,11 +148,46 @@ const Bridge = () => {
     const mint = getMint(bridgeMode == 1 ? toNetwork?.id : fromNetwork?.id);
 
     if (bridgeMode == 1) {
-      approve = createOperationObject("Approve", createOperationData(tokenABI, selectedToken?.originalToken, "approve", [lock, 2 ** 254]), commonCallback);
-      send = createOperationObject("Send", createOperationData(lockABI, lock, "lock", [toNetwork?.id, mint, selectedToken?.originalToken, bridgeViewData.amount ?? 0 * 1e18, address]), commonCallback);
+      approve = createOperationObject(
+        "Approve",
+        createOperationData(tokenABI, selectedToken?.originalToken, "approve", [
+          lock,
+          2 ** 254
+        ]),
+        commonCallback
+      );
+      send = createOperationObject(
+        "Send",
+        createOperationData(lockABI, lock, "lock", [
+          toNetwork?.id,
+          mint,
+          selectedToken?.originalToken,
+          bridgeViewData.amount ?? 0 * 1e18,
+          address
+        ]),
+        commonCallback
+      );
     } else if (bridgeMode == 2) {
-      approve = createOperationObject("Approve", createOperationData(tokenABI, parentnetToken, "approve", [mint, 2 ** 254]), commonCallback);
-      send = createOperationObject("Send", createOperationData(mintABI, mint, "burn", [toNetwork?.id, lock, selectedToken?.originalToken, parentnetToken, bridgeViewData.amount ?? 0 * 1e18, address]), commonCallback);
+      approve = createOperationObject(
+        "Approve",
+        createOperationData(tokenABI, parentnetToken, "approve", [
+          mint,
+          2 ** 254
+        ]),
+        commonCallback
+      );
+      send = createOperationObject(
+        "Send",
+        createOperationData(mintABI, mint, "burn", [
+          toNetwork?.id,
+          lock,
+          selectedToken?.originalToken,
+          parentnetToken,
+          bridgeViewData.amount ?? 0 * 1e18,
+          address
+        ]),
+        commonCallback
+      );
     } else {
       throw new Error("Invalid bridge mode");
     }
@@ -189,7 +235,11 @@ const Bridge = () => {
     });
 
     // set bridge view data
-    setBridgeViewData({ ...bridgeViewData, fromNetwork: fromNetwork, customizeNetwork: false });
+    setBridgeViewData({
+      ...bridgeViewData,
+      fromNetwork: fromNetwork,
+      customizeNetwork: false
+    });
   };
 
   return (
@@ -199,11 +249,19 @@ const Bridge = () => {
           Bridge
         </div>
 
-        <div className='card-body'>
-          {!isConnected
-            ? <ConnectWallet />
-            : <BridgeContent bridgeViewData={bridgeViewData} setBridgeViewData={setBridgeViewData} tokenBalance={tokenBalance} showApprove={showApprove} approve={approve} send={send} />
-          }
+        <div className="card-body">
+          {!isConnected ? (
+            <ConnectWallet />
+          ) : (
+            <BridgeContent
+              bridgeViewData={bridgeViewData}
+              setBridgeViewData={setBridgeViewData}
+              tokenBalance={tokenBalance}
+              showApprove={showApprove}
+              approve={approve}
+              send={send}
+            />
+          )}
         </div>
 
         {/* Note: No idea what this does, please check */}
@@ -216,7 +274,11 @@ const Bridge = () => {
       </div>
 
       {/* Dialog to add network */}
-      <AddNetWorkDialog setData={setBridgeViewData} data={bridgeViewData} submitRpcUrl={submitRpcUrl} />
+      <AddNetWorkDialog
+        setData={setBridgeViewData}
+        data={bridgeViewData}
+        submitRpcUrl={submitRpcUrl}
+      />
 
       {/* Note: No idea what this does, please check */}
       {/* Put this part before </body> tag */}
@@ -228,14 +290,20 @@ const Bridge = () => {
       />
 
       {/* Dialog to select token */}
-      <SelectTokenDialog setData={setBridgeViewData} data={bridgeViewData} tokens={tokens} address={address} render={render} />
+      <SelectTokenDialog
+        setData={setBridgeViewData}
+        data={bridgeViewData}
+        tokens={tokens}
+        address={address}
+        render={render}
+      />
     </>
   );
 };
 
 export default Bridge;
 
-// hooks 
+// hooks
 const useGetReads0 = (
   selectedToken: any,
   address: string | undefined,
@@ -266,7 +334,7 @@ const useGetReads0 = (
         args: [subnet?.id, selectedToken?.originalToken]
       }
     ],
-    scopeKey: render.toString(),
+    scopeKey: render.toString()
   });
 
   const tokenBalance = data?.[0]?.result;
@@ -276,8 +344,12 @@ const useGetReads0 = (
   return { tokenBalance, allowance, parentnetToken };
 };
 
-const useGetReads1 = (tokens: CrossChainToken[], address: string | undefined, render: number) => {
-  const tokenBalanceReads = tokens?.map<OperationObject.Data>(token => {
+const useGetReads1 = (
+  tokens: CrossChainToken[],
+  address: string | undefined,
+  render: number
+) => {
+  const tokenBalanceReads = tokens?.map<OperationObject.Data>((token) => {
     return {
       abi: tokenABI,
       address: token.originalToken,
@@ -294,9 +366,13 @@ const useGetReads1 = (tokens: CrossChainToken[], address: string | undefined, re
   return data;
 };
 
-const useGetTokenBalances = (tokens: CrossChainToken[], address: string | undefined, render: number) => {
+const useGetTokenBalances = (
+  tokens: CrossChainToken[],
+  address: string | undefined,
+  render: number
+) => {
   const reads1 = useGetReads1(tokens, address, render);
-  const tokenDecimalsReads = tokens?.map<OperationObject.Data>(token => {
+  const tokenDecimalsReads = tokens?.map<OperationObject.Data>((token) => {
     return {
       abi: tokenABI,
       address: token.originalToken,
@@ -328,18 +404,33 @@ type BridgeContentProps = {
   send: OperationObject;
 };
 
-function BridgeContent({ bridgeViewData, setBridgeViewData, tokenBalance, showApprove, approve, send }: BridgeContentProps) {
+function BridgeContent({
+  bridgeViewData,
+  setBridgeViewData,
+  tokenBalance,
+  showApprove,
+  approve,
+  send
+}: BridgeContentProps) {
   return (
     <>
-      <SourceTargetSelect data={bridgeViewData} setData={setBridgeViewData} tokenBalance={tokenBalance} />
+      <SourceTargetSelect
+        data={bridgeViewData}
+        setData={setBridgeViewData}
+        tokenBalance={tokenBalance}
+      />
       <TokenSelect data={bridgeViewData} setData={setBridgeViewData} />
       <input
         type="number"
         placeholder="0"
         className="input input-bordered w-full"
         onChange={(e) => {
-          setBridgeViewData({ ...bridgeViewData, amount: Number(e.target.value) });
-        }} />
+          setBridgeViewData({
+            ...bridgeViewData,
+            amount: Number(e.target.value)
+          });
+        }}
+      />
       {/* <div className="text-right mt-2">
           <SubmitButton {...getTestCoin} />
         </div>
@@ -362,8 +453,8 @@ function BridgeContent({ bridgeViewData, setBridgeViewData, tokenBalance, showAp
 function ConnectWallet() {
   return (
     <>
-      <h2 className='text-xl'>Please connect to wallet before using bridge.</h2>
-      <div className='mt-4'>
+      <h2 className="text-xl">Please connect to wallet before using bridge.</h2>
+      <div className="mt-4">
         <ConnectButton />
       </div>
     </>
@@ -373,7 +464,10 @@ function ConnectWallet() {
 type AddNetWorkDialogProps = {
   setData: Dispatch<SetStateAction<BridgeData>>;
   data: BridgeData;
-  submitRpcUrl: (rpcName: string | undefined, rpcUrl: string | undefined) => Promise<void>;
+  submitRpcUrl: (
+    rpcName: string | undefined,
+    rpcUrl: string | undefined
+  ) => Promise<void>;
 };
 
 type SelectTokenDialogProps = {
@@ -384,7 +478,13 @@ type SelectTokenDialogProps = {
   tokens: CrossChainToken[];
 };
 
-function SelectTokenDialog({ data, setData, address, render, tokens }: SelectTokenDialogProps) {
+function SelectTokenDialog({
+  data,
+  setData,
+  address,
+  render,
+  tokens
+}: SelectTokenDialogProps) {
   const tokenBalances = useGetTokenBalances(tokens, address, render);
 
   return (
@@ -439,7 +539,11 @@ function SelectTokenDialog({ data, setData, address, render, tokens }: SelectTok
   );
 }
 
-function AddNetWorkDialog({ setData, data, submitRpcUrl }: AddNetWorkDialogProps) {
+function AddNetWorkDialog({
+  setData,
+  data,
+  submitRpcUrl
+}: AddNetWorkDialogProps) {
   return (
     <div className="modal" role="dialog">
       <div className="modal-box">
@@ -450,14 +554,16 @@ function AddNetWorkDialog({ setData, data, submitRpcUrl }: AddNetWorkDialogProps
           className="input input-bordered w-full max-w-xs"
           onChange={(e) => {
             setData({ ...data, rpcName: e.target.value });
-          }} />
+          }}
+        />
         <input
           type="text"
           placeholder="rpc endpoint url"
           className="input input-bordered w-full max-w-xs mt-2"
           onChange={(e) => {
             setData({ ...data, rpcUrl: e.target.value });
-          }} />
+          }}
+        />
         <div className="modal-action">
           <div
             className="btn btn-success"
@@ -490,14 +596,16 @@ type SelectTokenProps = {
 };
 
 function TokenSelect({ data, setData }: SelectTokenProps) {
-  return <div
-    className="btn btn-success w-max mt-10"
-    onClick={() => {
-      setData({ ...data, selectToken: !data.selectToken });
-    }}
-  >
-    {data.token ? data.token?.name : "Select a token"}
-  </div>;
+  return (
+    <div
+      className="btn btn-success w-max mt-10"
+      onClick={() => {
+        setData({ ...data, selectToken: !data.selectToken });
+      }}
+    >
+      {data.token ? data.token?.name : "Select a token"}
+    </div>
+  );
 }
 
 type SourceTargetSelectProps = {
@@ -506,8 +614,12 @@ type SourceTargetSelectProps = {
   tokenBalance: any;
 };
 
-function SourceTargetSelect({ data, setData, tokenBalance }: SourceTargetSelectProps) {
-  // TODO: After connect the wallet, we are able to use chain from wagmi useNetwork? 
+function SourceTargetSelect({
+  data,
+  setData,
+  tokenBalance
+}: SourceTargetSelectProps) {
+  // TODO: After connect the wallet, we are able to use chain from wagmi useNetwork?
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
 
