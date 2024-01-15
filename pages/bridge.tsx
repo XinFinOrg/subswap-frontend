@@ -19,7 +19,7 @@ import {
 import { useGlobalContext } from "@/components/Context";
 import SubmitButton from "@/components/SubmitButton";
 import { GoArrowLeft } from "react-icons/go";
-import { NetWorkSelect } from '../components/Bridge/NetWorkSelect';
+import { NetworkSelect } from '../components/Bridge/NetworkSelect';
 import { SourceTargetSelect } from '../components/Bridge/SourceTargetSelect';
 import { TokenSelect } from '../components/Bridge/TokenSelect';
 import { ConnectWallet } from '../components/Bridge/ConnectWallet';
@@ -66,17 +66,44 @@ export namespace OperationObject {
   }
 }
 
+export type Network = {
+  name: string;
+  rpcUrl: string;
+};
+
 const Bridge = () => {
   const { isConnected } = useAccount();
   const [showSelectNetwork, setShowSelectNetwork] = useState(false);
   const [bridgeViewData, setBridgeViewData] = useState<BridgeData>({});
   const [render, serRender] = useState(0);
+  const [selectedNetwork, setSelectedNetwork] = useState<Network>();
+  const [storedNetworks, setStoredNetworks] = useState<Network[]>([]);
 
   const router = useRouter();
   const { address } = useAccount();
   const [context, setContext] = useGlobalContext();
 
   const { rpcUrl, rpcName } = router.query;
+
+  // Load existing data from localStorage when component mounts
+  useEffect(() => {
+    let storedNetworks;
+    let storedSelectedNetwork;
+
+    try {
+      const networks = localStorage.getItem('networks');
+      storedNetworks = networks ? JSON.parse(networks) : [];
+
+      const network = localStorage.getItem('selectedNetwork');
+      storedSelectedNetwork = network ? JSON.parse(network) : null;
+    } catch (error) {
+      console.error("Error parsing data from localStorage", error);
+      storedNetworks = [];
+    }
+
+    setStoredNetworks(storedNetworks);
+    setSelectedNetwork(storedSelectedNetwork);
+  }, []);
 
   // When query changed, we get network from query
   useEffect(() => {
@@ -212,7 +239,14 @@ const Bridge = () => {
       cardBodyContent = <ConnectWallet />;
     } else if (showSelectNetwork) {
       cardTitle = "Networks";
-      cardBodyContent = <NetWorkSelect />;
+      cardBodyContent = (
+        <NetworkSelect
+          selectedNetwork={selectedNetwork}
+          storedNetworks={storedNetworks ?? []}
+          setSelectedNetwork={setSelectedNetwork}
+          setStoredNetworks={setStoredNetworks}
+        />
+      );
       showGoBackIcon = true;
     } else {
       cardTitle = "Bridge";
@@ -233,7 +267,7 @@ const Bridge = () => {
       <>
         <CardTitle title={cardTitle} showGoBackIcon={showGoBackIcon} />
         <CardBody>{cardBodyContent}</CardBody>
-        <div className="text-center pt-6 pb-8 text-grey-9">Powered by XDC-Zero</div>
+        <div className="text-center pb-8 text-grey-9">Powered by XDC-Zero</div>
       </>
     );
   }
@@ -262,7 +296,7 @@ const Bridge = () => {
   type CardBodyProps = React.PropsWithChildren;
 
   function CardBody({ children }: CardBodyProps) {
-    return <div className="card-body">{children}</div>;
+    return <div className="card-body pb-4">{children}</div>;
   }
 
   // const getTestCoin = {
