@@ -59,18 +59,15 @@ export function SourceTargetSelect({
 
         {bridgeViewData.fromNetwork && chain?.id !== bridgeViewData.fromNetwork.id && (
           <button
-            className="btn"
+            className="mt-2 px-2.5 py-1.5 text-sm text-bold text-primary bg-button-bg rounded-3xl"
             onClick={() => {
               switchNetwork?.(bridgeViewData.fromNetwork?.id);
             }}
             disabled={!bridgeViewData.fromNetwork}
           >
-            Switch to {bridgeViewData.fromNetwork.name}
+            Switch
           </button>
         )}
-        <button className="mt-2 px-2.5 py-1.5 text-sm text-bold text-primary bg-button-bg rounded-3xl">
-          Switch
-        </button>
       </div>
 
       <div className="bg-light/10 p-1 rounded-full mx-2 -mt-2">
