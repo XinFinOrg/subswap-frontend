@@ -197,6 +197,11 @@ const Bridge = () => {
     return { approve, send };
   }
 
+  // content can be one of these, in order.
+  // 1. connect wallet 
+  // 2. select network
+  // 3. select token
+  // 4. bridge function
   function getCardContent() {
     let cardTitle: string;
     let cardBodyContent: JSX.Element;
