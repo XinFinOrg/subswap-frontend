@@ -258,6 +258,7 @@ const Bridge = () => {
           showApprove={showApprove}
           approve={approve}
           send={send}
+          selectedNetwork={selectedNetwork}
           setShowSelectNetwork={setShowSelectNetwork}
         />
       );
@@ -440,6 +441,7 @@ type BridgeContentProps = {
   showApprove: boolean;
   approve: OperationObject;
   send: OperationObject;
+  selectedNetwork?: Network;
   setShowSelectNetwork: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -450,6 +452,7 @@ function BridgeContent({
   showApprove,
   approve,
   send,
+  selectedNetwork,
   setShowSelectNetwork
 }: BridgeContentProps) {
   return (
@@ -458,6 +461,7 @@ function BridgeContent({
         data={bridgeViewData}
         setData={setBridgeViewData}
         tokenBalance={tokenBalance}
+        selectedNetwork={selectedNetwork}
         setShowSelectNetwork={setShowSelectNetwork}
       />
       <TokenSelect data={bridgeViewData} setData={setBridgeViewData} />

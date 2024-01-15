@@ -1,7 +1,9 @@
 import { Dispatch, SetStateAction } from "react";
 import { useNetwork, useSwitchNetwork } from "wagmi";
 import { Section } from "./Section";
-import { BridgeData } from "../../pages/bridge";
+import { BridgeData, Network } from "../../pages/bridge";
+import Image from "next/image";
+import { RiArrowDownSLine } from "react-icons/ri";
 
 import RightArrow from "@/components/RightArrow";
 import { LiaExchangeAltSolid } from "react-icons/lia";
@@ -11,12 +13,14 @@ type SourceTargetSelectProps = {
   setData: Dispatch<SetStateAction<BridgeData>>;
   tokenBalance: any;
   setShowSelectNetwork: Dispatch<SetStateAction<boolean>>;
+  selectedNetwork?: Network;
 };
 
 export function SourceTargetSelect({
   data,
   setData,
   tokenBalance,
+  selectedNetwork,
   setShowSelectNetwork
 }: SourceTargetSelectProps) {
   // TODO: After connect the wallet, we are able to use chain from wagmi useNetwork?
@@ -44,7 +48,7 @@ export function SourceTargetSelect({
           </select>
         ) : (
           <div
-            className="btn rounded-3xl w-full mt-2 bg-light/10 text-primary"
+            className="btn rounded-3xl w-full mt-2 bg-light/10 text-primary flex justify-between"
             onClick={() => {
               setData({
                 ...data,
@@ -54,7 +58,13 @@ export function SourceTargetSelect({
               setShowSelectNetwork(true);
             }}
           >
-            Add new network
+            <div className="flex items-center gap-2">
+              <Image src="/coin.svg" width="24" height="24" alt="Coin icon" />
+              {selectedNetwork?.name ?? "Add/select subnet"}
+            </div>
+            <div>
+              <RiArrowDownSLine size="20" />
+            </div>
           </div>
         )}
 
@@ -90,8 +100,8 @@ export function SourceTargetSelect({
           </option>
         </select>
         <div className="mt-3 ml-2 text-light-grey font-light text-sm h-6">
-          Balance: {Number(tokenBalance ?? 0) / 1e18 || 0}
-          {data.token?.name}{" "}
+          {/* Balance: {Number(tokenBalance ?? 0) / 1e18 || 0}
+          {data.token?.name}{" "} */}
         </div>
       </div>
     </Section>

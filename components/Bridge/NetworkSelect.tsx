@@ -5,7 +5,7 @@ import { useState } from "react";
 type NetworkSelectProps = {
   selectedNetwork?: Network;
   storedNetworks: Network[];
-  setSelectedNetwork: React.Dispatch<React.SetStateAction<Network>>;
+  setSelectedNetwork: React.Dispatch<React.SetStateAction<Network | undefined>>;
   setStoredNetworks: React.Dispatch<React.SetStateAction<Network[]>>;
 };
 
@@ -119,7 +119,7 @@ export function NetworkSelect({
 type NetworkSelectListProps = {
   networks: Network[];
   selectedNetwork?: Network;
-  setSelectedNetwork: React.Dispatch<React.SetStateAction<Network>>;
+  setSelectedNetwork: React.Dispatch<React.SetStateAction<Network | undefined>>;
   className?: string;
 };
 
@@ -153,7 +153,7 @@ function NetworkSelectList({
 type NetworkSelectItemProps = {
   network: Network;
   selected?: boolean;
-  setSelectedNetwork: React.Dispatch<React.SetStateAction<Network>>;
+  setSelectedNetwork: React.Dispatch<React.SetStateAction<Network | undefined>>;
 };
 
 function NetworkSelectItem({
