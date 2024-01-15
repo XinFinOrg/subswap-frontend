@@ -81,12 +81,17 @@ const Bridge = () => {
   const [render, serRender] = useState(0);
   const [selectedNetwork, setSelectedNetwork] = useState<Network>();
   const [storedNetworks, setStoredNetworks] = useState<Network[]>([]);
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
 
   const router = useRouter();
   const { address } = useAccount();
   const [context, setContext] = useGlobalContext();
 
   const { rpcUrl, rpcName } = router.query;
+
+  useEffect(() => {
+    setIsWalletConnected(isConnected);
+  }, [isConnected]);
 
   // Load existing data from localStorage when component mounts
   useEffect(() => {
@@ -237,7 +242,7 @@ const Bridge = () => {
     let cardBodyContent: JSX.Element;
     let showGoBackIcon = false;
 
-    if (!isConnected) {
+    if (!isWalletConnected) {
       cardTitle = "Bridge";
       cardBodyContent = <ConnectWallet />;
     } else if (showSelectNetwork) {
