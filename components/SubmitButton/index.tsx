@@ -29,7 +29,7 @@ const SubmitButton = (props: any) => {
 
   useEffect(() => {
     props?.callback?.(confirmed);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [confirmed]);
 
   return (
@@ -39,7 +39,7 @@ const SubmitButton = (props: any) => {
           <button
             className={
               (props?.disabled || !write || confirming ? "btn-disabled " : "") +
-              "btn btn-primary btn-outline text-xs w-full rounded-3xl"
+              "btn bg-primary text-grey-9 text-base w-full rounded-3xl"
             }
             // disabled={props?.disabled || !write || confirming}
             style={{ minWidth: 112 }}

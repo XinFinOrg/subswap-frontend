@@ -28,6 +28,7 @@ import { AddNetWorkDialog } from '../components/Bridge/AddNetWorkDialog';
 import { Section } from '../components/Bridge/Section';
 import { RiArrowDownSLine } from "react-icons/ri";
 import Slider from '../components/Slider/Slider';
+import RightArrow from '../components/RightArrow';
 
 const tokenABI = rawTokenABI as OperationObject.Data.Abi;
 
@@ -474,38 +475,70 @@ function BridgeContent({
       />
 
       {selectedNetwork && (
-        <Section>
-          <div className='flex flex-col w-full gap-4'>
-            <div className='py-3 flex justify-between w-full gap-4 items-center'>
-              <div className='flex items-center justify-between grow'>
-                {/* Token select */}
-                <div
-                  className="btn rounded-3xl w-40 bg-light/10 text-grey-9 flex"
-                >
-                  BitCoin<RiArrowDownSLine size="20" />
+        <>
+          <Section>
+            <div className='flex flex-col w-full gap-4'>
+              <div className='py-3 flex justify-between w-full gap-4 items-center'>
+                <div className='flex items-center justify-between grow'>
+                  {/* Token select */}
+                  <div
+                    className="btn rounded-3xl w-40 bg-light/10 text-grey-9 flex"
+                  >
+                    BitCoin<RiArrowDownSLine size="20" />
+                  </div>
+
+                  {/* Selected amount */}
+                  <div className="grow text-right text-grey-9">{bridgeViewData.amount}</div>
                 </div>
 
-                {/* Selected amount */}
-                <div className="grow text-right text-grey-9">{bridgeViewData.amount}</div>
+                {/* Max button */}
+                <button className='rounded-full bg-grey-9/10 py-2 px-4 h-10 text-primary'>Max</button>
               </div>
-
-              {/* Max button */}
-              <button className='rounded-full bg-grey-9/10 py-2 px-4 h-10 text-primary'>Max</button>
+              <Slider min={0} max={100} onChange={amount => {
+                setBridgeViewData({
+                  ...bridgeViewData,
+                  amount
+                });
+              }} />
+              <div className='self-end pr-1'>
+                Balance: {Number(tokenBalance ?? 0) / 1e18 || 0}
+              </div>
             </div>
-            <Slider min={0} max={100} onChange={amount => {
-              setBridgeViewData({
-                ...bridgeViewData,
-                amount
-              });
-            }} />
-            <div className='self-end pr-1'>
-              Balance: {Number(tokenBalance ?? 0) / 1e18 || 0}
+          </Section>
+          <Section>
+            <div className='flex flex-col w-full'>
+              <div className="flex items-center">
+                <div className="font-bold text-light-grey text-sm">To address</div>
+                <div className="ml-3">
+                  <RightArrow />
+                </div>
+              </div>
+              <div className='mt-2'>
+                <input
+                  type="text"
+                  placeholder="Enter address"
+                  className="w-full rounded-full bg-grey-9/10 p-4"
+                  onChange={(e) => {
+                    // TODO: check valid address and set address to state
+                  }}
+                />
+              </div>
+            </div>
+          </Section>
+          <div>
+            <div className='flex justify-between'>
+              <p>You will receive</p>
+              <p className='text-right'>XXX token A in mainnet</p>
+            </div>
+            <div className='flex justify-between mt-2'>
+              <p>Fee</p>
+              <p className='text-right'>XXX USD</p>
             </div>
           </div>
-        </Section>
+        </>
       )}
 
-      <TokenSelect data={bridgeViewData} setData={setBridgeViewData} />
+      {/* <TokenSelect data={bridgeViewData} setData={setBridgeViewData} />
       <input
         type="number"
         placeholder="0"
@@ -516,7 +549,7 @@ function BridgeContent({
             amount: Number(e.target.value)
           });
         }}
-      />
+      /> */}
       {/* <div className="text-right mt-2">
           <SubmitButton {...getTestCoin} />
         </div>
