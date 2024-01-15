@@ -276,8 +276,8 @@ const Bridge = () => {
     return (
       <>
         <CardTitle title={cardTitle} showGoBackIcon={showGoBackIcon} />
-        <div className="card-body pb-4 gap-8">{cardBodyContent}</div>;
-        <div className="text-center pb-8 text-grey-9">Powered by XDC-Zero</div>
+        <div className="card-body pb-8 gap-8">{cardBodyContent}</div>
+        <div className="text-center pb-10 text-grey-9 text-sm">Powered by XDC-zero</div>
       </>
     );
   }
@@ -304,10 +304,6 @@ const Bridge = () => {
   }
 
   type CardBodyProps = React.PropsWithChildren;
-
-  function CardBody({ children }: CardBodyProps) {
-    return <div className="card-body pb-4 gap-8">{children}</div>;
-  }
 
   // const getTestCoin = {
   //   buttonName: "Get test coin",
@@ -560,9 +556,9 @@ function BridgeContent({
         </div> */}
 
       {showApprove ? (
-        <SubmitButton {...approve} className="m-auto my-4" />
+        <SubmitButton {...approve} />
       ) : (
-        <SubmitButton {...send} className="m-auto my-4" />
+        <SubmitButton {...send} />
       )}
     </>
   );
