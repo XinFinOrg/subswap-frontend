@@ -9,13 +9,14 @@ interface SliderProps {
 export default function Slider({ min, max, onChange }: SliderProps) {
   const [value, setValue] = useState<number>(min);
 
-  useEffect(() => {
-    onChange(value);
-  }, [value, onChange]);
-
   const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(Number(event.target.value));
+    const value = Number(event.target.value);
+
+    setValue(value);
+    onChange(value);
   };
+
+  const fillPercentage = ((value - min) / (max - min)) * 100;
 
   return (
     <div className="flex items-center">
@@ -25,9 +26,11 @@ export default function Slider({ min, max, onChange }: SliderProps) {
         max={max}
         value={value}
         onChange={handleSliderChange}
-        className="slider-thumb w-full h-2 rounded-full cursor-pointer accent-primary"
+        className="slider"
+        style={{
+          background: `linear-gradient(to right, #4E80EE ${fillPercentage}%, #ddd 0%)`
+        }}
       />
-      <div className="ml-2 text-sm">{value}</div>
     </div>
   );
 };

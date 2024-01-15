@@ -270,7 +270,7 @@ const Bridge = () => {
     return (
       <>
         <CardTitle title={cardTitle} showGoBackIcon={showGoBackIcon} />
-        <CardBody>{cardBodyContent}</CardBody>
+        <div className="card-body pb-4 gap-8">{cardBodyContent}</div>;
         <div className="text-center pb-8 text-grey-9">Powered by XDC-Zero</div>
       </>
     );
@@ -481,13 +481,18 @@ function BridgeContent({
                 </div>
 
                 {/* Selected amount */}
-                <div className="grow text-right text-grey-9">1</div>
+                <div className="grow text-right text-grey-9">{bridgeViewData.amount}</div>
               </div>
 
               {/* Max button */}
               <button className='rounded-full bg-grey-9/10 py-2 px-4 h-10 text-primary'>Max</button>
             </div>
-            <Slider min={0} max={100} onChange={() => { }} />
+            <Slider min={0} max={100} onChange={amount => {
+              setBridgeViewData({
+                ...bridgeViewData,
+                amount
+              });
+            }} />
             <div className='self-end pr-1'>
               Balance: {Number(tokenBalance ?? 0) / 1e18 || 0}
             </div>
