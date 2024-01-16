@@ -49,7 +49,7 @@ export function BridgeContent({
 
                   {/* Token select */}
                   <div
-                    className="btn rounded-3xl w-40 bg-light/10 text-grey-9 flex"
+                    className="btn rounded-3xl w-40 bg-black-2 text-grey-9 flex"
                     onClick={() => {
                       setShowSelectToken(true);
                     }}
