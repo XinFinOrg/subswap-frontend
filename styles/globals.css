@@ -13,6 +13,11 @@ body {
   width: 8px;
 }
 
+::-webkit-scrollbar-thumb {
+  background-color: #8f8d95;
+  border-radius: 9999px;
+}
+
 /* Custom Slider Styles */
 .slider {
   appearance: none;
