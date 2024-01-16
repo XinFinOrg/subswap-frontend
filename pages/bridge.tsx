@@ -22,8 +22,6 @@ import { GoArrowLeft } from "react-icons/go";
 import { NetworkSelect } from '../components/Bridge/NetworkSelect';
 import { SourceTargetSetting } from '../components/Bridge/SourceTargetSetting';
 import { ConnectWallet } from '../components/Bridge/ConnectWallet';
-import { TokenSelectDialog } from '../components/Bridge/TokenSelectDialog';
-import { AddNetWorkDialog } from '../components/Bridge/AddNetWorkDialog';
 import { Section } from '../components/Bridge/Section';
 import { RiArrowDownSLine } from "react-icons/ri";
 import Slider from '../components/Slider/Slider';
@@ -369,39 +367,23 @@ const Bridge = () => {
     <>
       <div className="mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-black-2">
         {getCardContent()}
-
-        {/* Note: No idea what this does, please check */}
-        {/* Put this part before </body> tag */}
-        <input
-          type="checkbox"
-          className="modal-toggle"
-          checked={bridgeViewData?.customizeNetwork}
-        />
       </div>
 
-      {/* Dialog to add network */}
-      <AddNetWorkDialog
-        setData={setBridgeViewData}
-        data={bridgeViewData}
-        submitRpcUrl={submitRpcUrl}
+      {/* TODO: No idea what this does, please check */}
+      {/* Put this part before </body> tag */}
+      <input
+        type="checkbox"
+        className="modal-toggle"
+        checked={bridgeViewData?.customizeNetwork}
       />
 
-      {/* Note: No idea what this does, please check */}
+      {/* TODO: No idea what this does, please check */}
       {/* Put this part before </body> tag */}
       <input
         id="test"
         type="checkbox"
         className="modal-toggle"
         checked={bridgeViewData?.selectToken}
-      />
-
-      {/* Dialog to select token */}
-      <TokenSelectDialog
-        setData={setBridgeViewData}
-        data={bridgeViewData}
-        tokens={tokens}
-        address={address}
-        render={render}
       />
     </>
   );

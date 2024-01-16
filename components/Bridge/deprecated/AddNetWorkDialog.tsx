@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
-import { BridgeViewData } from '../../pages/bridge';
+import { BridgeViewData } from '../../../pages/bridge';
 
 type AddNetWorkDialogProps = {
   setData: Dispatch<SetStateAction<BridgeViewData>>;
@@ -10,6 +10,7 @@ type AddNetWorkDialogProps = {
   ) => Promise<void>;
 };
 
+// Note: this is the deprecated version of add network dialog, not being used, just for reference.
 export function AddNetWorkDialog({
   setData,
   data,
