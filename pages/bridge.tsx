@@ -468,7 +468,7 @@ function BridgeContent({
   setShowSelectNetwork,
   setShowSelectToken
 }: BridgeContentProps) {
-  const amountMaxRange = 100;
+  const amountMaxRange = bridgeViewData.token?.balance ?? 0;
 
   return (
     <>
