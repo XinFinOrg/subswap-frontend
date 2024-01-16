@@ -105,11 +105,15 @@ const Bridge = () => {
 
         const fromNetwork = await getNetwork(parsedSelectedNetwork.name, parsedSelectedNetwork.rpcUrl);
         setBridgeViewData({ ...bridgeViewData, fromNetwork });
+        
+        context.rpcs.push(fromNetwork);
+        setContext({
+          ...context
+        });
       } catch (error) {
         console.error("Error parsing data from localStorage", error);
         setStoredNetworks([]);
       }
-
     }
 
     setDefaultDataFromLocalStorage();
