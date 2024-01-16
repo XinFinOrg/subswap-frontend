@@ -8,19 +8,19 @@ import { RiArrowDownSLine } from "react-icons/ri";
 import RightArrow from "@/components/RightArrow";
 import { LiaExchangeAltSolid } from "react-icons/lia";
 
-type SourceTargetSelectProps = {
+type SourceTargetSettingProps = {
   bridgeViewData: BridgeViewData;
   setBridgeViewData: Dispatch<SetStateAction<BridgeViewData>>;
   tokenBalance: any;
   setShowSelectNetwork: Dispatch<SetStateAction<boolean>>;
 };
 
-export function SourceTargetSelect({
+export function SourceTargetSetting({
   bridgeViewData,
   setBridgeViewData,
   // tokenBalance,
   setShowSelectNetwork
-}: SourceTargetSelectProps) {
+}: SourceTargetSettingProps) {
   // TODO: After connect the wallet, we are able to use chain from wagmi useNetwork?
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();

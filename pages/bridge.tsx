@@ -20,7 +20,7 @@ import { useGlobalContext } from "@/components/Context";
 import SubmitButton from "@/components/SubmitButton";
 import { GoArrowLeft } from "react-icons/go";
 import { NetworkSelect } from '../components/Bridge/NetworkSelect';
-import { SourceTargetSelect } from '../components/Bridge/SourceTargetSelect';
+import { SourceTargetSetting } from '../components/Bridge/SourceTargetSetting';
 import { ConnectWallet } from '../components/Bridge/ConnectWallet';
 import { TokenSelectDialog } from '../components/Bridge/TokenSelectDialog';
 import { AddNetWorkDialog } from '../components/Bridge/AddNetWorkDialog';
@@ -473,7 +473,7 @@ function BridgeContent({
 }: BridgeContentProps) {
   return (
     <>
-      <SourceTargetSelect
+      <SourceTargetSetting
         bridgeViewData={bridgeViewData}
         setBridgeViewData={setBridgeViewData}
         tokenBalance={tokenBalance}
