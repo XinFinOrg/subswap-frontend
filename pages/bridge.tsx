@@ -1,9 +1,5 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import {
-  useAccount,
-  useContractReads,
-  Chain
-} from "wagmi";
+import React, { useEffect, useState } from "react";
+import { useAccount, useContractReads, Chain } from "wagmi";
 import { useRouter } from "next/router";
 
 import {
@@ -14,19 +10,14 @@ import {
   getMint,
   lockABI,
   mintABI,
-  getNetwork,
+  getNetwork
 } from "@/config";
 import { useGlobalContext } from "@/components/Context";
-import SubmitButton from "@/components/SubmitButton";
-import { GoArrowLeft } from "react-icons/go";
-import { NetworkSelect } from '../components/Bridge/NetworkSelect';
-import { SourceTargetSetting } from '../components/Bridge/SourceTargetSetting';
-import { ConnectWallet } from '../components/Bridge/ConnectWallet';
-import { Section } from '../components/Bridge/Section';
-import { RiArrowDownSLine } from "react-icons/ri";
-import Slider from '../components/Slider/Slider';
-import RightArrow from '../components/RightArrow';
-import { TokenSelect } from '../components/Bridge/TokenSelect';
+import { NetworkSelect } from "../components/Bridge/NetworkSelect";
+import { ConnectWallet } from "../components/Bridge/ConnectWallet";
+import { TokenSelect } from "../components/Bridge/TokenSelect";
+import { BridgeContent } from "../components/Bridge/BridgeContent";
+import CardTitle from "../components/Bridge/CardTitle";
 
 const tokenABI = rawTokenABI as OperationObject.Data.Abi;
 
@@ -96,14 +87,19 @@ const Bridge = () => {
   useEffect(() => {
     async function setDefaultDataFromLocalStorage() {
       try {
-        const networks = localStorage.getItem('networks');
+        const networks = localStorage.getItem("networks");
         const parsedNetworks = networks ? JSON.parse(networks) : [];
         setStoredNetworks(parsedNetworks);
 
-        const selectedNetworkInfo = localStorage.getItem('selectedNetwork');
-        const parsedSelectedNetwork = selectedNetworkInfo ? JSON.parse(selectedNetworkInfo) : null;
+        const selectedNetworkInfo = localStorage.getItem("selectedNetwork");
+        const parsedSelectedNetwork = selectedNetworkInfo
+          ? JSON.parse(selectedNetworkInfo)
+          : null;
 
-        submitRpcUrl(parsedSelectedNetwork?.name, parsedSelectedNetwork?.rpcUrl);
+        submitRpcUrl(
+          parsedSelectedNetwork?.name,
+          parsedSelectedNetwork?.rpcUrl
+        );
       } catch (error) {
         console.error("Error parsing data from localStorage", error);
         setStoredNetworks([]);
@@ -239,7 +235,7 @@ const Bridge = () => {
   }
 
   // content can be one of these, in order.
-  // 1. connect wallet 
+  // 1. connect wallet
   // 2. select network
   // 3. select token
   // 4. bridge function
@@ -293,34 +289,17 @@ const Bridge = () => {
 
     return (
       <>
-        <CardTitle title={cardTitle} showGoBackIcon={showGoBackIcon} />
+        <CardTitle
+          title={cardTitle}
+          showGoBackIcon={showGoBackIcon}
+          setShowSelectNetwork={setShowSelectNetwork}
+          setShowSelectToken={setShowSelectToken}
+        />
         <div className="card-body pb-8 gap-8">{cardBodyContent}</div>
-        <div className="text-center pb-10 text-grey-9 text-sm">Powered by XDC-zero</div>
+        <div className="text-center pb-10 text-grey-9 text-sm">
+          Powered by XDC-zero
+        </div>
       </>
-    );
-  }
-
-  type CardTitleProps = {
-    title: string;
-    showGoBackIcon?: boolean;
-  };
-
-  function CardTitle({ title, showGoBackIcon }: CardTitleProps) {
-    return (
-      <div className="pl-8 pt-8">
-        {showGoBackIcon && (
-          <button
-            className="w-10 h-10 rounded-full bg-light/10 flex items-center justify-center"
-            onClick={() => {
-              setShowSelectNetwork(false);
-              setShowSelectToken(false);
-            }}
-          >
-            <GoArrowLeft color="bg-grey-9/50" size="20" />
-          </button>
-        )}
-        <div className="card-title text-3xl text-grey-9 mt-4">{title}</div>
-      </div>
     );
   }
 
@@ -345,7 +324,6 @@ const Bridge = () => {
     rpcName: string | undefined,
     rpcUrl: string | undefined
   ) => {
-
     try {
       if (!rpcName) {
         alert("rpc name is required");
@@ -371,9 +349,10 @@ const Bridge = () => {
         fromNetwork,
         customizeNetwork: false
       });
-
     } catch (error) {
-      throw new Error("Fail to get network, please check if the rpc url is valid");
+      throw new Error(
+        "Fail to get network, please check if the rpc url is valid"
+      );
     }
   };
 
@@ -445,121 +424,3 @@ const useGetReads0 = (
 
   return { tokenBalance, allowance, parentnetToken };
 };
-
-// Components for bridge page
-type BridgeContentProps = {
-  bridgeViewData: BridgeViewData;
-  setBridgeViewData: Dispatch<SetStateAction<BridgeViewData>>;
-  tokenBalance: unknown;
-  showApprove: boolean;
-  approve: OperationObject;
-  send: OperationObject;
-  setShowSelectNetwork: Dispatch<SetStateAction<boolean>>;
-  setShowSelectToken: Dispatch<SetStateAction<boolean>>;
-};
-
-function BridgeContent({
-  bridgeViewData,
-  setBridgeViewData,
-  tokenBalance,
-  showApprove,
-  approve,
-  send,
-  setShowSelectNetwork,
-  setShowSelectToken
-}: BridgeContentProps) {
-  const amountMaxRange = bridgeViewData.token?.balance ?? 0;
-
-  return (
-    <>
-      <Section>
-        <SourceTargetSetting
-          bridgeViewData={bridgeViewData}
-          setBridgeViewData={setBridgeViewData}
-          setShowSelectNetwork={setShowSelectNetwork}
-        />
-      </Section>
-
-      {bridgeViewData.fromNetwork && (
-        <>
-          <Section>
-            <div className='flex flex-col w-full gap-4'>
-              <div className='py-3 flex justify-between w-full gap-4 items-center'>
-                <div className='flex items-center justify-between grow'>
-
-                  {/* Token select */}
-                  <div
-                    className="btn rounded-3xl w-40 bg-light/10 text-grey-9 flex"
-                    onClick={() => {
-                      setShowSelectToken(true);
-                    }}
-                  >
-                    BitCoin<RiArrowDownSLine size="20" />
-                  </div>
-
-                  {/* Selected amount */}
-                  <div className="grow text-right text-grey-9">{bridgeViewData.amount}</div>
-                </div>
-
-                {/* Max button */}
-                <button
-                  onClick={() => {
-                    setBridgeViewData({
-                      ...bridgeViewData,
-                      amount: amountMaxRange
-                    });
-                  }}
-                  className='rounded-full bg-grey-9/10 py-2 px-4 h-10 text-primary'>Max</button>
-              </div>
-              <Slider min={0} max={amountMaxRange} value={bridgeViewData.amount} onChange={amount => {
-                setBridgeViewData({
-                  ...bridgeViewData,
-                  amount
-                });
-              }} />
-              <div className='self-end pr-1'>
-                Balance: {Number(tokenBalance ?? 0) / 1e18 || 0}
-              </div>
-            </div>
-          </Section>
-          <Section>
-            <div className='flex flex-col w-full'>
-              <div className="flex items-center">
-                <div className="font-bold text-light-grey text-sm">To address</div>
-                <div className="ml-3">
-                  <RightArrow />
-                </div>
-              </div>
-              <div className='mt-2'>
-                <input
-                  type="text"
-                  placeholder="Enter address"
-                  className="w-full rounded-full bg-grey-9/10 p-4"
-                  onChange={(e) => {
-                    // TODO: check valid address and set address to state
-                  }}
-                />
-              </div>
-            </div>
-          </Section>
-          <div>
-            <div className='flex justify-between'>
-              <p>You will receive</p>
-              <p className='text-right font-bold'>{bridgeViewData.amount} token(s) A in mainnet</p>
-            </div>
-            <div className='flex justify-between mt-2'>
-              <p>Fee</p>
-              <p className='text-right font-bold'>0 USD</p>
-            </div>
-          </div>
-          {showApprove ? (
-            <SubmitButton {...approve} />
-          ) : (
-            <SubmitButton {...send} />
-          )}
-        </>
-      )}
-    </>
-  );
-}
-

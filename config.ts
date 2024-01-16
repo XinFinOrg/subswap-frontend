@@ -96,7 +96,7 @@ export const getNetwork = async (rpcName: string, rpcUrl: string): Promise<Chain
 
   const json = await response.json();
   const chainId = Number(json.result);
-  const network = {
+  const network: Chain = {
     id: chainId,
     name: rpcName,
     network: rpcName,

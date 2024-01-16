@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAccount, useContractWrite, useWaitForTransaction } from "wagmi";
 import { Notify } from "notiflix/build/notiflix-notify-aio";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
+
 import { OperationObject } from '../../pages/bridge';
 import Alert from '../Alert/Alert';
 
@@ -65,7 +66,7 @@ const SubmitButton = (props: SubmitButtonProps) => {
             style={{ minWidth: 112 }}
             onClick={() => {
               try {
-                const [valid, message] = validate();
+                const [valid, message = ""] = validate();
 
                 if (!valid) {
                   setShowAlert(true);
