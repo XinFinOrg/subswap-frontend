@@ -2,13 +2,18 @@ import { useEffect, useState } from "react";
 import { useAccount, useContractWrite, useWaitForTransaction } from "wagmi";
 import { Notify } from "notiflix/build/notiflix-notify-aio";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
+import { OperationObject } from '../../pages/bridge';
 
-const SubmitButton = (props: any) => {
+type SubmitButtonProps = OperationObject & {
+  disabled?: boolean;
+};
+
+const SubmitButton = (props: SubmitButtonProps) => {
   const [mounted, setMounted] = useState(false);
   const addRecentTransaction = useAddRecentTransaction();
   const { isConnected } = useAccount();
   const { data: tx, write } = useContractWrite({
-    ...props?.data,
+    ...props?.data as any,
     onError(error) {
       Notify.failure(error.message);
     }
@@ -32,43 +37,58 @@ const SubmitButton = (props: any) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [confirmed]);
 
+  function validate() {
+    if (!isConnected) {
+      alert("Please connect wallet before sending transaction");
+      return false;
+    }
+
+    // TODO: validate address
+    if (!props.data.address) {
+      alert("Please input contract address");
+      return false;
+    }
+
+    return true;
+  }
+
   return (
     mounted && (
-      <div className={`${props.className} w-full`}>
-        {
-          <button
-            className={
-              (props?.disabled || !write || confirming ? "btn-disabled " : "") +
-              "btn bg-primary text-grey-9 text-base w-full rounded-3xl"
-            }
-            // disabled={props?.disabled || !write || confirming}
-            style={{ minWidth: 112 }}
-            onClick={() => {
-              if (!isConnected) {
-                alert("Please connect wallet before sending transaction");
+      <div className="w-full">
+        <button
+          className={
+            (props?.disabled || !write || confirming ? "btn-disabled " : "") +
+            "btn bg-primary text-grey-9 text-base w-full rounded-3xl"
+          }
+          style={{ minWidth: 112 }}
+          onClick={() => {
+            try {
+              if (!validate()) {
+                alert('Validate failed');
                 return;
               }
 
               write?.();
               if (tx) {
-                try {
-                  addRecentTransaction({
-                    hash: tx.hash,
-                    description: props?.buttonName
-                  });
-                } catch (e) { }
-              }
-            }}
-          >
-            {confirming && (
-              <>
-                <span className="loading loading-spinner"></span>Loading
-              </>
-            )}
+                addRecentTransaction({
+                  hash: tx.hash,
+                  description: props?.buttonName
+                });
 
-            {props?.buttonName}
-          </button>
-        }
+              }
+            } catch (e) {
+              alert('Failed to send transaction');
+            }
+          }}
+        >
+          {confirming && (
+            <>
+              <span className="loading loading-spinner"></span>Loading
+            </>
+          )}
+
+          {props?.buttonName}
+        </button>
       </div>
     )
   );

@@ -543,11 +543,11 @@ function BridgeContent({
           <div>
             <div className='flex justify-between'>
               <p>You will receive</p>
-              <p className='text-right'>XXX token A in mainnet</p>
+              <p className='text-right font-bold'>{bridgeViewData.amount} token(s) A in mainnet</p>
             </div>
             <div className='flex justify-between mt-2'>
               <p>Fee</p>
-              <p className='text-right'>XXX USD</p>
+              <p className='text-right font-bold'>0 USD</p>
             </div>
           </div>
           {showApprove ? (
