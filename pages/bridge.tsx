@@ -103,13 +103,7 @@ const Bridge = () => {
         const selectedNetworkInfo = localStorage.getItem('selectedNetwork');
         const parsedSelectedNetwork = selectedNetworkInfo ? JSON.parse(selectedNetworkInfo) : null;
 
-        const fromNetwork = await getNetwork(parsedSelectedNetwork.name, parsedSelectedNetwork.rpcUrl);
-        setBridgeViewData({ ...bridgeViewData, fromNetwork });
-        
-        context.rpcs.push(fromNetwork);
-        setContext({
-          ...context
-        });
+        submitRpcUrl(parsedSelectedNetwork?.name, parsedSelectedNetwork?.rpcUrl);
       } catch (error) {
         console.error("Error parsing data from localStorage", error);
         setStoredNetworks([]);
@@ -482,7 +476,6 @@ function BridgeContent({
         <SourceTargetSetting
           bridgeViewData={bridgeViewData}
           setBridgeViewData={setBridgeViewData}
-          tokenBalance={tokenBalance}
           setShowSelectNetwork={setShowSelectNetwork}
         />
       </Section>
@@ -493,15 +486,11 @@ function BridgeContent({
             <div className='flex flex-col w-full gap-4'>
               <div className='py-3 flex justify-between w-full gap-4 items-center'>
                 <div className='flex items-center justify-between grow'>
+
                   {/* Token select */}
                   <div
                     className="btn rounded-3xl w-40 bg-light/10 text-grey-9 flex"
                     onClick={() => {
-                      // setBridgeViewData({
-                      //   ...bridgeViewData,
-                      //   customizeNetwork: !bridgeViewData.customizeNetwork
-                      // });
-
                       setShowSelectToken(true);
                     }}
                   >
@@ -570,27 +559,6 @@ function BridgeContent({
           )}
         </>
       )}
-
-      {/* <TokenSelect data={bridgeViewData} setData={setBridgeViewData} />
-      <input
-        type="number"
-        placeholder="0"
-        className="input input-bordered w-full"
-        onChange={(e) => {
-          setBridgeViewData({
-            ...bridgeViewData,
-            amount: Number(e.target.value)
-          });
-        }}
-      /> 
-       <div className="text-right mt-2">
-          <SubmitButton {...getTestCoin} />
-        </div>
-
-        <div className="text-center">
-          You will receive {data.amount || 0} ({data.token?.name}) in XDC
-          Mainnet
-        </div> */}
     </>
   );
 }

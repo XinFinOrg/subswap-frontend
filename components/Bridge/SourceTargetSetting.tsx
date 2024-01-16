@@ -10,14 +10,12 @@ import { LiaExchangeAltSolid } from "react-icons/lia";
 type SourceTargetSettingProps = {
   bridgeViewData: BridgeViewData;
   setBridgeViewData: Dispatch<SetStateAction<BridgeViewData>>;
-  tokenBalance: any;
   setShowSelectNetwork: Dispatch<SetStateAction<boolean>>;
 };
 
 export function SourceTargetSetting({
   bridgeViewData,
   setBridgeViewData,
-  // tokenBalance,
   setShowSelectNetwork
 }: SourceTargetSettingProps) {
   // TODO: After connect the wallet, we are able to use chain from wagmi useNetwork?
