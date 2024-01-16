@@ -269,8 +269,11 @@ const Bridge = () => {
       cardTitle = "Select Token";
       cardBodyContent = (
         <TokenSelect
-          data={bridgeViewData}
-          setData={setBridgeViewData}
+          tokens={tokens}
+          address={address}
+          render={render}
+          bridgeViewData={bridgeViewData}
+          setBridgeViewData={setBridgeViewData}
         />
       );
       showGoBackIcon = true;
@@ -285,6 +288,7 @@ const Bridge = () => {
           approve={approve}
           send={send}
           setShowSelectNetwork={setShowSelectNetwork}
+          setShowSelectToken={setShowSelectToken}
         />
       );
     }
@@ -309,7 +313,10 @@ const Bridge = () => {
         {showGoBackIcon && (
           <button
             className="w-10 h-10 rounded-full bg-light/10 flex items-center justify-center"
-            onClick={() => setShowSelectNetwork(false)}
+            onClick={() => {
+              setShowSelectNetwork(false);
+              setShowSelectToken(false);
+            }}
           >
             <GoArrowLeft color="bg-grey-9/50" size="20" />
           </button>
@@ -318,8 +325,6 @@ const Bridge = () => {
       </div>
     );
   }
-
-  type CardBodyProps = React.PropsWithChildren;
 
   // const getTestCoin = {
   //   buttonName: "Get test coin",
@@ -443,7 +448,6 @@ const useGetReads0 = (
   return { tokenBalance, allowance, parentnetToken };
 };
 
-
 // Components for bridge page
 type BridgeContentProps = {
   bridgeViewData: BridgeViewData;
@@ -453,6 +457,7 @@ type BridgeContentProps = {
   approve: OperationObject;
   send: OperationObject;
   setShowSelectNetwork: Dispatch<SetStateAction<boolean>>;
+  setShowSelectToken: Dispatch<SetStateAction<boolean>>;
 };
 
 function BridgeContent({
@@ -462,7 +467,8 @@ function BridgeContent({
   showApprove,
   approve,
   send,
-  setShowSelectNetwork
+  setShowSelectNetwork,
+  setShowSelectToken
 }: BridgeContentProps) {
   const amountMaxRange = 100;
 
@@ -486,6 +492,14 @@ function BridgeContent({
                   {/* Token select */}
                   <div
                     className="btn rounded-3xl w-40 bg-light/10 text-grey-9 flex"
+                    onClick={() => {
+                      // setBridgeViewData({
+                      //   ...bridgeViewData,
+                      //   customizeNetwork: !bridgeViewData.customizeNetwork
+                      // });
+
+                      setShowSelectToken(true);
+                    }}
                   >
                     BitCoin<RiArrowDownSLine size="20" />
                   </div>
