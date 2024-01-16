@@ -57,17 +57,18 @@ export function SourceTargetSetting({
           </div>
         </div>
 
-        {bridgeViewData.fromNetwork && chain?.id !== bridgeViewData.fromNetwork.id && (
-          <button
-            className="mt-2 px-2.5 py-1.5 text-sm text-bold text-primary bg-button-bg rounded-3xl"
-            onClick={() => {
-              switchNetwork?.(bridgeViewData.fromNetwork?.id);
-            }}
-            disabled={!bridgeViewData.fromNetwork}
-          >
-            Switch
-          </button>
-        )}
+        {/* Use css invisible so that we can keep everything aligned */}
+        <button
+          className={`mt-2 px-2.5 py-1.5 text-sm text-bold text-primary bg-button-bg rounded-3xl ${bridgeViewData.fromNetwork &&
+            chain?.id !== bridgeViewData.fromNetwork.id
+            } ? 'invisible' : '`}
+          onClick={() => {
+            switchNetwork?.(bridgeViewData.fromNetwork?.id);
+          }}
+          disabled={!bridgeViewData.fromNetwork}
+        >
+          Switch
+        </button>
       </div>
 
       <div className="bg-light/10 p-1 rounded-full mx-2 -mt-2">

@@ -541,6 +541,11 @@ function BridgeContent({
               <p className='text-right'>XXX USD</p>
             </div>
           </div>
+          {showApprove ? (
+            <SubmitButton {...approve} />
+          ) : (
+            <SubmitButton {...send} />
+          )}
         </>
       )}
 
@@ -555,8 +560,8 @@ function BridgeContent({
             amount: Number(e.target.value)
           });
         }}
-      /> */}
-      {/* <div className="text-right mt-2">
+      /> 
+       <div className="text-right mt-2">
           <SubmitButton {...getTestCoin} />
         </div>
 
@@ -564,12 +569,6 @@ function BridgeContent({
           You will receive {data.amount || 0} ({data.token?.name}) in XDC
           Mainnet
         </div> */}
-
-      {showApprove ? (
-        <SubmitButton {...approve} />
-      ) : (
-        <SubmitButton {...send} />
-      )}
     </>
   );
 }
