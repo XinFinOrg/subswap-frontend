@@ -5,7 +5,7 @@ interface EllipseBgProps {
 export const EllipseBgLeft: React.FC<EllipseBgProps> = ({ className }) => {
   return (
     <div
-      className={`${className} absolute h-[752px] w-[752px] shrink-0 rounded-[752px] bg-white blur-[1200px] dark:bg-primary-6`}
+      className={`${className} absolute h-[752px] w-[752px] shrink-0 rounded-[752px] bg-white blur-[1200px] dark:bg-primary`}
     ></div>
   );
 };
