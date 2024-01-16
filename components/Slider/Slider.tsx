@@ -1,18 +1,13 @@
-import { useState, useEffect } from 'react';
-
 interface SliderProps {
   min: number;
   max: number;
+  value: number | undefined;
   onChange: (value: number) => void;
 }
 
-export default function Slider({ min, max, onChange }: SliderProps) {
-  const [value, setValue] = useState<number>(min);
-
+export default function Slider({ min, max, value = 0, onChange }: SliderProps) {
   const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(event.target.value);
-
-    setValue(value);
     onChange(value);
   };
 

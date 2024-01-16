@@ -471,6 +471,8 @@ function BridgeContent({
   send,
   setShowSelectNetwork
 }: BridgeContentProps) {
+  const amountMaxRange = 100;
+
   return (
     <>
       <SourceTargetSetting
@@ -498,9 +500,16 @@ function BridgeContent({
                 </div>
 
                 {/* Max button */}
-                <button className='rounded-full bg-grey-9/10 py-2 px-4 h-10 text-primary'>Max</button>
+                <button
+                  onClick={() => {
+                    setBridgeViewData({
+                      ...bridgeViewData,
+                      amount: amountMaxRange
+                    });
+                  }}
+                  className='rounded-full bg-grey-9/10 py-2 px-4 h-10 text-primary'>Max</button>
               </div>
-              <Slider min={0} max={100} onChange={amount => {
+              <Slider min={0} max={amountMaxRange} value={bridgeViewData.amount} onChange={amount => {
                 setBridgeViewData({
                   ...bridgeViewData,
                   amount
