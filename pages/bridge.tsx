@@ -26,6 +26,7 @@ import { Section } from '../components/Bridge/Section';
 import { RiArrowDownSLine } from "react-icons/ri";
 import Slider from '../components/Slider/Slider';
 import RightArrow from '../components/RightArrow';
+import { TokenSelect } from '../components/Bridge/TokenSelect';
 
 const tokenABI = rawTokenABI as OperationObject.Data.Abi;
 
@@ -75,6 +76,7 @@ export type NetworkInfo = {
 const Bridge = () => {
   // Show the select network UI in the card content area
   const [showSelectNetwork, setShowSelectNetwork] = useState(false);
+  const [showSelectToken, setShowSelectToken] = useState(false);
   const [bridgeViewData, setBridgeViewData] = useState<BridgeViewData>({});
   const [render, serRender] = useState(0);
   const [storedNetworks, setStoredNetworks] = useState<NetworkInfo[]>([]);
@@ -260,6 +262,15 @@ const Bridge = () => {
           setBridgeViewData={setBridgeViewData}
           storedNetworks={storedNetworks ?? []}
           setStoredNetworks={setStoredNetworks}
+        />
+      );
+      showGoBackIcon = true;
+    } else if (showSelectToken) {
+      cardTitle = "Select Token";
+      cardBodyContent = (
+        <TokenSelect
+          data={bridgeViewData}
+          setData={setBridgeViewData}
         />
       );
       showGoBackIcon = true;
@@ -457,12 +468,14 @@ function BridgeContent({
 
   return (
     <>
-      <SourceTargetSetting
-        bridgeViewData={bridgeViewData}
-        setBridgeViewData={setBridgeViewData}
-        tokenBalance={tokenBalance}
-        setShowSelectNetwork={setShowSelectNetwork}
-      />
+      <Section>
+        <SourceTargetSetting
+          bridgeViewData={bridgeViewData}
+          setBridgeViewData={setBridgeViewData}
+          tokenBalance={tokenBalance}
+          setShowSelectNetwork={setShowSelectNetwork}
+        />
+      </Section>
 
       {bridgeViewData.fromNetwork && (
         <>

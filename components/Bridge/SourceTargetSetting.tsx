@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
 import { useNetwork, useSwitchNetwork } from "wagmi";
-import { Section } from "./Section";
 import { BridgeViewData, NetworkInfo } from "../../pages/bridge";
 import Image from "next/image";
 import { RiArrowDownSLine } from "react-icons/ri";
@@ -26,7 +25,7 @@ export function SourceTargetSetting({
   const { switchNetwork } = useSwitchNetwork();
 
   return (
-    <Section>
+    <>
       <div className="w-full">
         {/* From -> */}
         <div className="flex items-center">
@@ -91,6 +90,6 @@ export function SourceTargetSetting({
           {data.token?.name}{" "} */}
         </div>
       </div>
-    </Section>
+    </>
   );
 }
