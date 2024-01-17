@@ -61,7 +61,7 @@ const SubmitButton = (props: SubmitButtonProps) => {
           <button
             className={
               (props?.disabled || !write || confirming ? "btn-disabled " : "") +
-              "btn bg-primary text-grey-9 text-base w-full rounded-3xl"
+              "btn bg-primary text-grey-9 text-base w-full rounded-3xl border-0"
             }
             style={{ minWidth: 112 }}
             onClick={() => {

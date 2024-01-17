@@ -6,7 +6,7 @@ type LayoutProps = PropsWithChildren;
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <main className='bg-black-4 min-h-screen relative overflow-hidden pb-20'>
+    <main className='z-0 bg-white-3 dark:bg-black-4 min-h-screen relative overflow-hidden pb-20 text-black dark:text-grey-9'>
       <EllipseBgs />
       <Navbar />
       {children}

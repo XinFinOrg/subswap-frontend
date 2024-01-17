@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { BridgeViewData, OperationObject } from '../../pages/bridge';
-import RightArrow from '../RightArrow';
+import RightArrowIcon from '../Images/RightArrowIcon';
 import Slider from '../Slider/Slider';
 import SubmitButton from '../SubmitButton';
 import { Section } from './Section';
@@ -49,12 +49,12 @@ export function BridgeContent({
 
                   {/* Token select */}
                   <div
-                    className="btn rounded-3xl w-40 bg-black-2 text-grey-9 flex"
+                    className="px-4 py-3 border-grey-border border bg-white rounded-3xl flex dark:bg-light/10 dark:border-none"
                     onClick={() => {
                       setShowSelectToken(true);
                     }}
                   >
-                    BitCoin<RiArrowDownSLine size="20" />
+                    BitCoin<RiArrowDownSLine size="25" />
                   </div>
 
                   {/* Selected amount */}
@@ -69,7 +69,7 @@ export function BridgeContent({
                       amount: amountMaxRange
                     });
                   }}
-                  className='rounded-full bg-grey-9/10 py-2 px-4 h-10 text-primary'>Max</button>
+                  className='rounded-full py-2 px-4 h-10 text-primary bg-button-bg dark:bg-grey-9/10'>Max</button>
               </div>
               <Slider min={0} max={amountMaxRange} value={bridgeViewData.amount} onChange={amount => {
                 setBridgeViewData({
@@ -77,7 +77,7 @@ export function BridgeContent({
                   amount
                 });
               }} />
-              <div className='self-end pr-1'>
+              <div className='self-end pr-1 text-black/50 dark:text-grey-9/50'>
                 Balance: {Number(tokenBalance ?? 0) / 1e18 || 0}
               </div>
             </div>
@@ -85,16 +85,16 @@ export function BridgeContent({
           <Section>
             <div className='flex flex-col w-full'>
               <div className="flex items-center">
-                <div className="font-bold text-light-grey text-sm">To address</div>
+                <div className="font-bold text-black/50 dark:text-light-grey text-sm">To address</div>
                 <div className="ml-3">
-                  <RightArrow />
+                  <RightArrowIcon />
                 </div>
               </div>
               <div className='mt-2'>
                 <input
                   type="text"
                   placeholder="Enter address"
-                  className="w-full rounded-full bg-grey-9/10 p-4"
+                  className="w-full rounded-full bg-grey-9/10 p-4 border border-grey-border dark:border-none"
                   onChange={(e) => {
                     // TODO: check valid address and set address to state
                   }}
@@ -102,7 +102,7 @@ export function BridgeContent({
               </div>
             </div>
           </Section>
-          <div>
+          <div className='text-black/50 dark:text-grey-9/50'>
             <div className='flex justify-between'>
               <p>You will receive</p>
               <p className='text-right font-bold'>{bridgeViewData.amount} token(s) A in mainnet</p>

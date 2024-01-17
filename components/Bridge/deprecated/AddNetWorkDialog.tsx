@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import { BridgeViewData } from '../../../pages/bridge';
 
-type AddNetWorkDialogProps = {
+type AddNetworkDialogProps = {
   setData: Dispatch<SetStateAction<BridgeViewData>>;
   data: BridgeViewData;
   submitRpcUrl: (
@@ -11,11 +11,11 @@ type AddNetWorkDialogProps = {
 };
 
 // Note: this is the deprecated version of add network dialog, not being used, just for reference.
-export function AddNetWorkDialog({
+export function AddNetworkDialog({
   setData,
   data,
   submitRpcUrl
-}: AddNetWorkDialogProps) {
+}: AddNetworkDialogProps) {
   return (
     <div className="modal" role="dialog">
       <div className="modal-box">

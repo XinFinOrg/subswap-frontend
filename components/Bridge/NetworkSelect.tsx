@@ -4,6 +4,7 @@ import { useState } from "react";
 import { getNetwork } from '../../config';
 import Spinner from '../Spinner/Spinner';
 import { useGlobalContext } from '../../context';
+import CoinIcon from '../Images/CoinIcon';
 
 type NetworkSelectProps = {
   storedNetworks: NetworkInfo[];
@@ -235,7 +236,7 @@ function NetworkSelectItem({
         className={`${selected ? "bg-light/10" : ""} p-4 flex w-full`}
         onClick={() => selectStoredNetwork(network)}
       >
-        <Image src="/coin.svg" width="24" height="24" alt="Coin icon" />
+        <CoinIcon />
         <div className="pl-2 text-xl font-bold text-grey-9">{network.name}</div>
       </button>
     </li>

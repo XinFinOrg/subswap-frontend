@@ -24,14 +24,20 @@ module.exports = {
         "button-bg": "rgba(78, 128, 238, 0.15)",
         "primary": {
           DEFAULT: "#4E80EE",
-          6: "#4E80EE",
+        },
+        white: {
+          DEFAULT: "#FFFFFF",
+          3: "#EEF2FD",
+          4: "#FBFCFF",
         },
         "black": {
+          DEFAULT: "#0D0E10", // the colour is not in design system 🤷
           2: "#151D33",
           4: "#111729",
         },
         "grey": {
-          9: "#FBFAFC"
+          9: "#FBFAFC",
+          "border": "#E7E7E8"
         },
         "button-disabled": "#484B52"
       },

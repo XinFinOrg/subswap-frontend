@@ -296,7 +296,7 @@ const Bridge = () => {
           setShowSelectToken={setShowSelectToken}
         />
         <div className="card-body pb-8 gap-8">{cardBodyContent}</div>
-        <div className="text-center pb-10 text-grey-9 text-sm">
+        <div className="text-center pb-10 text-sm">
           Powered by XDC-zero
         </div>
       </>
@@ -358,7 +358,7 @@ const Bridge = () => {
 
   return (
     <>
-      <div className="mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-black-2">
+      <div className="mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-white-4 dark:bg-black-2">
         {getCardContent()}
       </div>
 

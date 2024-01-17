@@ -22,7 +22,7 @@ export default function CardTitle({ title, showGoBackIcon, setShowSelectNetwork,
           <GoArrowLeft color="bg-grey-9/50" size="20" />
         </button>
       )}
-      <div className="card-title text-3xl text-grey-9 mt-4">{title}</div>
+      <div className="card-title text-3xl mt-4">{title}</div>
     </div>
   );
 }

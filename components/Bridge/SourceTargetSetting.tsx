@@ -1,11 +1,13 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useContext } from "react";
 import { useNetwork, useSwitchNetwork } from "wagmi";
 import { BridgeViewData, NetworkInfo } from "../../pages/bridge";
 import Image from "next/image";
 import { RiArrowDownSLine } from "react-icons/ri";
 
-import RightArrow from "@/components/RightArrow";
+import RightArrowIcon from "@/components/Images/RightArrowIcon";
 import { LiaExchangeAltSolid } from "react-icons/lia";
+import CoinIcon from '../Images/CoinIcon';
+import ThemeContext from '../../context/ThemeContext';
 
 type SourceTargetSettingProps = {
   bridgeViewData: BridgeViewData;
@@ -21,21 +23,22 @@ export function SourceTargetSetting({
   // TODO: After connect the wallet, we are able to use chain from wagmi useNetwork?
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
+  const { isDarkTheme } = useContext(ThemeContext);
 
   return (
     <>
       <div className="w-full">
         {/* From -> */}
         <div className="flex items-center">
-          <div className="font-bold text-light-grey text-sm">From</div>
+          <div className="font-bold text-black/50 dark:text-light-grey text-sm">From</div>
           <div className="ml-3">
-            <RightArrow />
+            <RightArrowIcon />
           </div>
         </div>
 
         {/* Select network */}
         <div
-          className="btn rounded-3xl w-full mt-2 bg-light/10 text-primary flex justify-between"
+          className="px-4 py-3 text-primary border-grey-border bg-white border rounded-3xl w-full mt-2 flex justify-between dark:border-none dark:bg-light/10 cursor-pointer"
           onClick={() => {
             setBridgeViewData({
               ...bridgeViewData,
@@ -46,11 +49,13 @@ export function SourceTargetSetting({
           }}
         >
           <div className="flex items-center gap-2">
-            <Image src="/coin.svg" width="24" height="24" alt="Coin icon" />
-            {bridgeViewData.fromNetwork?.name ?? "Add/Select subnet"}
+            <CoinIcon />
+            <div className='text-lg'>
+              {bridgeViewData.fromNetwork?.name ?? "Add/Select subnet"}
+            </div>
           </div>
           <div>
-            <RiArrowDownSLine size="20" />
+            <RiArrowDownSLine size="25" />
           </div>
         </div>
 
@@ -68,25 +73,28 @@ export function SourceTargetSetting({
         </button>
       </div>
 
-      <div className="bg-light/10 p-1 rounded-full mx-2 -mt-2">
-        <LiaExchangeAltSolid size="16" color="white" />
+      <div className="bg-white border dark:border-none dark:bg-light/10 p-1 rounded-full mx-2 -mt-2">
+        <LiaExchangeAltSolid size="16" color={isDarkTheme ? '#fff' : '#000'} />
       </div>
 
       {/* -> To */}
       <div className="w-full">
         <div className="flex items-center">
-          <RightArrow />
-          <div className="ml-3 font-bold text-light-grey text-sm">To</div>
+          <RightArrowIcon />
+          <div className="ml-3 font-bold text-black/50 dark:text-light-grey text-sm">To</div>
         </div>
-        <select className="select select-bordered w-full mt-2 rounded-3xl">
-          <option disabled selected>
-            Mainnet
-          </option>
-        </select>
-        <div className="mt-3 ml-2 text-light-grey font-light text-sm h-6">
-          {/* Balance: {Number(tokenBalance ?? 0) / 1e18 || 0}
-          {data.token?.name}{" "} */}
+        <div
+          className="px-4 py-3 text-black border-grey-border bg-white border rounded-3xl w-full mt-2 flex justify-between dark:text-white dark:border-none dark:bg-light/10"
+        >
+          <div className="flex items-center gap-2">
+            <div className='text-lg'>
+              Mainnet
+            </div>
+          </div>
         </div>
+
+        {/* To help left and right sections aligned */}
+        <div className="mt-3 ml-2 text-light-grey font-light text-sm h-6"></div>
       </div>
     </>
   );
