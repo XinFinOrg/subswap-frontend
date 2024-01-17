@@ -3,7 +3,7 @@ import { BridgeViewData, NetworkInfo } from "../../pages/bridge";
 import { useState } from "react";
 import { getNetwork } from '../../config';
 import Spinner from '../Spinner/Spinner';
-import { useGlobalContext } from '../Context';
+import { useGlobalContext } from '../../context';
 
 type NetworkSelectProps = {
   storedNetworks: NetworkInfo[];

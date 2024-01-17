@@ -12,7 +12,7 @@ import {
   mintABI,
   getNetwork
 } from "@/config";
-import { useGlobalContext } from "@/components/Context";
+import { useGlobalContext } from "@/context";
 import { NetworkSelect } from "../components/Bridge/NetworkSelect";
 import { ConnectWallet } from "../components/Bridge/ConnectWallet";
 import { TokenSelect } from "../components/Bridge/TokenSelect";

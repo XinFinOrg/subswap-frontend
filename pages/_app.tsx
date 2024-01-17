@@ -6,8 +6,9 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 import { xdcParentNet } from "@/config";
 import Layout from "@/components/Layout";
-import { ContextProvider } from "@/components/Context";
+import { ContextProvider } from "@/context";
 import "@/styles/globals.css";
+import { ThemeContextProvider } from '../context/ThemeContext';
 
 export default function App({ Component, pageProps }: any) {
   const [context, setContext] = useState<{ rpcs: Chain[]; }>({
@@ -40,9 +41,11 @@ export default function App({ Component, pageProps }: any) {
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider {...rainbowKitConfig}>
         <ContextProvider state={[context, setContext]}>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+          <ThemeContextProvider>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </ThemeContextProvider>
         </ContextProvider>
       </RainbowKitProvider>
     </WagmiConfig>

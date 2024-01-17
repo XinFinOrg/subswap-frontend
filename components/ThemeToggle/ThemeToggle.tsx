@@ -1,10 +1,16 @@
+import { useContext } from 'react';
+import ThemeContext from '../../context/ThemeContext';
+
 export const ThemeToggle = () => {
+  const themeContext = useContext(ThemeContext);
+
   return (
     <label className="cursor-pointer grid place-items-center m-2">
       <input
         type="checkbox"
-        value="light"
-        className="toggle theme-controller bg-base-content row-start-1 col-start-1 col-span-2"
+        className="toggle bg-base-content row-start-1 col-start-1 col-span-2"
+        checked={themeContext.isDarkTheme}
+        onChange={themeContext.toggleThemeHandler}
       />
       <LightModeIcon />
       <DarkModeIcon />
