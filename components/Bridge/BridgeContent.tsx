@@ -69,7 +69,7 @@ export function BridgeContent({
                       amount: amountMaxRange
                     });
                   }}
-                  className='rounded-full py-2 px-4 h-10 text-primary bg-button-bg dark:bg-grey-9/10'>Max</button>
+                  className='rounded-full py-2 px-4 h-8 leading-none text-primary bg-button-bg dark:bg-grey-9/10'>Max</button>
               </div>
               <Slider min={0} max={amountMaxRange} value={bridgeViewData.amount} onChange={amount => {
                 setBridgeViewData({
