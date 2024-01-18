@@ -39,7 +39,15 @@ module.exports = {
           9: "#FBFAFC",
           "border": "#E7E7E8"
         },
-        "button-disabled": "#484B52"
+
+        // the colour is not in design system 🤷 
+        "light-blue": {
+          1: "#F0F4FF", // lighter, used in network list item
+          2: "#DBE6FA", // a bit darker, selected
+
+        },
+        "button-disabled": "#D0D1D580",
+        "button-disabled-dark": "#484B52"
       },
 
       boxShadow: {

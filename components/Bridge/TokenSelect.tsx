@@ -52,7 +52,8 @@ export function TokenSelect({
               setBridgeViewData({
                 ...bridgeViewData,
                 token,
-                selectToken: !bridgeViewData.selectToken
+                selectToken: !bridgeViewData.selectToken,
+                amount: 0
               });
             }}
           >

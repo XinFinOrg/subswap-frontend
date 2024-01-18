@@ -5,6 +5,7 @@ import { getNetwork } from '../../config';
 import Spinner from '../Spinner/Spinner';
 import { useGlobalContext } from '../../context';
 import CoinIcon from '../Images/CoinIcon';
+import Input from '../Input/Input';
 
 type NetworkSelectProps = {
   storedNetworks: NetworkInfo[];
@@ -81,7 +82,7 @@ export function NetworkSelect({
               setBridgeViewData={setBridgeViewData}
             />
 
-            <div className="text-center text-grey-9 pt-4">or</div>
+            <div className="text-center pt-4">or</div>
           </div>
         </div>
       )}
@@ -95,30 +96,24 @@ export function NetworkSelect({
         {isLoading && (
           <Spinner text="Adding" />
         )}
-        <div className={`px-4 pt-8 pb-4 rounded-3xl ${isLoading ? 'bg-light/20' : ''}`}>
+        <div className={`px-4 pt-8 pb-4 rounded-3xl ${isLoading ? 'opacity-20' : ''}`}>
           <SectionTitle title="Add new network" className="pl-3" />
           {/* set network name */}
           <div className="pt-6">
-            <input
-              type="text"
+            <Input
               placeholder="Enter network name"
-              className="w-full rounded-full bg-grey-9/10 p-4"
-              value={networkName}
-              onChange={(e) => {
-                setNetworkName(e.target.value);
+              onChange={v => {
+                setNetworkName(v.target.value);
               }}
             />
           </div>
 
           {/* set rpc url */}
           <div className="pt-4">
-            <input
-              type="text"
+            <Input
               placeholder="Enter new rpc URL"
-              className="w-full rounded-full bg-grey-9/10 p-4"
-              value={networkRpcUrl}
-              onChange={(e) => {
-                setNetworkRpcUrl(e.target.value);
+              onChange={v => {
+                setNetworkRpcUrl(v.target.value);
               }}
             />
           </div>
@@ -128,7 +123,7 @@ export function NetworkSelect({
             <button
               className={`w-full rounded-full p-4 font-bold text-base ${hasAllDataToAddNewNetwork
                 ? "bg-primary text-white"
-                : "bg-button-disabled"
+                : "bg-button-disabled dark:bg-button-disabled-dark"
                 }`}
               disabled={!hasAllDataToAddNewNetwork}
               onClick={addNewNetwork}
@@ -171,7 +166,7 @@ function NetworkSelectList({
       {/* Content */}
       <ul
         className={`${className ? className : ""
-          } ${isLoading ? "bg-light/20" : ""} rounded-3xl bg-light/10 max-h-[180px] overflow-y-auto relative`}
+          } ${isLoading ? "opacity-20" : ""} rounded-3xl bg-light/10 max-h-[180px] overflow-y-auto relative`}
       >
         {networks.map((network, i) => (
           <NetworkSelectItem
@@ -233,11 +228,11 @@ function NetworkSelectItem({
   return (
     <li>
       <button
-        className={`${selected ? "bg-light/10" : ""} p-4 flex w-full`}
+        className={`${selected ? "dark:bg-grey-9/25 bg-light-blue-2" : "dark:bg-light/10 bg-light-blue-1"} p-4 flex w-full`}
         onClick={() => selectStoredNetwork(network)}
       >
         <CoinIcon />
-        <div className="pl-2 text-xl font-bold text-grey-9">{network.name}</div>
+        <div className="pl-2 text-xl font-bold">{network.name}</div>
       </button>
     </li>
   );
@@ -251,7 +246,7 @@ type SectionTitleProps = {
 function SectionTitle({ title, className }: SectionTitleProps) {
   return (
     <div
-      className={`${className ? className : ""} text-xl font-bold text-grey-9`}
+      className={`${className ? className : ""} text-xl font-bold`}
     >
       {title}
     </div>

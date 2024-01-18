@@ -18,6 +18,7 @@ import { ConnectWallet } from "../components/Bridge/ConnectWallet";
 import { TokenSelect } from "../components/Bridge/TokenSelect";
 import { BridgeContent } from "../components/Bridge/BridgeContent";
 import CardTitle from "../components/Bridge/CardTitle";
+import Spinner from '../components/Spinner/Spinner';
 
 const tokenABI = rawTokenABI as OperationObject.Data.Abi;
 
@@ -72,6 +73,7 @@ const Bridge = () => {
   const [render, serRender] = useState(0);
   const [storedNetworks, setStoredNetworks] = useState<NetworkInfo[]>([]);
   const [isWalletConnected, setIsWalletConnected] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
   const { address, isConnected } = useAccount();
@@ -87,6 +89,7 @@ const Bridge = () => {
   useEffect(() => {
     async function setDefaultDataFromLocalStorage() {
       try {
+        setIsLoading(true);
         const networks = localStorage.getItem("networks");
         const parsedNetworks = networks ? JSON.parse(networks) : [];
         setStoredNetworks(parsedNetworks);
@@ -96,13 +99,15 @@ const Bridge = () => {
           ? JSON.parse(selectedNetworkInfo)
           : null;
 
-        submitRpcUrl(
+        await submitRpcUrl(
           parsedSelectedNetwork?.name,
           parsedSelectedNetwork?.rpcUrl
         );
       } catch (error) {
         console.error("Error parsing data from localStorage", error);
         setStoredNetworks([]);
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -357,8 +362,11 @@ const Bridge = () => {
   };
 
   return (
-    <>
-      <div className="mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-white-4 dark:bg-black-2">
+    <div className='relative'>
+      {isLoading && (
+        <Spinner text="Loading" textSize='md' />
+      )}
+      <div className={`mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-white-4 dark:bg-black-2 ${isLoading ? "opacity-10" : ""}`}>
         {getCardContent()}
       </div>
 
@@ -378,7 +386,7 @@ const Bridge = () => {
         className="modal-toggle"
         checked={bridgeViewData?.selectToken}
       />
-    </>
+    </div>
   );
 };
 

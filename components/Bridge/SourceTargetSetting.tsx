@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction, useContext } from "react";
 import { useNetwork, useSwitchNetwork } from "wagmi";
-import { BridgeViewData, NetworkInfo } from "../../pages/bridge";
-import Image from "next/image";
+import { BridgeViewData } from "../../pages/bridge";
 import { RiArrowDownSLine } from "react-icons/ri";
 
 import RightArrowIcon from "@/components/Images/RightArrowIcon";
@@ -51,7 +50,7 @@ export function SourceTargetSetting({
           <div className="flex items-center gap-2">
             <CoinIcon />
             <div className='text-lg'>
-              {bridgeViewData.fromNetwork?.name ?? "Add/Select subnet"}
+              {bridgeViewData.fromNetwork?.name ?? "Select subnet"}
             </div>
           </div>
           <div>
