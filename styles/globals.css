@@ -35,8 +35,13 @@ body {
   width: 12px;
   height: 12px;
   background: white;
+  box-shadow: 0 0 4px 0 #ccc8d5;
   cursor: pointer;
   border-radius: 12px;
+}
+
+.dark .slider::-webkit-slider-thumb {
+  background: white; /* Replace with the color you want for dark mode */
 }
 
 .slider::-moz-range-thumb {
