@@ -1,3 +1,7 @@
+## Project Goal
+
+Provide a way to swap tokens between subnet and mainnet.
+
 ## Getting Started
 
 First, run the development server:
