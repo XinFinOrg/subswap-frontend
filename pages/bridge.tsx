@@ -19,6 +19,7 @@ import { TokenSelect } from "../components/Bridge/TokenSelect";
 import { BridgeContent } from "../components/Bridge/BridgeContent";
 import CardTitle from "../components/Bridge/CardTitle";
 import Spinner from "../components/Spinner/Spinner";
+import SubmitButton from "@/components/SubmitButton";
 
 const tokenABI = rawTokenABI as OperationObject.Data.Abi;
 
@@ -40,7 +41,7 @@ export interface OperationObject {
 }
 
 export namespace OperationObject {
-  export type ButtonName = "Approve" | "Send";
+  export type ButtonName = "Approve" | "Send" | "Get test coin";
   export interface Data {
     abi: Data.Abi;
     address: string | undefined;
@@ -127,7 +128,6 @@ const Bridge = () => {
 
           await submitRpcUrl(rpcName, rpcUrl);
         }
-
         setBridgeViewData({ ...bridgeViewData, toNetwork: xdcParentNet });
       } catch (error) {
         alert(error);
@@ -139,6 +139,7 @@ const Bridge = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rpcUrl, rpcName]);
 
+  console.log(bridgeViewData);
   const fromNetwork = bridgeViewData?.fromNetwork;
   const toNetwork = bridgeViewData?.toNetwork;
 
@@ -155,6 +156,7 @@ const Bridge = () => {
     xdcParentNet.id,
     render
   );
+
   const { approve, send } = handleTokenOperations();
 
   function createOperationObject(
@@ -189,6 +191,7 @@ const Bridge = () => {
     let send: OperationObject;
 
     // Common lock and mint calculations
+
     const lock = getLock(bridgeMode == 1 ? fromNetwork?.id : toNetwork?.id);
     const mint = getMint(bridgeMode == 1 ? toNetwork?.id : fromNetwork?.id);
 
@@ -200,6 +203,13 @@ const Bridge = () => {
           2 ** 254,
         ]),
         commonCallback
+      );
+      console.log(
+        toNetwork?.id,
+        mint,
+        selectedToken?.originalToken,
+        bridgeViewData.amount ?? 0 * 1e18,
+        toAddress || address
       );
       send = createOperationObject(
         "Send",
@@ -303,25 +313,25 @@ const Bridge = () => {
           setShowSelectToken={setShowSelectToken}
         />
         <div className="card-body pb-8 gap-8">{cardBodyContent}</div>
-        <div className="text-center pb-10 text-sm">Powered by XDC-zero</div>
+        <div className="text-center pb-10 text-sm">Powered by XDCZero</div>
       </>
     );
   }
 
-  // const getTestCoin = {
-  //   buttonName: "Get test coin",
-  //   data: {
-  //     abi: tokenABI,
-  //     address: selectedToken?.originalToken,
-  //     functionName: "mint",
-  //     args: [address, "1000000000000000000000000"]
-  //   },
-  //   callback: (confirmed: boolean) => {
-  //     if (confirmed) {
-  //       serRender(render + 1);
-  //     }
-  //   }
-  // };
+  const getTestCoin = {
+    buttonName: "Get test coin",
+    data: {
+      abi: tokenABI,
+      address: selectedToken?.originalToken,
+      functionName: "mint",
+      args: [address, "1000000000000000000000000"],
+    },
+    callback: (confirmed: boolean) => {
+      if (confirmed) {
+        serRender(render + 1);
+      }
+    },
+  };
 
   const showApprove = allowance < (bridgeViewData.amount ?? 0) * 1e18;
 
@@ -388,6 +398,8 @@ const Bridge = () => {
         className="modal-toggle"
         checked={bridgeViewData?.selectToken}
       />
+
+      <SubmitButton {...getTestCoin} />
     </div>
   );
 };
