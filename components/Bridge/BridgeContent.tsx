@@ -7,6 +7,7 @@ import SubmitButton from "../SubmitButton";
 import { Section } from "./Section";
 import { SourceTargetSetting } from "./SourceTargetSetting";
 import Input from "../Input/Input";
+import { isAddress } from "viem";
 
 type BridgeContentProps = {
   bridgeViewData: BridgeViewData;
@@ -17,6 +18,7 @@ type BridgeContentProps = {
   send: OperationObject;
   setShowSelectNetwork: Dispatch<SetStateAction<boolean>>;
   setShowSelectToken: Dispatch<SetStateAction<boolean>>;
+  setToAddress: Dispatch<SetStateAction<string | undefined>>;
 };
 
 export function BridgeContent({
@@ -27,7 +29,8 @@ export function BridgeContent({
   approve,
   send,
   setShowSelectNetwork,
-  setShowSelectToken
+  setShowSelectToken,
+  setToAddress,
 }: BridgeContentProps) {
   const amountMaxRange = bridgeViewData.token?.balance ?? 0;
 
@@ -54,7 +57,7 @@ export function BridgeContent({
                       setShowSelectToken(true);
                     }}
                   >
-                    {bridgeViewData.token?.name ?? 'Select token'}
+                    {bridgeViewData.token?.name ?? "Select token"}
                     <RiArrowDownSLine size="25" />
                   </div>
 
@@ -69,7 +72,7 @@ export function BridgeContent({
                   onClick={() => {
                     setBridgeViewData({
                       ...bridgeViewData,
-                      amount: amountMaxRange
+                      amount: amountMaxRange,
                     });
                   }}
                   className="rounded-full py-2 px-4 h-8 leading-none text-primary bg-button-bg dark:bg-grey-9/10"
@@ -84,7 +87,7 @@ export function BridgeContent({
                 onChange={(amount) => {
                   setBridgeViewData({
                     ...bridgeViewData,
-                    amount
+                    amount,
                   });
                 }}
               />
@@ -108,6 +111,9 @@ export function BridgeContent({
                   placeholder="Enter address"
                   onChange={(e) => {
                     // TODO: check valid address and set address to state
+                    if (isAddress(e.target.value)) {
+                      setToAddress(e.target.value);
+                    }
                   }}
                 />
               </div>
