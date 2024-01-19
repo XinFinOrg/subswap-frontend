@@ -1,8 +1,8 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
 
-const GlobalContext = createContext();
+const GlobalContext = createContext<any>({});
 
-export function ContextProvider({ children, state }) {
+export function ContextProvider({ children, state }: any) {
   return (
     <GlobalContext.Provider value={state}>{children}</GlobalContext.Provider>
   );
