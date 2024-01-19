@@ -10,7 +10,7 @@ import {
   getMint,
   lockABI,
   mintABI,
-  getNetwork
+  getNetwork,
 } from "@/config";
 import { useGlobalContext } from "@/context";
 import { NetworkSelect } from "../components/Bridge/NetworkSelect";
@@ -18,7 +18,8 @@ import { ConnectWallet } from "../components/Bridge/ConnectWallet";
 import { TokenSelect } from "../components/Bridge/TokenSelect";
 import { BridgeContent } from "../components/Bridge/BridgeContent";
 import CardTitle from "../components/Bridge/CardTitle";
-import Spinner from '../components/Spinner/Spinner';
+import Spinner from "../components/Spinner/Spinner";
+import SubmitButton from "@/components/SubmitButton";
 
 const tokenABI = rawTokenABI as OperationObject.Data.Abi;
 
@@ -40,7 +41,7 @@ export interface OperationObject {
 }
 
 export namespace OperationObject {
-  export type ButtonName = "Approve" | "Send";
+  export type ButtonName = "Approve" | "Send" | "Get test coin";
   export interface Data {
     abi: Data.Abi;
     address: string | undefined;
@@ -72,6 +73,7 @@ const Bridge = () => {
   const [bridgeViewData, setBridgeViewData] = useState<BridgeViewData>({});
   const [render, serRender] = useState(0);
   const [storedNetworks, setStoredNetworks] = useState<NetworkInfo[]>([]);
+  const [toAddress, setToAddress] = useState<string>();
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -126,7 +128,6 @@ const Bridge = () => {
 
           await submitRpcUrl(rpcName, rpcUrl);
         }
-
         setBridgeViewData({ ...bridgeViewData, toNetwork: xdcParentNet });
       } catch (error) {
         alert(error);
@@ -138,6 +139,7 @@ const Bridge = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rpcUrl, rpcName]);
 
+  console.log(bridgeViewData);
   const fromNetwork = bridgeViewData?.fromNetwork;
   const toNetwork = bridgeViewData?.toNetwork;
 
@@ -154,6 +156,7 @@ const Bridge = () => {
     xdcParentNet.id,
     render
   );
+
   const { approve, send } = handleTokenOperations();
 
   function createOperationObject(
@@ -164,7 +167,7 @@ const Bridge = () => {
     return {
       buttonName,
       data,
-      callback
+      callback,
     };
   }
 
@@ -188,6 +191,7 @@ const Bridge = () => {
     let send: OperationObject;
 
     // Common lock and mint calculations
+
     const lock = getLock(bridgeMode == 1 ? fromNetwork?.id : toNetwork?.id);
     const mint = getMint(bridgeMode == 1 ? toNetwork?.id : fromNetwork?.id);
 
@@ -196,9 +200,16 @@ const Bridge = () => {
         "Approve",
         createOperationData(tokenABI, selectedToken?.originalToken, "approve", [
           lock,
-          2 ** 254
+          2 ** 254,
         ]),
         commonCallback
+      );
+      console.log(
+        toNetwork?.id,
+        mint,
+        selectedToken?.originalToken,
+        bridgeViewData.amount ?? 0 * 1e18,
+        toAddress || address
       );
       send = createOperationObject(
         "Send",
@@ -207,7 +218,7 @@ const Bridge = () => {
           mint,
           selectedToken?.originalToken,
           bridgeViewData.amount ?? 0 * 1e18,
-          address
+          toAddress || address,
         ]),
         commonCallback
       );
@@ -216,7 +227,7 @@ const Bridge = () => {
         "Approve",
         createOperationData(tokenABI, parentnetToken, "approve", [
           mint,
-          2 ** 254
+          2 ** 254,
         ]),
         commonCallback
       );
@@ -228,7 +239,7 @@ const Bridge = () => {
           selectedToken?.originalToken,
           parentnetToken,
           bridgeViewData.amount ?? 0 * 1e18,
-          address
+          toAddress || address,
         ]),
         commonCallback
       );
@@ -288,6 +299,7 @@ const Bridge = () => {
           send={send}
           setShowSelectNetwork={setShowSelectNetwork}
           setShowSelectToken={setShowSelectToken}
+          setToAddress={setToAddress}
         />
       );
     }
@@ -301,27 +313,25 @@ const Bridge = () => {
           setShowSelectToken={setShowSelectToken}
         />
         <div className="card-body pb-8 gap-8">{cardBodyContent}</div>
-        <div className="text-center pb-10 text-sm">
-          Powered by XDC-zero
-        </div>
+        <div className="text-center pb-10 text-sm">Powered by XDCZero</div>
       </>
     );
   }
 
-  // const getTestCoin = {
-  //   buttonName: "Get test coin",
-  //   data: {
-  //     abi: tokenABI,
-  //     address: selectedToken?.originalToken,
-  //     functionName: "mint",
-  //     args: [address, "1000000000000000000000000"]
-  //   },
-  //   callback: (confirmed: boolean) => {
-  //     if (confirmed) {
-  //       serRender(render + 1);
-  //     }
-  //   }
-  // };
+  const getTestCoin = {
+    buttonName: "Get test coin",
+    data: {
+      abi: tokenABI,
+      address: selectedToken?.originalToken,
+      functionName: "mint",
+      args: [address, "1000000000000000000000000"],
+    },
+    callback: (confirmed: boolean) => {
+      if (confirmed) {
+        serRender(render + 1);
+      }
+    },
+  };
 
   const showApprove = allowance < (bridgeViewData.amount ?? 0) * 1e18;
 
@@ -345,14 +355,14 @@ const Bridge = () => {
       // push fromNetwork to context rpcs
       context.rpcs.push(fromNetwork);
       setContext({
-        ...context
+        ...context,
       });
 
       // set bridge view data
       setBridgeViewData({
         ...bridgeViewData,
         fromNetwork,
-        customizeNetwork: false
+        customizeNetwork: false,
       });
     } catch (error) {
       throw new Error(
@@ -362,11 +372,13 @@ const Bridge = () => {
   };
 
   return (
-    <div className='relative'>
-      {isLoading && (
-        <Spinner text="Loading" textSize='md' />
-      )}
-      <div className={`mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-white-4 dark:bg-black-2 ${isLoading ? "opacity-10" : ""}`}>
+    <div className="relative">
+      {isLoading && <Spinner text="Loading" textSize="md" />}
+      <div
+        className={`mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-white-4 dark:bg-black-2 ${
+          isLoading ? "opacity-10" : ""
+        }`}
+      >
         {getCardContent()}
       </div>
 
@@ -386,6 +398,8 @@ const Bridge = () => {
         className="modal-toggle"
         checked={bridgeViewData?.selectToken}
       />
+
+      <SubmitButton {...getTestCoin} />
     </div>
   );
 };
@@ -408,22 +422,22 @@ const useGetReads0 = (
         abi: tokenABI,
         address: selectedToken?.originalToken,
         functionName: "balanceOf",
-        args: [address] as any
+        args: [address] as any,
       },
       {
         abi: tokenABI,
         address: selectedToken?.originalToken,
         functionName: "allowance",
-        args: [address] as any
+        args: [address] as any,
       },
       {
         abi: mintABI,
         address: parentnetMint,
         functionName: "treasuryMapping",
-        args: [subnet?.id, selectedToken?.originalToken]
-      }
+        args: [subnet?.id, selectedToken?.originalToken],
+      },
     ],
-    scopeKey: render.toString()
+    scopeKey: render.toString(),
   });
 
   const tokenBalance = data?.[0]?.result;

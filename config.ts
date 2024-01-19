@@ -44,7 +44,7 @@ const crossChainTokens: CrossChainToken[] = [
     name: "Token A",
     subnetChainId: 8851,
     parentnetChainId: 551,
-    originalToken: "0x1606C3211936fE0b596d4230129FAeA00D76A78A",
+    originalToken: "0xf9548e50De7519e6546f34A03280784D943A5a08",
     logo: "/vercel.svg",
     mode: 1
   },
