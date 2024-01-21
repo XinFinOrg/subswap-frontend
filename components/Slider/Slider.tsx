@@ -11,7 +11,7 @@ export default function Slider({ min, max, value = 0, onChange }: SliderProps) {
     onChange(value);
   };
 
-  const fillPercentage = ((value - min) / (max - min)) * 100;
+  const fillPercentage = ((value - min) / (Number(max) - Number(min))) * 100;
 
   return (
     <div className="flex items-center">
