@@ -70,7 +70,7 @@ const Bridge = () => {
   // Show the select network UI in the card content area
   const [showSelectNetwork, setShowSelectNetwork] = useState(false);
   const [showSelectToken, setShowSelectToken] = useState(false);
-  const [bridgeViewData, setBridgeViewData] = useState<BridgeViewData>({});
+  const [bridgeViewData, setBridgeViewData] = useState<BridgeViewData>({ toNetwork: xdcParentNet });
   const [render, serRender] = useState(0);
   const [storedNetworks, setStoredNetworks] = useState<NetworkInfo[]>([]);
   const [toAddress, setToAddress] = useState<string>();
@@ -128,7 +128,6 @@ const Bridge = () => {
 
           await submitRpcUrl(rpcName, rpcUrl);
         }
-        setBridgeViewData({ ...bridgeViewData, toNetwork: xdcParentNet });
       } catch (error) {
         alert(error);
         return;
@@ -375,9 +374,8 @@ const Bridge = () => {
     <div className="relative">
       {isLoading && <Spinner text="Loading" textSize="md" />}
       <div
-        className={`mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-white-4 dark:bg-black-2 ${
-          isLoading ? "opacity-10" : ""
-        }`}
+        className={`mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-white-4 dark:bg-black-2 ${isLoading ? "opacity-10" : ""
+          }`}
       >
         {getCardContent()}
       </div>
