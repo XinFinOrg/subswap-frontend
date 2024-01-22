@@ -70,7 +70,9 @@ const Bridge = () => {
   // Show the select network UI in the card content area
   const [showSelectNetwork, setShowSelectNetwork] = useState(false);
   const [showSelectToken, setShowSelectToken] = useState(false);
-  const [bridgeViewData, setBridgeViewData] = useState<BridgeViewData>({ toNetwork: xdcParentNet });
+  const [bridgeViewData, setBridgeViewData] = useState<BridgeViewData>({
+    toNetwork: xdcParentNet,
+  });
   const [render, serRender] = useState(0);
   const [storedNetworks, setStoredNetworks] = useState<NetworkInfo[]>([]);
   const [toAddress, setToAddress] = useState<string>();
@@ -207,7 +209,7 @@ const Bridge = () => {
         toNetwork?.id,
         mint,
         selectedToken?.originalToken,
-        bridgeViewData.amount ?? 0 * 1e18,
+        (Number(bridgeViewData.amount) ?? 0) * 1e18,
         toAddress || address
       );
       send = createOperationObject(
@@ -216,7 +218,7 @@ const Bridge = () => {
           toNetwork?.id,
           mint,
           selectedToken?.originalToken,
-          bridgeViewData.amount ?? 0 * 1e18,
+          (Number(bridgeViewData.amount) ?? 0) * 1e18,
           toAddress || address,
         ]),
         commonCallback
@@ -237,7 +239,7 @@ const Bridge = () => {
           lock,
           selectedToken?.originalToken,
           parentnetToken,
-          bridgeViewData.amount ?? 0 * 1e18,
+          Number(bridgeViewData.amount) ?? 0 * 1e18,
           toAddress || address,
         ]),
         commonCallback
@@ -332,7 +334,7 @@ const Bridge = () => {
     },
   };
 
-  const showApprove = allowance < (bridgeViewData.amount ?? 0) * 1e18;
+  const showApprove = allowance < (Number(bridgeViewData.amount) ?? 0) * 1e18;
 
   const submitRpcUrl = async (
     rpcName: string | undefined,
@@ -374,8 +376,9 @@ const Bridge = () => {
     <div className="relative">
       {isLoading && <Spinner text="Loading" textSize="md" />}
       <div
-        className={`mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-white-4 dark:bg-black-2 ${isLoading ? "opacity-10" : ""
-          }`}
+        className={`mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-white-4 dark:bg-black-2 ${
+          isLoading ? "opacity-10" : ""
+        }`}
       >
         {getCardContent()}
       </div>

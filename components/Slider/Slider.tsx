@@ -11,7 +11,8 @@ export default function Slider({ min, max, value = 0, onChange }: SliderProps) {
     onChange(value);
   };
 
-  const fillPercentage = ((value - min) / (Number(max) - Number(min))) * 100;
+  const fillPercentage =
+    ((Number(value) - Number(min)) / (Number(max) - Number(min))) * 100;
 
   return (
     <div className="flex items-center">
@@ -23,9 +24,9 @@ export default function Slider({ min, max, value = 0, onChange }: SliderProps) {
         onChange={handleSliderChange}
         className="slider"
         style={{
-          background: `linear-gradient(to right, #4E80EE ${fillPercentage}%, #ddd 0%)`
+          background: `linear-gradient(to right, #4E80EE ${fillPercentage}%, #ddd 0%)`,
         }}
       />
     </div>
   );
-};
+}
