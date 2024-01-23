@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAccount, useContractWrite, useWaitForTransaction } from "wagmi";
 import { Notify } from "notiflix/build/notiflix-notify-aio";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
+import { isAddress } from 'viem';
 
 import { OperationObject } from '../../pages/bridge';
 import Alert from '../Alert/Alert';
@@ -46,9 +47,12 @@ const SubmitButton = (props: SubmitButtonProps) => {
       return [false, "Please connect wallet before sending transaction"];
     }
 
-    // TODO: validate address
     if (!props.data.address) {
       return [false, "Please input address"];
+    }
+
+    if (isAddress(props.data.address) === false) {
+      return [false, "Invalid address"];
     }
 
     return [true];

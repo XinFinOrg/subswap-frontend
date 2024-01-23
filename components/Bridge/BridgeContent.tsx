@@ -114,10 +114,7 @@ export function BridgeContent({
                 <Input
                   placeholder="Enter address"
                   onChange={(e) => {
-                    // TODO: check valid address and set address to state
-                    if (isAddress(e.target.value)) {
                       setToAddress(e.target.value);
-                    }
                   }}
                 />
               </div>
