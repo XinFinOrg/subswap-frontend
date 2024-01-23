@@ -161,10 +161,6 @@ const Bridge = () => {
   const tokens = getTokens(subnet?.id, xdcParentNet.id, bridgeMode);
   const selectedToken = bridgeViewData?.token;
 
-  const isCurrentNetwork = fromNetwork?.id === chainId;
-  isCurrentNetwork;
-
-
   // TODO: Specify what reads0 is
   const { tokenBalance, allowance, parentnetToken } = useGetReads0(
     selectedToken,
