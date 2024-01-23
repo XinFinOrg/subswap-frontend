@@ -48,7 +48,7 @@ export function TokenSelect({
         return (
           <div
             key={index}
-            className={`border p-4 border-section-border rounded-3xl btn flex justify-between w-full ${selected ? "hover:bg-grey-9/20 bg-grey-9/20" : ""
+            className={`border p-4 border-section-border rounded-3xl btn flex justify-between w-full ${selected ? "hover:dark:bg-blue-600 dark:bg-blue-600" : ""
               }`}
             onClick={() => {
               setBridgeViewData({

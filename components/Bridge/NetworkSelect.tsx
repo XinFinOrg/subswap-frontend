@@ -238,7 +238,7 @@ function NetworkSelectItem({
   return (
     <li>
       <button
-        className={`${selected ? "dark:bg-grey-9/25 bg-light-blue-2" : "dark:bg-light/10 bg-light-blue-1"} p-4 flex w-full`}
+        className={`${selected ? "dark:bg-blue-600 bg-light-blue-2" : "dark:bg-light/10 bg-light-blue-1"} p-4 flex w-full`}
         onClick={() => selectStoredNetwork(network)}
       >
         <CoinIcon />
