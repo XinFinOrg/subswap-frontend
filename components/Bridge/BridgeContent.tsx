@@ -5,7 +5,7 @@ import RightArrowIcon from "../Images/RightArrowIcon";
 import Slider from "../Slider/Slider";
 import SubmitButton from "../SubmitButton";
 import { Section } from "./Section";
-import { SourceTargetSetting } from "./SourceTargetSetting";
+import { SourceTargetNetworkSetting } from "./SourceTargetNetworkSetting";
 import Input from "../Input/Input";
 import { isAddress } from "viem";
 import { useNetwork } from 'wagmi';
@@ -40,7 +40,7 @@ export function BridgeContent({
   return (
     <>
       <Section>
-        <SourceTargetSetting
+        <SourceTargetNetworkSetting
           bridgeViewData={bridgeViewData}
           setBridgeViewData={setBridgeViewData}
           setShowSelectNetwork={setShowSelectNetwork}
