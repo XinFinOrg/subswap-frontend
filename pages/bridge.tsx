@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useAccount, useContractReads, Chain } from "wagmi";
+import { useAccount, useContractReads, Chain, useChainId } from "wagmi";
 import { useRouter } from "next/router";
 
 import {
@@ -82,6 +82,7 @@ const Bridge = () => {
   const router = useRouter();
   const { address, isConnected } = useAccount();
   const [context, setContext] = useGlobalContext();
+  const chainId = useChainId();
 
   const { rpcUrl, rpcName } = router.query;
 
@@ -148,6 +149,10 @@ const Bridge = () => {
   const bridgeMode = fromNetwork?.id === xdcParentNet.id ? 2 : 1;
   const tokens = getTokens(subnet?.id, xdcParentNet.id, bridgeMode);
   const selectedToken = bridgeViewData?.token;
+
+  const isCurrentNetwork = fromNetwork?.id === chainId;
+
+  console.log(isCurrentNetwork);
 
   // TODO: Specify what reads0 is
   const { tokenBalance, allowance, parentnetToken } = useGetReads0(
