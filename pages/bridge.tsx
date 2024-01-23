@@ -11,6 +11,7 @@ import {
   lockABI,
   mintABI,
   getNetwork,
+  xdcParentNetSubnet,
 } from "@/config";
 import { useGlobalContext } from "@/context";
 import { NetworkSelect } from "../components/Bridge/NetworkSelect";
@@ -84,7 +85,18 @@ const Bridge = () => {
   const [context, setContext] = useGlobalContext();
   const chainId = useChainId();
 
-  const { rpcUrl, rpcName } = router.query;
+  const { rpcUrl, rpcName, isInSubnetMode } = router.query;
+
+  // Set default to xdcParentNetSubnet when isInSubnetMode is true
+  useEffect(() => {
+    if (isInSubnetMode) {
+      setBridgeViewData({
+        ...bridgeViewData,
+        toNetwork: xdcParentNetSubnet,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     setIsWalletConnected(isConnected);
@@ -141,7 +153,6 @@ const Bridge = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rpcUrl, rpcName]);
 
-  console.log(bridgeViewData);
   const fromNetwork = bridgeViewData?.fromNetwork;
   const toNetwork = bridgeViewData?.toNetwork;
 
@@ -151,8 +162,8 @@ const Bridge = () => {
   const selectedToken = bridgeViewData?.token;
 
   const isCurrentNetwork = fromNetwork?.id === chainId;
+  isCurrentNetwork;
 
-  console.log(isCurrentNetwork);
 
   // TODO: Specify what reads0 is
   const { tokenBalance, allowance, parentnetToken } = useGetReads0(
@@ -210,13 +221,13 @@ const Bridge = () => {
         ]),
         commonCallback
       );
-      console.log(
-        toNetwork?.id,
-        mint,
-        selectedToken?.originalToken,
-        (Number(bridgeViewData.amount) ?? 0) * 1e18,
-        toAddress || address
-      );
+      // console.log(
+      //   toNetwork?.id,
+      //   mint,
+      //   selectedToken?.originalToken,
+      //   (Number(bridgeViewData.amount) ?? 0) * 1e18,
+      //   toAddress || address
+      // );
       send = createOperationObject(
         "Send",
         createOperationData(lockABI, lock, "lock", [
@@ -381,9 +392,8 @@ const Bridge = () => {
     <div className="relative">
       {isLoading && <Spinner text="Loading" textSize="md" />}
       <div
-        className={`mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-white-4 dark:bg-black-2 ${
-          isLoading ? "opacity-10" : ""
-        }`}
+        className={`mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-white-4 dark:bg-black-2 ${isLoading ? "opacity-10" : ""
+          }`}
       >
         {getCardContent()}
       </div>
