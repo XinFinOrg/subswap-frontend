@@ -3,38 +3,50 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { Chain, configureChains, createConfig, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import "@rainbow-me/rainbowkit/styles.css";
+import { connectorsForWallets } from "@rainbow-me/rainbowkit";
+import {
+  metaMaskWallet,
+  rainbowWallet,
+  walletConnectWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 
 import { xdcParentNet } from "@/config";
 import Layout from "@/components/Layout";
 import { ContextProvider } from "@/context";
 import "@/styles/globals.css";
-import { ThemeContextProvider } from '../context/ThemeContext';
+import { ThemeContextProvider } from "../context/ThemeContext";
 
 export default function App({ Component, pageProps }: any) {
-  const [context, setContext] = useState<{ rpcs: Chain[]; }>({
-    rpcs: [xdcParentNet]
+  const [context, setContext] = useState<{ rpcs: Chain[] }>({
+    rpcs: [xdcParentNet],
   });
 
   const { chains, publicClient } = configureChains(context.rpcs, [
-    publicProvider()
+    publicProvider(),
   ]);
 
-  const { connectors } = getDefaultWallets({
-    appName: "App",
-    projectId: "2a612b9a18e81ce3fda2f82787eb6a4a",
-    chains
-  });
+  const connectors = connectorsForWallets([
+    {
+      groupName: "Recommended",
+      wallets: [
+        metaMaskWallet({
+          chains,
+          projectId: "2a612b9a18e81ce3fda2f82787eb6a4a",
+        }),
+      ],
+    },
+  ]);
 
   const wagmiConfig = createConfig({
     autoConnect: true,
     connectors,
-    publicClient
+    publicClient,
   });
 
   const rainbowKitConfig = {
     chains: chains,
     showRecentTransactions: true,
-    coolMode: true
+    coolMode: true,
   };
 
   return (
