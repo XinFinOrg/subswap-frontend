@@ -8,6 +8,7 @@ import { Section } from "./Section";
 import { SourceTargetSetting } from "./SourceTargetSetting";
 import Input from "../Input/Input";
 import { isAddress } from "viem";
+import { useNetwork } from 'wagmi';
 
 type BridgeContentProps = {
   bridgeViewData: BridgeViewData;
@@ -32,6 +33,8 @@ export function BridgeContent({
   setShowSelectToken,
   setToAddress,
 }: BridgeContentProps) {
+  const { chain } = useNetwork();
+
   const amountMaxRange = bridgeViewData.token?.balance ?? 0;
 
   return (
@@ -44,7 +47,7 @@ export function BridgeContent({
         />
       </Section>
 
-      {bridgeViewData.fromNetwork && (
+      {bridgeViewData.fromNetwork && chain?.id === bridgeViewData.fromNetwork.id && (
         <>
           <Section>
             <div className="flex flex-col w-full gap-4">
