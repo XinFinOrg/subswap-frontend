@@ -1,7 +1,7 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import React from "react";
 import Link from "next/link";
-import { ThemeToggle } from '../ThemeToggle/ThemeToggle';
+import { ThemeToggle } from "../ThemeToggle/ThemeToggle";
 
 const Navbar = () => {
   return (
@@ -11,7 +11,7 @@ const Navbar = () => {
         <div className="text-xl ml-2">Subswap</div>
 
         {/* Nav links */}
-        <Link
+        {/* <Link
           href=""
           className="btn text-white dark:text-black bg-primary dark:bg-white border-0 hover:bg-primary/60"
           onClick={() => {
@@ -25,7 +25,7 @@ const Navbar = () => {
           className="btn text-white dark:text-black bg-primary dark:bg-white border-0 hover:bg-primary/60"
         >
           Bridge
-        </Link>
+        </Link> */}
       </div>
 
       {/* Connect button & theme toggle */}
