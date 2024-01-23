@@ -10,6 +10,7 @@ type SelectTokenProps = {
   tokens: CrossChainToken[];
   address: string | undefined;
   render: number;
+  setShowSelectToken: Dispatch<SetStateAction<boolean>>;
 };
 
 export function TokenSelect({
@@ -17,7 +18,8 @@ export function TokenSelect({
   setBridgeViewData,
   tokens,
   address,
-  render
+  render,
+  setShowSelectToken
 }: SelectTokenProps) {
   const [search, setSearch] = useState("");
   const tokenBalances = useGetTokenBalances(tokens, address, render);
@@ -55,6 +57,8 @@ export function TokenSelect({
                 selectToken: !bridgeViewData.selectToken,
                 amount: 0
               });
+
+              setShowSelectToken(false);
             }}
           >
             <p className="text-grey-9 text-left">{token.name}</p>

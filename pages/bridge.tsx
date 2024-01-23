@@ -285,6 +285,7 @@ const Bridge = () => {
           setBridgeViewData={setBridgeViewData}
           storedNetworks={storedNetworks ?? []}
           setStoredNetworks={setStoredNetworks}
+          setShowSelectNetwork={setShowSelectNetwork}
         />
       );
       showGoBackIcon = true;
@@ -297,6 +298,7 @@ const Bridge = () => {
           render={render}
           bridgeViewData={bridgeViewData}
           setBridgeViewData={setBridgeViewData}
+          setShowSelectToken={setShowSelectToken}
         />
       );
       showGoBackIcon = true;
