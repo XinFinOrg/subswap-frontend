@@ -14,6 +14,7 @@ type BridgeContentProps = {
   bridgeViewData: BridgeViewData;
   setBridgeViewData: Dispatch<SetStateAction<BridgeViewData>>;
   tokenBalance: unknown;
+  toAddress: string | undefined;
   showApprove: boolean;
   approve: OperationObject;
   send: OperationObject;
@@ -32,10 +33,10 @@ export function BridgeContent({
   setShowSelectNetwork,
   setShowSelectToken,
   setToAddress,
+  toAddress,
 }: BridgeContentProps) {
-  const { chain } = useNetwork();
-
   const amountMaxRange = bridgeViewData.token?.balance ?? 0;
+  const disableSendButton = !toAddress || !isAddress(toAddress) || bridgeViewData.selectToken;
 
   return (
     <>
@@ -135,9 +136,9 @@ export function BridgeContent({
             </div>
           </div>
           {showApprove ? (
-            <SubmitButton {...approve} />
+            <SubmitButton {...approve} disabled={disableSendButton} />
           ) : (
-            <SubmitButton {...send} />
+            <SubmitButton {...send} disabled={disableSendButton} />
           )}
         </>
       )}

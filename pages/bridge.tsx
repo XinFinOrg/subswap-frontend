@@ -309,6 +309,7 @@ const Bridge = () => {
           bridgeViewData={bridgeViewData}
           setBridgeViewData={setBridgeViewData}
           tokenBalance={tokenBalance}
+          toAddress={toAddress}
           showApprove={showApprove}
           approve={approve}
           send={send}
