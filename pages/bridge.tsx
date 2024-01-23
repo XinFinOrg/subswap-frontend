@@ -405,7 +405,7 @@ const Bridge = () => {
         checked={bridgeViewData?.selectToken}
       />
 
-      <SubmitButton {...getTestCoin} />
+      {/* <SubmitButton {...getTestCoin} /> */}
     </div>
   );
 };
