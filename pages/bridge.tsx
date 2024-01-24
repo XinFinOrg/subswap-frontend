@@ -389,25 +389,6 @@ const Bridge = () => {
         {getCardContent()}
       </div>
 
-      {/* TODO: No idea what this does, please check */}
-      {/* this is customize network button ,click it will open customize network modal */}
-      {/* Put this part before </body> tag */}
-      <input
-        type="checkbox"
-        className="modal-toggle"
-        checked={bridgeViewData?.customizeNetwork}
-      />
-
-      {/* TODO: No idea what this does, please check */}
-      {/* this is select token button ,click it will open select token modal */}
-      {/* Put this part before </body> tag */}
-      <input
-        id="test"
-        type="checkbox"
-        className="modal-toggle"
-        checked={bridgeViewData?.selectToken}
-      />
-
       {/* <SubmitButton {...getTestCoin} /> */}
     </div>
   );
