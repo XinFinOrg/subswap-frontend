@@ -48,7 +48,7 @@ export function TokenSelect({
         return (
           <div
             key={index}
-            className={`border p-4 border-section-border rounded-3xl btn flex justify-between w-full ${selected ? "hover:dark:bg-blue-600 dark:bg-blue-600" : ""
+            className={`border p-4 border-section-border hover:border-section-border rounded-3xl btn flex justify-between w-full ${selected ? "hover:dark:bg-blue-600 dark:bg-blue-600 bg-blue-300 hover:bg-blue-300" : "bg-light-blue-1 hover:bg-light-blue-1"
               }`}
             onClick={() => {
               setBridgeViewData({
@@ -61,8 +61,8 @@ export function TokenSelect({
               setShowSelectToken(false);
             }}
           >
-            <p className="text-grey-9 text-left">{token.name}</p>
-            <p className="text-grey-9/60 text-right">
+            <p className="text-black dark:text-grey-9 text-left">{token.name}</p>
+            <p className="text-black dark:text-grey-9/60 text-right">
               {token.balance?.toString()}
             </p>
           </div>
@@ -114,9 +114,10 @@ const useGetTokenBalances = (
   });
 
   return tokens?.map((token, index) => {
+    console.log(reads1?.[index]?.result);
     return {
       ...token,
-      balance: reads1?.[index]?.result,
+      balance: 999,
       decimals: reads2?.[index]?.result
     };
   });
