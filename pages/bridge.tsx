@@ -143,7 +143,7 @@ const Bridge = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rpcUrl, rpcName]);
 
-  console.log(bridgeViewData);
+  // console.log(bridgeViewData);
   const fromNetwork = bridgeViewData?.fromNetwork;
   const toNetwork = bridgeViewData?.toNetwork;
 
@@ -208,13 +208,13 @@ const Bridge = () => {
         ]),
         commonCallback
       );
-      console.log(
-        toNetwork?.id,
-        mint,
-        selectedToken?.originalToken,
-        (Number(bridgeViewData.amount) ?? 0) * 1e18,
-        toAddress || address
-      );
+      // console.log(
+      //   toNetwork?.id,
+      //   mint,
+      //   selectedToken?.originalToken,
+      //   (Number(bridgeViewData.amount) ?? 0) * 1e18,
+      //   toAddress || address
+      // );
       send = createOperationObject(
         "Send",
         createOperationData(lockABI, lock, "lock", [
