@@ -116,10 +116,12 @@ const Bridge = () => {
           ? JSON.parse(selectedNetworkInfo)
           : null;
 
-        await submitRpcUrl(
-          parsedSelectedNetwork?.name,
-          parsedSelectedNetwork?.rpcUrl
-        );
+        if (parsedSelectedNetwork?.rpcUrl && parsedSelectedNetwork?.name) {
+          await submitRpcUrl(
+            parsedSelectedNetwork.name,
+            parsedSelectedNetwork.rpcUrl
+          );
+        }
       } catch (error) {
         console.error("Error parsing data from localStorage", error);
         setStoredNetworks([]);
