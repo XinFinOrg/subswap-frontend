@@ -35,6 +35,8 @@ export function BridgeContent({
   setToAddress,
   toAddress,
 }: BridgeContentProps) {
+  const { chain } = useNetwork();
+
   const amountMaxRange = bridgeViewData.token?.balance ?? 0;
   const disableSendButton = !toAddress || !isAddress(toAddress) || bridgeViewData.selectToken;
 
@@ -114,7 +116,7 @@ export function BridgeContent({
                 <Input
                   placeholder="Enter address"
                   onChange={(e) => {
-                      setToAddress(e.target.value);
+                    setToAddress(e.target.value);
                   }}
                 />
               </div>
