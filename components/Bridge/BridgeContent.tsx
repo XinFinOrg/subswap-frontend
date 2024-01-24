@@ -67,7 +67,7 @@ export function BridgeContent({
 
                   {/* Selected amount */}
                   <div className="grow text-right text-grey-9">
-                    {bridgeViewData.amount}
+                    {formatBalance(bridgeViewData.amount)}
                   </div>
                 </div>
 
@@ -96,7 +96,7 @@ export function BridgeContent({
                 }}
               />
               <div className="self-end pr-1 text-black/50 dark:text-grey-9/50">
-                Balance: {Number(tokenBalance ?? 0) / 1e18 || 0}
+                Balance: {formatBalance(tokenBalance)}
               </div>
             </div>
           </Section>
@@ -124,7 +124,7 @@ export function BridgeContent({
             <div className="flex justify-between">
               <p>You will receive</p>
               <p className="text-right font-bold">
-                {bridgeViewData.amount} token(s) A in mainnet
+                {formatBalance(bridgeViewData.amount)} token(s) A in mainnet
               </p>
             </div>
             <div className="flex justify-between mt-2">
@@ -141,4 +141,8 @@ export function BridgeContent({
       )}
     </>
   );
+}
+
+function formatBalance(balance: unknown): string {
+  return (Number(balance ?? 0) / 1e18 || 0).toString();
 }
