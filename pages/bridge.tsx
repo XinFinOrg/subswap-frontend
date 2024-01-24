@@ -155,6 +155,7 @@ const Bridge = () => {
   console.log(isCurrentNetwork);
 
   // TODO: Specify what reads0 is
+  // this is read data from contract, you can console.log it to see what it is,also same is reads1 reads2,if some data you dont know , you can comment it todo, i will explain
   const { tokenBalance, allowance, parentnetToken } = useGetReads0(
     selectedToken,
     address,
@@ -389,6 +390,7 @@ const Bridge = () => {
       </div>
 
       {/* TODO: No idea what this does, please check */}
+      {/* this is customize network button ,click it will open customize network modal */}
       {/* Put this part before </body> tag */}
       <input
         type="checkbox"
@@ -397,6 +399,7 @@ const Bridge = () => {
       />
 
       {/* TODO: No idea what this does, please check */}
+      {/* this is select token button ,click it will open select token modal */}
       {/* Put this part before </body> tag */}
       <input
         id="test"
