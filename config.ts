@@ -19,14 +19,6 @@ export const xdcParentNet: Chain = {
   },
 };
 
-export const xdcParentNetSubnet: Chain = {
-  ...xdcParentNet, 
-  rpcUrls: {
-    public: { http: ["https://devnetstats.apothem.network/subnet"] },
-    default: { http: ["https://devnetstats.apothem.network/subnet"] },
-  },
-};
-
 interface Applications {
   mints: { [x: number]: string; };
   locks: { [x: number]: string; };

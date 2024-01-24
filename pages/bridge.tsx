@@ -11,7 +11,6 @@ import {
   lockABI,
   mintABI,
   getNetwork,
-  xdcParentNetSubnet,
 } from "@/config";
 import { useGlobalContext } from "@/context";
 import { NetworkSelect } from "../components/Bridge/NetworkSelect";
@@ -85,18 +84,7 @@ const Bridge = () => {
   const [context, setContext] = useGlobalContext();
   const chainId = useChainId();
 
-  const { rpcUrl, rpcName, isInSubnetMode } = router.query;
-
-  // Set default to xdcParentNetSubnet when isInSubnetMode is true
-  useEffect(() => {
-    if (isInSubnetMode) {
-      setBridgeViewData({
-        ...bridgeViewData,
-        toNetwork: xdcParentNetSubnet,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { rpcUrl, rpcName } = router.query;
 
   useEffect(() => {
     setIsWalletConnected(isConnected);
@@ -155,6 +143,7 @@ const Bridge = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rpcUrl, rpcName]);
 
+  console.log(bridgeViewData);
   const fromNetwork = bridgeViewData?.fromNetwork;
   const toNetwork = bridgeViewData?.toNetwork;
 
@@ -219,13 +208,13 @@ const Bridge = () => {
         ]),
         commonCallback
       );
-      // console.log(
-      //   toNetwork?.id,
-      //   mint,
-      //   selectedToken?.originalToken,
-      //   (Number(bridgeViewData.amount) ?? 0) * 1e18,
-      //   toAddress || address
-      // );
+      console.log(
+        toNetwork?.id,
+        mint,
+        selectedToken?.originalToken,
+        (Number(bridgeViewData.amount) ?? 0) * 1e18,
+        toAddress || address
+      );
       send = createOperationObject(
         "Send",
         createOperationData(lockABI, lock, "lock", [
