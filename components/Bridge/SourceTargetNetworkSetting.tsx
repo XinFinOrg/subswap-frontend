@@ -23,6 +23,8 @@ export function SourceTargetNetworkSetting({
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
   const { isDarkTheme } = useContext(ThemeContext);
+  const hideSwitchButton = !bridgeViewData.fromNetwork ||
+    chain?.id === bridgeViewData.fromNetwork.id;
 
   return (
     <>
@@ -60,8 +62,7 @@ export function SourceTargetNetworkSetting({
 
         {/* Use css invisible so that we can keep everything aligned */}
         <button
-          className={`mt-2 px-2.5 py-1.5 text-sm text-bold text-primary bg-button-bg rounded-3xl ${bridgeViewData.fromNetwork &&
-            chain?.id === bridgeViewData.fromNetwork.id ? 'invisible' : ''} `}
+          className={`mt-2 px-2.5 py-1.5 text-sm text-bold text-primary bg-button-bg rounded-3xl ${hideSwitchButton ? 'invisible' : ''} `}
           onClick={() => {
             switchNetwork?.(bridgeViewData.fromNetwork?.id);
           }}
