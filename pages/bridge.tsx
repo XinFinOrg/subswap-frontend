@@ -154,8 +154,6 @@ const Bridge = () => {
 
   console.log(isCurrentNetwork);
 
-  // TODO: Specify what reads0 is
-  // this is read data from contract, you can console.log it to see what it is,also same is reads1 reads2,if some data you dont know , you can comment it todo, i will explain
   const { tokenBalance, allowance, parentnetToken } = useGetTokenDetails(
     selectedToken,
     address,
