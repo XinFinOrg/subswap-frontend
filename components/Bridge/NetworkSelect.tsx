@@ -12,7 +12,7 @@ type NetworkSelectProps = {
   bridgeViewData: BridgeViewData;
   setBridgeViewData: React.Dispatch<React.SetStateAction<BridgeViewData>>;
   setStoredNetworks: React.Dispatch<React.SetStateAction<NetworkInfo[]>>;
-  submitRpcUrl: (
+  submitRpcNameAndUrl: (
     rpcName: string | undefined,
     rpcUrl: string | undefined
   ) => Promise<void>;
@@ -24,7 +24,7 @@ export function NetworkSelect({
   bridgeViewData,
   setBridgeViewData,
   setStoredNetworks,
-  submitRpcUrl,
+  submitRpcNameAndUrl,
   setShowSelectNetwork,
 }: NetworkSelectProps) {
   const [networkName, setNetworkName] = useState<string>();
@@ -48,7 +48,7 @@ export function NetworkSelect({
         const newNetwork = { name: networkName, rpcUrl: networkRpcUrl };
 
         // set to state
-        await submitRpcUrl(networkName, networkRpcUrl);
+        await submitRpcNameAndUrl(networkName, networkRpcUrl);
         setStoredNetworks([newNetwork, ...storedNetworks]);
 
         // add to localstorage

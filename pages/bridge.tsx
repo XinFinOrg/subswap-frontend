@@ -104,7 +104,7 @@ const Bridge = () => {
           : null;
 
         if (parsedSelectedNetwork?.rpcUrl && parsedSelectedNetwork?.name) {
-          await submitRpcUrl(
+          await submitRpcNameAndUrl(
             parsedSelectedNetwork.name,
             parsedSelectedNetwork.rpcUrl
           );
@@ -130,7 +130,7 @@ const Bridge = () => {
             return;
           }
 
-          await submitRpcUrl(rpcName, rpcUrl);
+          await submitRpcNameAndUrl(rpcName, rpcUrl);
         }
       } catch (error) {
         alert(error);
@@ -263,7 +263,7 @@ const Bridge = () => {
       cardTitle = "Networks";
       cardBodyContent = (
         <NetworkSelect
-          submitRpcUrl={submitRpcUrl}
+          submitRpcNameAndUrl={submitRpcNameAndUrl}
           bridgeViewData={bridgeViewData}
           setBridgeViewData={setBridgeViewData}
           storedNetworks={storedNetworks ?? []}
@@ -334,7 +334,7 @@ const Bridge = () => {
 
   const showApprove = allowance < (Number(bridgeViewData.amount) ?? 0) * 1e18;
 
-  const submitRpcUrl = async (
+  const submitRpcNameAndUrl = async (
     rpcName: string | undefined,
     rpcUrl: string | undefined
   ) => {
