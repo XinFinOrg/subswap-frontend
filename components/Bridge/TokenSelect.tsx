@@ -48,7 +48,7 @@ export function TokenSelect({
         return (
           <div
             key={index}
-            className={`border p-4 border-section-border hover:border-section-border rounded-3xl btn flex justify-between w-full ${selected ? "hover:dark:bg-blue-600 dark:bg-blue-600 bg-blue-300 hover:bg-blue-300" : "bg-light-blue-1 hover:bg-light-blue-1"
+            className={`border p-4 border-section-border hover:border-section-border rounded-3xl btn flex justify-between w-full ${selected ? "hover:dark:bg-blue-600 dark:bg-blue-600 bg-blue-300 hover:bg-blue-300" : "dark:bg-light/10 bg-light-blue-1 hover:bg-light-blue-1"
               }`}
             onClick={() => {
               setBridgeViewData({
