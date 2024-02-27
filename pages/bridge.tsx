@@ -19,7 +19,6 @@ import { TokenSelect } from "../components/Bridge/TokenSelect";
 import { BridgeContent } from "../components/Bridge/BridgeContent";
 import CardTitle from "../components/Bridge/CardTitle";
 import Spinner from "../components/Spinner/Spinner";
-import SubmitButton from "@/components/SubmitButton";
 
 const tokenABI = rawTokenABI as OperationObject.Data.Abi;
 
@@ -208,13 +207,6 @@ const Bridge = () => {
         ]),
         commonCallback
       );
-      // console.log(
-      //   toNetwork?.id,
-      //   mint,
-      //   selectedToken?.originalToken,
-      //   (Number(bridgeViewData.amount) ?? 0) * 1e18,
-      //   toAddress || address
-      // );
       send = createOperationObject(
         "Send",
         createOperationData(lockABI, lock, "lock", [
