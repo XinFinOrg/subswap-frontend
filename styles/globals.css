@@ -39,3 +39,7 @@ body {
   cursor: pointer;
   border-radius: 12px;
 }
+
+.btn-disabled {
+  color: #8f8d95 !important;
+}

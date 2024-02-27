@@ -38,7 +38,7 @@ export function BridgeContent({
   const { chain } = useNetwork();
 
   const amountMaxRange = bridgeViewData.token?.balance ?? 0;
-  const disableSendButton = !toAddress || !isAddress(toAddress) || bridgeViewData.selectToken;
+  const disableSendButton = !toAddress || !isAddress(toAddress) || !bridgeViewData.selectToken || !bridgeViewData.amount;
 
   return (
     <>
@@ -68,7 +68,7 @@ export function BridgeContent({
                   </div>
 
                   {/* Selected amount */}
-                  <div className="grow text-right text-grey-9">
+                  <div className="grow text-right text-black/50 dark:text-grey-9/50">
                     {formatBalance(bridgeViewData.amount)}
                   </div>
                 </div>
@@ -115,6 +115,7 @@ export function BridgeContent({
               <div className="mt-2">
                 <Input
                   placeholder="Enter address"
+                  value={toAddress}
                   onChange={(e) => {
                     setToAddress(e.target.value);
                   }}
