@@ -122,6 +122,7 @@ const Bridge = () => {
   }, []);
 
   // When query changed, we get network from query
+  // test with: http://localhost:3000/bridge?rpcName=test3&rpcUrl=https://devnetstats.apothem.network/subnet
   useEffect(() => {
     async function fetchData() {
       try {
@@ -131,6 +132,21 @@ const Bridge = () => {
           }
 
           await submitRpcNameAndUrl(rpcName, rpcUrl);
+
+          // set to localstorage and network list
+          if (storedNetworks.find((network) => network.name === rpcName) !== undefined) {
+            return;
+          }
+
+          const newNetwork = { name: rpcName, rpcUrl };
+          setStoredNetworks([newNetwork, ...storedNetworks]);
+
+          // add to localstorage
+          localStorage.setItem(
+            "networks",
+            JSON.stringify([...storedNetworks, newNetwork])
+          );
+          localStorage.setItem("selectedNetwork", JSON.stringify(newNetwork));
         }
       } catch (error) {
         alert(error);
