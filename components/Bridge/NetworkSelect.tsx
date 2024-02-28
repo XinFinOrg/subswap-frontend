@@ -213,6 +213,7 @@ function NetworkSelectItem({
   async function selectStoredNetwork(network: NetworkInfo) {
     try {
       if (bridgeViewData.fromNetwork?.name === network.name) {
+        setShowSelectNetwork(false);
         return;
       }
 
