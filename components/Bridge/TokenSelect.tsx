@@ -45,7 +45,6 @@ export function TokenSelect({
 
       {filteredTokens.map((token, index) => {
         const selected = bridgeViewData.token?.name === token?.name;
-        const formattedTokenBalance = formatTokenBalance(token);
 
         return (
           <div
@@ -57,7 +56,7 @@ export function TokenSelect({
                 ...bridgeViewData,
                 token: {
                   ...token,
-                  balance: formattedTokenBalance,
+                  balance: token.tokenBalance,
                 },
                 selectToken: !bridgeViewData.selectToken,
                 amount: 0
@@ -69,7 +68,7 @@ export function TokenSelect({
             <p className="text-black dark:text-grey-9 text-left">{token.name}</p>
             <p className="text-black dark:text-grey-9/60 text-right">
 
-              {formattedTokenBalance}
+              {token.tokenBalance}
             </p>
           </div>
         );
@@ -116,14 +115,21 @@ const useGetTokenBalances = (
 
   const { data: reads2 } = useContractReads({
     contracts: tokenDecimalsReads as any,
-    scopeKey: render.toString()
+    scopeKey: render.toString(),
   });
 
   return tokens?.map((token, index) => {
+    const balance = reads1?.[index]?.result;
+    const decimals = reads2?.[index]?.result;
+
+    const formattedTokenBalance = formatTokenBalance({
+      balance,
+      decimals,
+    });
+
     return {
       ...token,
-      balance: reads1?.[index]?.result,
-      decimals: reads2?.[index]?.result
+      tokenBalance: formattedTokenBalance,
     };
   });
 };

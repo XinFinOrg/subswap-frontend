@@ -433,6 +433,12 @@ const useGetTokenDetails = (
         functionName: "treasuryMapping",
         args: [subnet?.id, selectedToken?.originalToken],
       },
+      {
+        abi: tokenABI,
+        address: selectedToken?.originalToken,
+        functionName: "decimals"
+      }
+
     ],
     scopeKey: render.toString(),
   });
@@ -440,6 +446,12 @@ const useGetTokenDetails = (
   const tokenBalance = data?.[0]?.result;
   const allowance = data?.[1]?.result as number;
   const parentnetToken = data?.[2]?.result as any;
+  const decimals = data?.[3]?.result;
 
-  return { tokenBalance, allowance, parentnetToken };
+  const formattedTokenBalance = formatTokenBalance({
+    balance: tokenBalance,
+    decimals,
+  });
+
+  return { tokenBalance: formattedTokenBalance, allowance, parentnetToken };
 };
