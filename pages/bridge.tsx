@@ -167,8 +167,7 @@ const Bridge = () => {
   const tokens = getTokens(subnet?.id, xdcParentNet.id, bridgeMode);
   const selectedToken = bridgeViewData?.token;
 
-  // TODO: Specify what reads0 is
-  const { tokenBalance, allowance, parentnetToken } = useGetReads0(
+  const { tokenBalance, allowance, parentnetToken } = useGetTokenDetails(
     selectedToken,
     address,
     subnet,
@@ -396,23 +395,6 @@ const Bridge = () => {
         {getCardContent()}
       </div>
 
-      {/* TODO: No idea what this does, please check */}
-      {/* Put this part before </body> tag */}
-      <input
-        type="checkbox"
-        className="modal-toggle"
-        checked={bridgeViewData?.customizeNetwork}
-      />
-
-      {/* TODO: No idea what this does, please check */}
-      {/* Put this part before </body> tag */}
-      <input
-        id="test"
-        type="checkbox"
-        className="modal-toggle"
-        checked={bridgeViewData?.selectToken}
-      />
-
       {/* <SubmitButton {...getTestCoin} /> */}
     </div>
   );
@@ -421,7 +403,7 @@ const Bridge = () => {
 export default Bridge;
 
 // hooks
-const useGetReads0 = (
+const useGetTokenDetails = (
   selectedToken: any,
   address: string | undefined,
   subnet: Chain | undefined,

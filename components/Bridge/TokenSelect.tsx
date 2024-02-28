@@ -72,7 +72,7 @@ export function TokenSelect({
   );
 }
 
-const useGetReads1 = (
+const useGetTokenBalance = (
   tokens: CrossChainToken[],
   address: string | undefined,
   render: number
@@ -99,7 +99,7 @@ const useGetTokenBalances = (
   address: string | undefined,
   render: number
 ) => {
-  const reads1 = useGetReads1(tokens, address, render);
+  const reads1 = useGetTokenBalance(tokens, address, render);
   const tokenDecimalsReads = tokens?.map<OperationObject.Data>((token) => {
     return {
       abi: tokenABI,
