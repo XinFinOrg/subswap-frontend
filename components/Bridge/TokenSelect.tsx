@@ -25,6 +25,17 @@ export function TokenSelect({
   const tokenBalances = useGetTokenBalances(tokens, address, render);
   const filteredTokens = tokenBalances.filter((token) => token.name.includes(search));
 
+  function formatTokenBalance(token: any) {
+    if (!token?.balance || !token?.decimals) {
+      return '';
+    }
+
+    const divisor = 10n ** BigInt(token.decimals);
+    const balance = token.balance / divisor;
+
+    return balance.toString();
+  }
+
   return (
     <>
       <div className="flex items-center rounded-3xl bg-light/10 pl-2">
@@ -63,7 +74,8 @@ export function TokenSelect({
           >
             <p className="text-black dark:text-grey-9 text-left">{token.name}</p>
             <p className="text-black dark:text-grey-9/60 text-right">
-              {token.balance?.toString()}
+
+              {formatTokenBalance(token)}
             </p>
           </div>
         );
