@@ -147,5 +147,9 @@ export function BridgeContent({
 }
 
 function formatBalance(balance: unknown): string {
-  return (Number(balance ?? 0) / 1e18 || 0).toString();
+  if (!balance) {
+    return '0';
+  }
+
+  return (balance as any).toString();
 }

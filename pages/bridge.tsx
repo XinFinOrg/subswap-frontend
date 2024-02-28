@@ -19,6 +19,7 @@ import { TokenSelect } from "../components/Bridge/TokenSelect";
 import { BridgeContent } from "../components/Bridge/BridgeContent";
 import CardTitle from "../components/Bridge/CardTitle";
 import Spinner from "../components/Spinner/Spinner";
+import { formatTokenBalance } from '../helper';
 
 const tokenABI = rawTokenABI as OperationObject.Data.Abi;
 

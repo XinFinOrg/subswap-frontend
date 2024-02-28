@@ -39,8 +39,8 @@
     "context/**/*",
     "config.ts",
     "lang/**/*",
-    "config.ts",
-    ".next/types/**/*.ts"
+    "helper.ts",
+    ".next/types/**/*.ts",
   ],
   "exclude": [
     "node_modules",

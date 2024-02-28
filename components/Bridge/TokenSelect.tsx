@@ -3,6 +3,7 @@ import { BridgeViewData, OperationObject } from "../../pages/bridge";
 import { useContractReads } from "wagmi";
 import { CrossChainToken, tokenABI } from "../../config";
 import { FiSearch } from "react-icons/fi";
+import { formatTokenBalance } from "@/helper";
 
 type SelectTokenProps = {
   bridgeViewData: BridgeViewData;
@@ -25,17 +26,6 @@ export function TokenSelect({
   const tokenBalances = useGetTokenBalances(tokens, address, render);
   const filteredTokens = tokenBalances.filter((token) => token.name.includes(search));
 
-  function formatTokenBalance(token: any) {
-    if (!token?.balance || !token?.decimals) {
-      return '';
-    }
-
-    const divisor = 10n ** BigInt(token.decimals);
-    const balance = token.balance / divisor;
-
-    return balance.toString();
-  }
-
   return (
     <>
       <div className="flex items-center rounded-3xl bg-light/10 pl-2">
@@ -55,6 +45,7 @@ export function TokenSelect({
 
       {filteredTokens.map((token, index) => {
         const selected = bridgeViewData.token?.name === token?.name;
+        const formattedTokenBalance = formatTokenBalance(token);
 
         return (
           <div
@@ -64,7 +55,10 @@ export function TokenSelect({
             onClick={() => {
               setBridgeViewData({
                 ...bridgeViewData,
-                token,
+                token: {
+                  ...token,
+                  balance: formattedTokenBalance,
+                },
                 selectToken: !bridgeViewData.selectToken,
                 amount: 0
               });
@@ -75,7 +69,7 @@ export function TokenSelect({
             <p className="text-black dark:text-grey-9 text-left">{token.name}</p>
             <p className="text-black dark:text-grey-9/60 text-right">
 
-              {formatTokenBalance(token)}
+              {formattedTokenBalance}
             </p>
           </div>
         );
