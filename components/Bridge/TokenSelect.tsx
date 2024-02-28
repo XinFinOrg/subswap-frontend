@@ -114,10 +114,9 @@ const useGetTokenBalances = (
   });
 
   return tokens?.map((token, index) => {
-    console.log(reads1?.[index]?.result);
     return {
       ...token,
-      balance: 999,
+      balance: reads1?.[index]?.result,
       decimals: reads2?.[index]?.result
     };
   });
