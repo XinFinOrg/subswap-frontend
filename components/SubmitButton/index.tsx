@@ -92,13 +92,14 @@ const SubmitButton = (props: SubmitButtonProps) => {
               }
             }}
           >
-            {confirming && (
+            {confirming ? (
               <>
-                <span className="loading loading-spinner"></span>Loading
+                <span className="loading loading-spinner"></span>
               </>
-            )}
+            ) : <span>{props?.buttonName}</span>
+            }
 
-            {props?.buttonName}
+
           </button>
         </div>
         {showAlert && <Alert showAlert={showAlert} setShowAlert={setShowAlert} message={alertMessage} subMessage="Version: viem@1.5.3" />}
