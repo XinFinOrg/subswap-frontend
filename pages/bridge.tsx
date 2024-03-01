@@ -20,6 +20,7 @@ import { BridgeContent } from "../components/Bridge/BridgeContent";
 import CardTitle from "../components/Bridge/CardTitle";
 import Spinner from "../components/Spinner/Spinner";
 import { formatTokenBalance } from '../helper';
+import { Notify } from 'notiflix';
 
 const tokenABI = rawTokenABI as OperationObject.Data.Abi;
 
@@ -193,6 +194,7 @@ const Bridge = () => {
   function commonCallback(confirmed: boolean) {
     if (confirmed) {
       serRender(render + 1);
+      Notify.success('Successfully submitted transaction!');
     }
   }
 
