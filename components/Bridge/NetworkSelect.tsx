@@ -12,10 +12,11 @@ type NetworkSelectProps = {
   bridgeViewData: BridgeViewData;
   setBridgeViewData: React.Dispatch<React.SetStateAction<BridgeViewData>>;
   setStoredNetworks: React.Dispatch<React.SetStateAction<NetworkInfo[]>>;
-  submitRpcUrl: (
+  submitRpcNameAndUrl: (
     rpcName: string | undefined,
     rpcUrl: string | undefined
   ) => Promise<void>;
+  setShowSelectNetwork: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export function NetworkSelect({
@@ -23,7 +24,8 @@ export function NetworkSelect({
   bridgeViewData,
   setBridgeViewData,
   setStoredNetworks,
-  submitRpcUrl,
+  submitRpcNameAndUrl,
+  setShowSelectNetwork,
 }: NetworkSelectProps) {
   const [networkName, setNetworkName] = useState<string>();
   const [networkRpcUrl, setNetworkRpcUrl] = useState<string>();
@@ -46,7 +48,7 @@ export function NetworkSelect({
         const newNetwork = { name: networkName, rpcUrl: networkRpcUrl };
 
         // set to state
-        await submitRpcUrl(networkName, networkRpcUrl);
+        await submitRpcNameAndUrl(networkName, networkRpcUrl);
         setStoredNetworks([newNetwork, ...storedNetworks]);
 
         // add to localstorage
@@ -59,6 +61,8 @@ export function NetworkSelect({
         // reset input fields
         setNetworkName('');
         setNetworkRpcUrl('');
+
+        setShowSelectNetwork(false);
       }
     } catch (error) {
       alert(error);
@@ -80,6 +84,7 @@ export function NetworkSelect({
               className="mt-6"
               bridgeViewData={bridgeViewData}
               setBridgeViewData={setBridgeViewData}
+              setShowSelectNetwork={setShowSelectNetwork}
             />
 
             <div className="text-center pt-4">or</div>
@@ -141,6 +146,7 @@ type NetworkSelectListProps = {
   networks: NetworkInfo[];
   bridgeViewData: BridgeViewData;
   setBridgeViewData: React.Dispatch<React.SetStateAction<BridgeViewData>>;
+  setShowSelectNetwork: React.Dispatch<React.SetStateAction<boolean>>;
   className?: string;
 };
 
@@ -148,7 +154,8 @@ function NetworkSelectList({
   networks,
   className,
   bridgeViewData,
-  setBridgeViewData
+  setBridgeViewData,
+  setShowSelectNetwork,
 }: NetworkSelectListProps) {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -176,6 +183,7 @@ function NetworkSelectList({
             bridgeViewData={bridgeViewData}
             setBridgeViewData={setBridgeViewData}
             setIsLoading={setIsLoading}
+            setShowSelectNetwork={setShowSelectNetwork}
           />
         ))}
       </ul>
@@ -189,6 +197,7 @@ type NetworkSelectItemProps = {
   bridgeViewData: BridgeViewData;
   setBridgeViewData: React.Dispatch<React.SetStateAction<BridgeViewData>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowSelectNetwork: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 function NetworkSelectItem({
@@ -196,13 +205,15 @@ function NetworkSelectItem({
   selected,
   bridgeViewData,
   setBridgeViewData,
-  setIsLoading
+  setIsLoading,
+  setShowSelectNetwork,
 }: NetworkSelectItemProps) {
   const [context, setContext] = useGlobalContext();
 
   async function selectStoredNetwork(network: NetworkInfo) {
     try {
       if (bridgeViewData.fromNetwork?.name === network.name) {
+        setShowSelectNetwork(false);
         return;
       }
 
@@ -210,13 +221,13 @@ function NetworkSelectItem({
       const fromNetwork = await getNetwork(network.name, network.rpcUrl);
       setBridgeViewData({ ...bridgeViewData, fromNetwork });
 
-      // TODO: Is this correct?
       context.rpcs.push(fromNetwork);
       setContext({
         ...context
       });
 
       localStorage.setItem("selectedNetwork", JSON.stringify(network));
+      setShowSelectNetwork(false);
     } catch (error) {
       alert(error);
       return;
@@ -228,7 +239,7 @@ function NetworkSelectItem({
   return (
     <li>
       <button
-        className={`${selected ? "dark:bg-grey-9/25 bg-light-blue-2" : "dark:bg-light/10 bg-light-blue-1"} p-4 flex w-full`}
+        className={`${selected ? "dark:bg-blue-600 bg-blue-300" : "dark:bg-light/10 bg-light-blue-1"} p-4 flex w-full`}
         onClick={() => selectStoredNetwork(network)}
       >
         <CoinIcon />

@@ -3,6 +3,7 @@ import { BridgeViewData, OperationObject } from "../../pages/bridge";
 import { useContractReads } from "wagmi";
 import { CrossChainToken, tokenABI } from "../../config";
 import { FiSearch } from "react-icons/fi";
+import { formatTokenBalance } from "@/helper";
 
 type SelectTokenProps = {
   bridgeViewData: BridgeViewData;
@@ -10,6 +11,7 @@ type SelectTokenProps = {
   tokens: CrossChainToken[];
   address: string | undefined;
   render: number;
+  setShowSelectToken: Dispatch<SetStateAction<boolean>>;
 };
 
 export function TokenSelect({
@@ -17,7 +19,8 @@ export function TokenSelect({
   setBridgeViewData,
   tokens,
   address,
-  render
+  render,
+  setShowSelectToken
 }: SelectTokenProps) {
   const [search, setSearch] = useState("");
   const tokenBalances = useGetTokenBalances(tokens, address, render);
@@ -46,20 +49,26 @@ export function TokenSelect({
         return (
           <div
             key={index}
-            className={`border p-4 border-section-border rounded-3xl btn flex justify-between w-full ${selected ? "hover:bg-grey-9/20 bg-grey-9/20" : ""
+            className={`border p-4 border-section-border hover:border-section-border rounded-3xl btn flex justify-between w-full ${selected ? "hover:dark:bg-blue-600 dark:bg-blue-600 bg-blue-300 hover:bg-blue-300" : "dark:bg-light/10 bg-light-blue-1 hover:bg-light-blue-1"
               }`}
             onClick={() => {
               setBridgeViewData({
                 ...bridgeViewData,
-                token,
+                token: {
+                  ...token,
+                  balance: token.tokenBalance,
+                },
                 selectToken: !bridgeViewData.selectToken,
                 amount: 0
               });
+
+              setShowSelectToken(false);
             }}
           >
-            <p className="text-grey-9 text-left">{token.name}</p>
-            <p className="text-grey-9/60 text-right">
-              {token.balance?.toString()}
+            <p className="text-black dark:text-grey-9 text-left">{token.name}</p>
+            <p className="text-black dark:text-grey-9/60 text-right">
+
+              {token.tokenBalance}
             </p>
           </div>
         );
@@ -106,14 +115,21 @@ const useGetTokenBalances = (
 
   const { data: reads2 } = useContractReads({
     contracts: tokenDecimalsReads as any,
-    scopeKey: render.toString()
+    scopeKey: render.toString(),
   });
 
   return tokens?.map((token, index) => {
+    const balance = reads1?.[index]?.result;
+    const decimals = reads2?.[index]?.result;
+
+    const formattedTokenBalance = formatTokenBalance({
+      balance,
+      decimals,
+    });
+
     return {
       ...token,
-      balance: reads1?.[index]?.result,
-      decimals: reads2?.[index]?.result
+      tokenBalance: formattedTokenBalance,
     };
   });
 };

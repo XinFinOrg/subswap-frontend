@@ -19,7 +19,8 @@ import { TokenSelect } from "../components/Bridge/TokenSelect";
 import { BridgeContent } from "../components/Bridge/BridgeContent";
 import CardTitle from "../components/Bridge/CardTitle";
 import Spinner from "../components/Spinner/Spinner";
-import SubmitButton from "@/components/SubmitButton";
+import { formatTokenBalance } from '../helper';
+import { Notify } from 'notiflix';
 
 const tokenABI = rawTokenABI as OperationObject.Data.Abi;
 
@@ -104,10 +105,12 @@ const Bridge = () => {
           ? JSON.parse(selectedNetworkInfo)
           : null;
 
-        await submitRpcUrl(
-          parsedSelectedNetwork?.name,
-          parsedSelectedNetwork?.rpcUrl
-        );
+        if (parsedSelectedNetwork?.rpcUrl && parsedSelectedNetwork?.name) {
+          await submitRpcNameAndUrl(
+            parsedSelectedNetwork.name,
+            parsedSelectedNetwork.rpcUrl
+          );
+        }
       } catch (error) {
         console.error("Error parsing data from localStorage", error);
         setStoredNetworks([]);
@@ -121,6 +124,7 @@ const Bridge = () => {
   }, []);
 
   // When query changed, we get network from query
+  // test with: http://localhost:3000/bridge?rpcName=test3&rpcUrl=https://devnetstats.apothem.network/subnet
   useEffect(() => {
     async function fetchData() {
       try {
@@ -129,7 +133,22 @@ const Bridge = () => {
             return;
           }
 
-          await submitRpcUrl(rpcName, rpcUrl);
+          await submitRpcNameAndUrl(rpcName, rpcUrl);
+
+          // set to localstorage and network list
+          if (storedNetworks.find((network) => network.name === rpcName) !== undefined) {
+            return;
+          }
+
+          const newNetwork = { name: rpcName, rpcUrl };
+          setStoredNetworks([newNetwork, ...storedNetworks]);
+
+          // add to localstorage
+          localStorage.setItem(
+            "networks",
+            JSON.stringify([...storedNetworks, newNetwork])
+          );
+          localStorage.setItem("selectedNetwork", JSON.stringify(newNetwork));
         }
       } catch (error) {
         alert(error);
@@ -141,7 +160,7 @@ const Bridge = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rpcUrl, rpcName]);
 
-  console.log(bridgeViewData);
+  // console.log(bridgeViewData);
   const fromNetwork = bridgeViewData?.fromNetwork;
   const toNetwork = bridgeViewData?.toNetwork;
 
@@ -149,10 +168,6 @@ const Bridge = () => {
   const bridgeMode = fromNetwork?.id === xdcParentNet.id ? 2 : 1;
   const tokens = getTokens(subnet?.id, xdcParentNet.id, bridgeMode);
   const selectedToken = bridgeViewData?.token;
-
-  const isCurrentNetwork = fromNetwork?.id === chainId;
-
-  console.log(isCurrentNetwork);
 
   const { tokenBalance, allowance, parentnetToken } = useGetTokenDetails(
     selectedToken,
@@ -179,6 +194,7 @@ const Bridge = () => {
   function commonCallback(confirmed: boolean) {
     if (confirmed) {
       serRender(render + 1);
+      Notify.success('Successfully submitted transaction!');
     }
   }
 
@@ -208,13 +224,6 @@ const Bridge = () => {
           2 ** 254,
         ]),
         commonCallback
-      );
-      console.log(
-        toNetwork?.id,
-        mint,
-        selectedToken?.originalToken,
-        (Number(bridgeViewData.amount) ?? 0) * 1e18,
-        toAddress || address
       );
       send = createOperationObject(
         "Send",
@@ -272,11 +281,12 @@ const Bridge = () => {
       cardTitle = "Networks";
       cardBodyContent = (
         <NetworkSelect
-          submitRpcUrl={submitRpcUrl}
+          submitRpcNameAndUrl={submitRpcNameAndUrl}
           bridgeViewData={bridgeViewData}
           setBridgeViewData={setBridgeViewData}
           storedNetworks={storedNetworks ?? []}
           setStoredNetworks={setStoredNetworks}
+          setShowSelectNetwork={setShowSelectNetwork}
         />
       );
       showGoBackIcon = true;
@@ -289,6 +299,7 @@ const Bridge = () => {
           render={render}
           bridgeViewData={bridgeViewData}
           setBridgeViewData={setBridgeViewData}
+          setShowSelectToken={setShowSelectToken}
         />
       );
       showGoBackIcon = true;
@@ -299,6 +310,7 @@ const Bridge = () => {
           bridgeViewData={bridgeViewData}
           setBridgeViewData={setBridgeViewData}
           tokenBalance={tokenBalance}
+          toAddress={toAddress}
           showApprove={showApprove}
           approve={approve}
           send={send}
@@ -340,7 +352,7 @@ const Bridge = () => {
 
   const showApprove = allowance < (Number(bridgeViewData.amount) ?? 0) * 1e18;
 
-  const submitRpcUrl = async (
+  const submitRpcNameAndUrl = async (
     rpcName: string | undefined,
     rpcUrl: string | undefined
   ) => {
@@ -380,9 +392,8 @@ const Bridge = () => {
     <div className="relative">
       {isLoading && <Spinner text="Loading" textSize="md" />}
       <div
-        className={`mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-white-4 dark:bg-black-2 ${
-          isLoading ? "opacity-10" : ""
-        }`}
+        className={`mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-white-4 dark:bg-black-2 ${isLoading ? "opacity-10" : ""
+          }`}
       >
         {getCardContent()}
       </div>
@@ -424,6 +435,12 @@ const useGetTokenDetails = (
         functionName: "treasuryMapping",
         args: [subnet?.id, selectedToken?.originalToken],
       },
+      {
+        abi: tokenABI,
+        address: selectedToken?.originalToken,
+        functionName: "decimals"
+      }
+
     ],
     scopeKey: render.toString(),
   });
@@ -431,6 +448,12 @@ const useGetTokenDetails = (
   const tokenBalance = data?.[0]?.result;
   const allowance = data?.[1]?.result as number;
   const parentnetToken = data?.[2]?.result as any;
+  const decimals = data?.[3]?.result;
 
-  return { tokenBalance, allowance, parentnetToken };
+  const formattedTokenBalance = formatTokenBalance({
+    balance: tokenBalance,
+    decimals,
+  });
+
+  return { tokenBalance: formattedTokenBalance, allowance, parentnetToken };
 };

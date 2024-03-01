@@ -5,14 +5,16 @@ import RightArrowIcon from "../Images/RightArrowIcon";
 import Slider from "../Slider/Slider";
 import SubmitButton from "../SubmitButton";
 import { Section } from "./Section";
-import { SourceTargetSetting } from "./SourceTargetSetting";
+import { SourceTargetNetworkSetting } from "./SourceTargetNetworkSetting";
 import Input from "../Input/Input";
 import { isAddress } from "viem";
+import { useNetwork } from 'wagmi';
 
 type BridgeContentProps = {
   bridgeViewData: BridgeViewData;
   setBridgeViewData: Dispatch<SetStateAction<BridgeViewData>>;
   tokenBalance: unknown;
+  toAddress: string | undefined;
   showApprove: boolean;
   approve: OperationObject;
   send: OperationObject;
@@ -31,20 +33,24 @@ export function BridgeContent({
   setShowSelectNetwork,
   setShowSelectToken,
   setToAddress,
+  toAddress,
 }: BridgeContentProps) {
+  const { chain } = useNetwork();
+
   const amountMaxRange = bridgeViewData.token?.balance ?? 0;
+  const disableSendButton = !toAddress || !isAddress(toAddress) || !bridgeViewData.selectToken || !bridgeViewData.amount;
 
   return (
     <>
       <Section>
-        <SourceTargetSetting
+        <SourceTargetNetworkSetting
           bridgeViewData={bridgeViewData}
           setBridgeViewData={setBridgeViewData}
           setShowSelectNetwork={setShowSelectNetwork}
         />
       </Section>
 
-      {bridgeViewData.fromNetwork && (
+      {bridgeViewData.fromNetwork && chain?.id === bridgeViewData.fromNetwork.id && (
         <>
           <Section>
             <div className="flex flex-col w-full gap-4">
@@ -62,8 +68,8 @@ export function BridgeContent({
                   </div>
 
                   {/* Selected amount */}
-                  <div className="grow text-right text-grey-9">
-                    {bridgeViewData.amount}
+                  <div className="grow text-right text-black/50 dark:text-grey-9/50">
+                    {formatBalance(bridgeViewData.amount)}
                   </div>
                 </div>
 
@@ -92,7 +98,7 @@ export function BridgeContent({
                 }}
               />
               <div className="self-end pr-1 text-black/50 dark:text-grey-9/50">
-                Balance: {Number(tokenBalance ?? 0) / 1e18 || 0}
+                Balance: {formatBalance(tokenBalance)}
               </div>
             </div>
           </Section>
@@ -109,11 +115,9 @@ export function BridgeContent({
               <div className="mt-2">
                 <Input
                   placeholder="Enter address"
+                  value={toAddress}
                   onChange={(e) => {
-                    // TODO: check valid address and set address to state
-                    if (isAddress(e.target.value)) {
-                      setToAddress(e.target.value);
-                    }
+                    setToAddress(e.target.value);
                   }}
                 />
               </div>
@@ -123,7 +127,7 @@ export function BridgeContent({
             <div className="flex justify-between">
               <p>You will receive</p>
               <p className="text-right font-bold">
-                {bridgeViewData.amount} token(s) A in mainnet
+                {formatBalance(bridgeViewData.amount)} token(s) A in mainnet
               </p>
             </div>
             <div className="flex justify-between mt-2">
@@ -132,12 +136,20 @@ export function BridgeContent({
             </div>
           </div>
           {showApprove ? (
-            <SubmitButton {...approve} />
+            <SubmitButton {...approve} disabled={disableSendButton} />
           ) : (
-            <SubmitButton {...send} />
+            <SubmitButton {...send} disabled={disableSendButton} />
           )}
         </>
       )}
     </>
   );
+}
+
+function formatBalance(balance: unknown): string {
+  if (!balance) {
+    return '0';
+  }
+
+  return (balance as any).toString();
 }
