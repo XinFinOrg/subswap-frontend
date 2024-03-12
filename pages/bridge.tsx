@@ -19,8 +19,8 @@ import { TokenSelect } from "../components/Bridge/TokenSelect";
 import { BridgeContent } from "../components/Bridge/BridgeContent";
 import CardTitle from "../components/Bridge/CardTitle";
 import Spinner from "../components/Spinner/Spinner";
-import { formatTokenBalance } from '../helper';
-import { Notify } from 'notiflix';
+import { formatTokenBalance } from "../helper";
+import { Notify } from "notiflix";
 
 const tokenABI = rawTokenABI as OperationObject.Data.Abi;
 
@@ -136,7 +136,10 @@ const Bridge = () => {
           await submitRpcNameAndUrl(rpcName, rpcUrl);
 
           // set to localstorage and network list
-          if (storedNetworks.find((network) => network.name === rpcName) !== undefined) {
+          if (
+            storedNetworks.find((network) => network.name === rpcName) !==
+            undefined
+          ) {
             return;
           }
 
@@ -194,7 +197,7 @@ const Bridge = () => {
   function commonCallback(confirmed: boolean) {
     if (confirmed) {
       serRender(render + 1);
-      Notify.success('Successfully submitted transaction!');
+      Notify.success("Successfully submitted transaction!");
     }
   }
 
@@ -392,8 +395,9 @@ const Bridge = () => {
     <div className="relative">
       {isLoading && <Spinner text="Loading" textSize="md" />}
       <div
-        className={`mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-white-4 dark:bg-black-2 ${isLoading ? "opacity-10" : ""
-          }`}
+        className={`mt-8 w-[568px] max-sm:w-11/12 card mx-auto shadow-dialog bg-white-4 dark:bg-black-2 ${
+          isLoading ? "opacity-10" : ""
+        }`}
       >
         {getCardContent()}
       </div>
@@ -438,9 +442,8 @@ const useGetTokenDetails = (
       {
         abi: tokenABI,
         address: selectedToken?.originalToken,
-        functionName: "decimals"
-      }
-
+        functionName: "decimals",
+      },
     ],
     scopeKey: render.toString(),
   });
