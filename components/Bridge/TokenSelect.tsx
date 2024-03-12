@@ -67,7 +67,6 @@ export function TokenSelect({
           >
             <p className="text-black dark:text-grey-9 text-left">{token.name}</p>
             <p className="text-black dark:text-grey-9/60 text-right">
-
               {token.tokenBalance}
             </p>
           </div>

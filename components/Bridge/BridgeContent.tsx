@@ -23,6 +23,14 @@ type BridgeContentProps = {
   setToAddress: Dispatch<SetStateAction<string | undefined>>;
 };
 
+function getAmountMaxRange(tokenBalance: any) {
+  if (tokenBalance == "") {
+    return 0;
+  }
+
+  return tokenBalance ?? 0;
+}
+
 export function BridgeContent({
   bridgeViewData,
   setBridgeViewData,
@@ -37,7 +45,7 @@ export function BridgeContent({
 }: BridgeContentProps) {
   const { chain } = useNetwork();
 
-  const amountMaxRange = bridgeViewData.token?.balance ?? 0;
+  const amountMaxRange = getAmountMaxRange(bridgeViewData.token?.tokenBalance);
   const disableSendButton = !toAddress || !isAddress(toAddress) || !bridgeViewData.selectToken || !bridgeViewData.amount;
 
   return (
