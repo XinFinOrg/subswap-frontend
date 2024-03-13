@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import {
+  getDefaultWallets,
+  Locale,
+  RainbowKitProvider,
+} from "@rainbow-me/rainbowkit";
 import { Chain, configureChains, createConfig, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -15,6 +19,7 @@ import Layout from "@/components/Layout";
 import { ContextProvider } from "@/context";
 import "@/styles/globals.css";
 import { ThemeContextProvider } from "../context/ThemeContext";
+import { useRouter } from "next/router";
 
 export default function App({ Component, pageProps }: any) {
   const [context, setContext] = useState<{ rpcs: Chain[] }>({
@@ -48,10 +53,10 @@ export default function App({ Component, pageProps }: any) {
     showRecentTransactions: true,
     coolMode: true,
   };
-
+  const { locale } = useRouter();
   return (
     <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider {...rainbowKitConfig}>
+      <RainbowKitProvider locale={locale as Locale} {...rainbowKitConfig}>
         <ContextProvider state={[context, setContext]}>
           <ThemeContextProvider>
             <Layout>
