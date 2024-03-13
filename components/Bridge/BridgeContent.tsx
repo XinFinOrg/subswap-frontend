@@ -23,14 +23,6 @@ type BridgeContentProps = {
   setToAddress: Dispatch<SetStateAction<string | undefined>>;
 };
 
-function getAmountMaxRange(tokenBalance: any) {
-  if (tokenBalance == "") {
-    return 0;
-  }
-
-  return tokenBalance ?? 0;
-}
-
 export function BridgeContent({
   bridgeViewData,
   setBridgeViewData,
