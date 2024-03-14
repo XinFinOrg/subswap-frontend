@@ -146,9 +146,9 @@ export function BridgeContent({
               </div>
             </div>
             {showApprove ? (
-              <SubmitButton {...approve} disabled={disableSendButton} />
+              <SubmitButton {...approve} />
             ) : (
-              <SubmitButton {...send} disabled={disableSendButton} />
+              <SubmitButton {...send} />
             )}
           </>
         )}

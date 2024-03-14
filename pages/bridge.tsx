@@ -172,11 +172,15 @@ const Bridge = () => {
   const tokens = getTokens(subnet?.id, xdcParentNet.id, bridgeMode);
   const selectedToken = bridgeViewData?.token;
 
+  const lock = getLock(bridgeMode == 1 ? fromNetwork?.id : toNetwork?.id);
+  const mint = getMint(bridgeMode == 1 ? toNetwork?.id : fromNetwork?.id);
+
   const { tokenBalance, allowance, parentnetToken } = useGetTokenDetails(
     selectedToken,
     address,
     subnet,
     xdcParentNet.id,
+    lock,
     render
   );
 
@@ -353,7 +357,7 @@ const Bridge = () => {
     },
   };
 
-  const showApprove = allowance < (Number(bridgeViewData.amount) ?? 0) * 1e18;
+  const showApprove = allowance < Number((tokenBalance as any) * 1e18);
 
   const submitRpcNameAndUrl = async (
     rpcName: string | undefined,
@@ -415,6 +419,7 @@ const useGetTokenDetails = (
   address: string | undefined,
   subnet: Chain | undefined,
   xdcparentnetId: number,
+  lock: string | undefined,
   render: number
 ) => {
   const parentnetMint = getMint(xdcparentnetId);
@@ -431,7 +436,7 @@ const useGetTokenDetails = (
         abi: tokenABI,
         address: selectedToken?.originalToken,
         functionName: "allowance",
-        args: [address] as any,
+        args: [address, lock] as any,
       },
       {
         abi: mintABI,
@@ -450,6 +455,7 @@ const useGetTokenDetails = (
 
   const tokenBalance = data?.[0]?.result;
   const allowance = data?.[1]?.result as number;
+
   const parentnetToken = data?.[2]?.result as any;
   const decimals = data?.[3]?.result;
 
