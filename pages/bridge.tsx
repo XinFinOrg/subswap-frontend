@@ -223,6 +223,8 @@ const Bridge = () => {
     const lock = getLock(bridgeMode == 1 ? fromNetwork?.id : toNetwork?.id);
     const mint = getMint(bridgeMode == 1 ? toNetwork?.id : fromNetwork?.id);
 
+    console.log(bridgeViewData.amount);
+
     if (bridgeMode == 1) {
       approve = createOperationObject(
         "Approve",
@@ -238,7 +240,7 @@ const Bridge = () => {
           toNetwork?.id,
           mint,
           selectedToken?.originalToken,
-          (Number(bridgeViewData.amount) ?? 0) * 1e18,
+          BigInt(bridgeViewData.amount || 0) * BigInt(1e18),
           toAddress || address,
         ]),
         commonCallback
@@ -259,7 +261,7 @@ const Bridge = () => {
           lock,
           selectedToken?.originalToken,
           parentnetToken,
-          Number(bridgeViewData.amount) ?? 0 * 1e18,
+          BigInt(bridgeViewData.amount || 0) * BigInt(1e18),
           toAddress || address,
         ]),
         commonCallback
@@ -267,6 +269,8 @@ const Bridge = () => {
     } else {
       throw new Error("Invalid bridge mode");
     }
+
+    console.log(send);
 
     return { approve, send };
   }
@@ -454,6 +458,7 @@ const useGetTokenDetails = (
   });
 
   const tokenBalance = data?.[0]?.result;
+  console.log(tokenBalance);
   const allowance = data?.[1]?.result as number;
 
   const parentnetToken = data?.[2]?.result as any;

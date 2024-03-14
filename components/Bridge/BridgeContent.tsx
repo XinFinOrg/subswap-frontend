@@ -43,12 +43,6 @@ export function BridgeContent({
     setMaxRange(tokenBalance as number);
   }, [tokenBalance]);
 
-  const disableSendButton =
-    !toAddress ||
-    !isAddress(toAddress) ||
-    !bridgeViewData.selectToken ||
-    !bridgeViewData.amount;
-
   return (
     <>
       <Section>
