@@ -1,4 +1,4 @@
-import { Chain } from 'wagmi';
+import { Chain } from "wagmi";
 
 export { default as tokenABI } from "./abi/tokenABI.json";
 export { default as lockABI } from "./abi/lockABI.json";
@@ -20,13 +20,13 @@ export const xdcParentNet: Chain = {
 };
 
 interface Applications {
-  mints: { [x: number]: string; };
-  locks: { [x: number]: string; };
+  mints: { [x: number]: string };
+  locks: { [x: number]: string };
 }
 
 const applications: Applications = {
-  mints: { 551: "0xA55b967bF404d5C542833DaD63C7E288DDebBED0" },
-  locks: { 8851: "0x272655D0A3Fa7263524eA0Af2bbFb80BFDDC2F65" },
+  mints: { 551: "0xC4471D0567322deaC9a4422A007156e92ac9A103" },
+  locks: { 5173: "0x047695c6c781889F8955AbFaC6C99337C82b0C56" },
 };
 
 export interface CrossChainToken {
@@ -42,16 +42,22 @@ export interface CrossChainToken {
 const crossChainTokens: CrossChainToken[] = [
   {
     name: "Token A",
-    subnetChainId: 8851,
+    subnetChainId: 5173,
     parentnetChainId: 551,
-    originalToken: "0xf9548e50De7519e6546f34A03280784D943A5a08",
+    originalToken: "0xA9fA2724E5905bb24Ec989e39cfB508246461bD2",
     logo: "/vercel.svg",
-    mode: 1
+    mode: 1,
   },
 ];
 
-export const getTokens = (subnetChainId: number | undefined, parentnetChainId: number, bridgeMode: number) => {
+export const getTokens = (
+  subnetChainId: number | undefined,
+  parentnetChainId: number,
+  bridgeMode: number
+) => {
   const tokens = [];
+
+  console.log(subnetChainId, parentnetChainId, bridgeMode);
 
   for (const token of crossChainTokens) {
     if (
@@ -62,6 +68,8 @@ export const getTokens = (subnetChainId: number | undefined, parentnetChainId: n
       tokens.push(token);
     }
   }
+
+  console.log(tokens);
 
   return tokens;
 };
@@ -82,7 +90,10 @@ export const getMint = (chainId: number | undefined) => {
   return applications.mints[chainId];
 };
 
-export const getNetwork = async (rpcName: string, rpcUrl: string): Promise<Chain> => {
+export const getNetwork = async (
+  rpcName: string,
+  rpcUrl: string
+): Promise<Chain> => {
   const response = await fetch(rpcUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

@@ -20,11 +20,13 @@ export function TokenSelect({
   tokens,
   address,
   render,
-  setShowSelectToken
+  setShowSelectToken,
 }: SelectTokenProps) {
   const [search, setSearch] = useState("");
   const tokenBalances = useGetTokenBalances(tokens, address, render);
-  const filteredTokens = tokenBalances.filter((token) => token.name.includes(search));
+  const filteredTokens = tokenBalances.filter((token) =>
+    token.name.includes(search)
+  );
 
   return (
     <>
@@ -49,8 +51,11 @@ export function TokenSelect({
         return (
           <div
             key={index}
-            className={`border p-4 border-section-border hover:border-section-border rounded-3xl btn flex justify-between w-full ${selected ? "hover:dark:bg-blue-600 dark:bg-blue-600 bg-blue-300 hover:bg-blue-300" : "dark:bg-light/10 bg-light-blue-1 hover:bg-light-blue-1"
-              }`}
+            className={`border p-4 border-section-border hover:border-section-border rounded-3xl btn flex justify-between w-full ${
+              selected
+                ? "hover:dark:bg-blue-600 dark:bg-blue-600 bg-blue-300 hover:bg-blue-300"
+                : "dark:bg-light/10 bg-light-blue-1 hover:bg-light-blue-1"
+            }`}
             onClick={() => {
               setBridgeViewData({
                 ...bridgeViewData,
@@ -59,13 +64,15 @@ export function TokenSelect({
                   balance: token.tokenBalance,
                 },
                 selectToken: !bridgeViewData.selectToken,
-                amount: 0
+                amount: 0,
               });
 
               setShowSelectToken(false);
             }}
           >
-            <p className="text-black dark:text-grey-9 text-left">{token.name}</p>
+            <p className="text-black dark:text-grey-9 text-left">
+              {token.name}
+            </p>
             <p className="text-black dark:text-grey-9/60 text-right">
               {token.tokenBalance}
             </p>
@@ -86,13 +93,13 @@ const useGetTokenBalance = (
       abi: tokenABI,
       address: token.originalToken,
       functionName: "balanceOf",
-      args: [address]
+      args: [address],
     };
   });
 
   const { data } = useContractReads({
     contracts: tokenBalanceReads as any,
-    scopeKey: render.toString()
+    scopeKey: render.toString(),
   });
 
   return data;
@@ -108,7 +115,7 @@ const useGetTokenBalances = (
     return {
       abi: tokenABI,
       address: token.originalToken,
-      functionName: "decimals"
+      functionName: "decimals",
     };
   });
 

@@ -24,6 +24,8 @@ const SubmitButton = (props: SubmitButtonProps) => {
     }
   });
 
+  console.log(tx)
+
   const { isSuccess: confirmed, isLoading: confirming } = useWaitForTransaction(
     {
       ...tx,
