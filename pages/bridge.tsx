@@ -33,6 +33,7 @@ export interface BridgeViewData {
   amount?: number;
   rpcName?: string;
   rpcUrl?: string;
+  selectLeftSide?: boolean;
 }
 
 export interface OperationObject {
@@ -73,6 +74,7 @@ const Bridge = () => {
   const [showSelectToken, setShowSelectToken] = useState(false);
   const [bridgeViewData, setBridgeViewData] = useState<BridgeViewData>({
     toNetwork: xdcParentNet,
+    selectLeftSide: true,
   });
   const [render, serRender] = useState(0);
   const [storedNetworks, setStoredNetworks] = useState<NetworkInfo[]>([]);
@@ -108,7 +110,8 @@ const Bridge = () => {
         if (parsedSelectedNetwork?.rpcUrl && parsedSelectedNetwork?.name) {
           await submitRpcNameAndUrl(
             parsedSelectedNetwork.name,
-            parsedSelectedNetwork.rpcUrl
+            parsedSelectedNetwork.rpcUrl,
+            true
           );
         }
       } catch (error) {
@@ -133,7 +136,7 @@ const Bridge = () => {
             return;
           }
 
-          await submitRpcNameAndUrl(rpcName, rpcUrl);
+          await submitRpcNameAndUrl(rpcName, rpcUrl, true);
 
           // set to localstorage and network list
           if (
@@ -365,7 +368,8 @@ const Bridge = () => {
 
   const submitRpcNameAndUrl = async (
     rpcName: string | undefined,
-    rpcUrl: string | undefined
+    rpcUrl: string | undefined,
+    selectLeftSide: boolean
   ) => {
     try {
       if (!rpcName) {
@@ -378,20 +382,28 @@ const Bridge = () => {
         return;
       }
 
-      const fromNetwork = await getNetwork(rpcName, rpcUrl);
+      const selectNetwork = await getNetwork(rpcName, rpcUrl);
 
       // push fromNetwork to context rpcs
-      context.rpcs.push(fromNetwork);
+      context.rpcs.push(selectNetwork);
       setContext({
         ...context,
       });
 
       // set bridge view data
-      setBridgeViewData({
-        ...bridgeViewData,
-        fromNetwork,
-        customizeNetwork: false,
-      });
+      if (selectLeftSide) {
+        setBridgeViewData({
+          ...bridgeViewData,
+          fromNetwork: selectNetwork,
+          customizeNetwork: false,
+        });
+      } else {
+        setBridgeViewData({
+          ...bridgeViewData,
+          toNetwork: selectNetwork,
+          customizeNetwork: false,
+        });
+      }
     } catch (error) {
       throw new Error(
         "Fail to get network, please check if the rpc url is valid"
