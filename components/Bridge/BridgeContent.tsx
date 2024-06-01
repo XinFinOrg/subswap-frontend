@@ -1,13 +1,11 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { RiArrowDownSLine } from "react-icons/ri";
 import { BridgeViewData, OperationObject } from "../../pages/bridge";
-import RightArrowIcon from "../Images/RightArrowIcon";
 import Slider from "../Slider/Slider";
 import SubmitButton from "../SubmitButton";
 import { Section } from "./Section";
 import { SourceTargetNetworkSetting } from "./SourceTargetNetworkSetting";
 import Input from "../Input/Input";
-import { isAddress } from "viem";
 import { useAccount, useNetwork } from "wagmi";
 
 type BridgeContentProps = {
@@ -114,11 +112,9 @@ export function BridgeContent({
               <div className="flex flex-col w-full">
                 <div className="flex items-center">
                   <div className="font-bold text-black/50 dark:text-light-grey text-sm">
-                    To address
+                    Receiver
                   </div>
-                  <div className="ml-3">
-                    <RightArrowIcon />
-                  </div>
+               
                 </div>
                 <div className="mt-2">
                   <Input
@@ -133,13 +129,6 @@ export function BridgeContent({
             </Section>
             <div className="text-black/50 dark:text-grey-9/50">
               <div className="flex justify-between">
-                <p>You will receive</p>
-                <p className="text-right font-bold">
-                  {formatBalance(bridgeViewData.amount)} {selectedToken?.name}{" "}
-                  in {bridgeViewData.toNetwork?.name}
-                </p>
-              </div>
-              <div className="flex justify-between mt-2">
                 <p>Fee</p>
                 <p className="text-right font-bold">0 USD</p>
               </div>

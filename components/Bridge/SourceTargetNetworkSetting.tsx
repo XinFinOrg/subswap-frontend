@@ -2,8 +2,6 @@ import { Dispatch, SetStateAction, useContext, useState } from "react";
 import { useNetwork, useSwitchNetwork } from "wagmi";
 import { BridgeViewData } from "../../pages/bridge";
 import { RiArrowDownSLine } from "react-icons/ri";
-
-import RightArrowIcon from "@/components/Images/RightArrowIcon";
 import { LiaExchangeAltSolid } from "react-icons/lia";
 import CoinIcon from "../Images/CoinIcon";
 import ThemeContext from "../../context/ThemeContext";
@@ -33,12 +31,10 @@ export function SourceTargetNetworkSetting({
         {/* From -> */}
         <div className="flex items-center">
           <div className="font-bold text-black/50 dark:text-light-grey text-sm">
-            From
+            From Network
           </div>
 
-          <div className="ml-3">
-            <RightArrowIcon />
-          </div>
+        
         </div>
 
         {/* Select network */}
@@ -102,9 +98,9 @@ export function SourceTargetNetworkSetting({
       {/* -> To */}
       <div className="w-full">
         <div className="flex items-center">
-          <RightArrowIcon />
+       
           <div className="ml-3 font-bold text-black/50 dark:text-light-grey text-sm">
-            To
+            To Network
           </div>
         </div>
         <div
