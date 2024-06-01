@@ -42,8 +42,10 @@ export function BridgeContent({
   const { address } = useAccount();
 
   useEffect(() => {
-    setMaxRange(tokenBalance as number);
+    setMaxRange((tokenBalance || 0) as number);
   }, [tokenBalance]);
+
+  const selectedToken = bridgeViewData?.token;
 
   return (
     <>
@@ -84,7 +86,7 @@ export function BridgeContent({
                     onClick={() => {
                       setBridgeViewData({
                         ...bridgeViewData,
-                        amount: amountMaxRange || 0,
+                        amount: amountMaxRange,
                       });
                     }}
                     className="rounded-full py-2 px-4 h-8 leading-none text-primary bg-button-bg dark:bg-grey-9/10"
@@ -133,7 +135,8 @@ export function BridgeContent({
               <div className="flex justify-between">
                 <p>You will receive</p>
                 <p className="text-right font-bold">
-                  {formatBalance(bridgeViewData.amount)} token(s) A in mainnet
+                  {formatBalance(bridgeViewData.amount)} {selectedToken?.name}{" "}
+                  in {bridgeViewData.toNetwork?.name}
                 </p>
               </div>
               <div className="flex justify-between mt-2">
