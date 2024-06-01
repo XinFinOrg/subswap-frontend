@@ -59,7 +59,7 @@ export const getTokens = (
 ) => {
   const tokens = [];
 
-  console.log(subnetChainId, parentnetChainId, bridgeMode);
+
 
   for (const token of crossChainTokens) {
     if (
@@ -71,7 +71,7 @@ export const getTokens = (
     }
   }
 
-  console.log(tokens);
+
 
   return tokens;
 };

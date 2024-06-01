@@ -82,7 +82,7 @@ export function BridgeContent({
                     onClick={() => {
                       setBridgeViewData({
                         ...bridgeViewData,
-                        amount: amountMaxRange,
+                        amount: amountMaxRange || 0,
                       });
                     }}
                     className="rounded-full py-2 px-4 h-8 leading-none text-primary bg-button-bg dark:bg-grey-9/10"

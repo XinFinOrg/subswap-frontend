@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useAccount, useContractWrite, useWaitForTransaction } from "wagmi";
 import { Notify } from "notiflix/build/notiflix-notify-aio";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
-import { isAddress } from 'viem';
+import { isAddress } from "viem";
 
-import { OperationObject } from '../../pages/bridge';
-import Alert from '../Alert/Alert';
+import { OperationObject } from "../../pages/bridge";
+import Alert from "../Alert/Alert";
 
 type SubmitButtonProps = OperationObject & {
   disabled?: boolean;
@@ -18,20 +18,18 @@ const SubmitButton = (props: SubmitButtonProps) => {
   const addRecentTransaction = useAddRecentTransaction();
   const { isConnected } = useAccount();
   const { data: tx, write } = useContractWrite({
-    ...props?.data as any,
+    ...(props?.data as any),
     onError(error) {
       Notify.failure(error.message);
-    }
+    },
   });
-
-  console.log(tx)
 
   const { isSuccess: confirmed, isLoading: confirming } = useWaitForTransaction(
     {
       ...tx,
       onError(error) {
         Notify.failure(error.message);
-      }
+      },
     }
   );
 
@@ -85,12 +83,11 @@ const SubmitButton = (props: SubmitButtonProps) => {
                 if (tx) {
                   addRecentTransaction({
                     hash: tx.hash,
-                    description: props?.buttonName
+                    description: props?.buttonName,
                   });
-
                 }
               } catch (e) {
-                alert('Failed to send transaction');
+                alert("Failed to send transaction");
               }
             }}
           >
@@ -98,13 +95,19 @@ const SubmitButton = (props: SubmitButtonProps) => {
               <>
                 <span className="loading loading-spinner"></span>
               </>
-            ) : <span>{props?.buttonName}</span>
-            }
-
-
+            ) : (
+              <span>{props?.buttonName}</span>
+            )}
           </button>
         </div>
-        {showAlert && <Alert showAlert={showAlert} setShowAlert={setShowAlert} message={alertMessage} subMessage="Version: viem@1.5.3" />}
+        {showAlert && (
+          <Alert
+            showAlert={showAlert}
+            setShowAlert={setShowAlert}
+            message={alertMessage}
+            subMessage="Version: viem@1.5.3"
+          />
+        )}
       </>
     )
   );

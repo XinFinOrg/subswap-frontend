@@ -166,7 +166,7 @@ const Bridge = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rpcUrl, rpcName]);
 
-  // console.log(bridgeViewData);
+
   const fromNetwork = bridgeViewData?.fromNetwork;
   const toNetwork = bridgeViewData?.toNetwork;
 
@@ -199,7 +199,7 @@ const Bridge = () => {
     }
   }
 
-  console.log(tokens);
+
 
   const selectedToken = bridgeViewData?.token;
 
@@ -251,7 +251,7 @@ const Bridge = () => {
     const lock = getLock(bridgeMode == 1 ? fromNetwork?.id : toNetwork?.id);
     const mint = getMint(bridgeMode == 1 ? toNetwork?.id : fromNetwork?.id);
 
-    console.log(bridgeViewData.amount);
+
 
     if (bridgeMode == 1) {
       approve = createOperationObject(
@@ -298,7 +298,6 @@ const Bridge = () => {
       throw new Error("Invalid bridge mode");
     }
 
-    console.log(send);
 
     return { approve, send };
   }
@@ -495,7 +494,7 @@ const useGetTokenDetails = (
   });
 
   const tokenBalance = data?.[0]?.result;
-  console.log(tokenBalance);
+
   const allowance = data?.[1]?.result as number;
 
   const parentnetToken = data?.[2]?.result as any;
