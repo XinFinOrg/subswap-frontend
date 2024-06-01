@@ -60,7 +60,8 @@ export function SourceTargetNetworkSetting({
           }}
         >
           <div className="flex items-center gap-2">
-            <CoinIcon />
+            {selectLeftSide && <CoinIcon />}
+
             <div className="text-lg">
               {bridgeViewData.fromNetwork?.name ?? "Select subnet"}
             </div>
@@ -120,6 +121,7 @@ export function SourceTargetNetworkSetting({
           }}
         >
           <div className="flex items-center gap-2">
+            {!selectLeftSide && <CoinIcon />}
             <div className="text-lg">
               {" "}
               {bridgeViewData.toNetwork?.name ?? "Select Network"}
