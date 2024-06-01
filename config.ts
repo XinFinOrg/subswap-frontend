@@ -33,7 +33,8 @@ export interface CrossChainToken {
   name: string;
   subnetChainId: number;
   parentnetChainId: number;
-  originalToken: string;
+  subnetToken: string;
+  selectedToken: string;
   logo: string;
   // 1: only subnet to parentnet, 2: only parentnet to subnet, 3: both way
   mode: 1 | 2 | 3;
@@ -42,11 +43,12 @@ export interface CrossChainToken {
 const crossChainTokens: CrossChainToken[] = [
   {
     name: "Token A",
-    subnetChainId: 5173,
+    subnetChainId: 8851,
     parentnetChainId: 551,
-    originalToken: "0xA9fA2724E5905bb24Ec989e39cfB508246461bD2",
+    subnetToken: "0xA9fA2724E5905bb24Ec989e39cfB508246461bD2",
+    selectedToken: "",
     logo: "/vercel.svg",
-    mode: 1,
+    mode: 3,
   },
 ];
 

@@ -83,7 +83,7 @@ export function SourceTargetNetworkSetting({
       </div>
 
       <div
-        className="bg-white border dark:border-none dark:bg-light/10 p-1 rounded-full mx-2 -mt-2"
+        className="bg-white border dark:border-none dark:bg-light/10 p-1 rounded-full mx-2 -mt-2 cursor-pointer"
         onClick={() => {
           const tempNetwork = bridgeViewData.fromNetwork;
           bridgeViewData.fromNetwork = bridgeViewData.toNetwork;

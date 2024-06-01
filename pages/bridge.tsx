@@ -173,10 +173,35 @@ const Bridge = () => {
   const subnet = fromNetwork?.id === xdcParentNet.id ? toNetwork : fromNetwork;
   const bridgeMode = fromNetwork?.id === xdcParentNet.id ? 2 : 1;
   const tokens = getTokens(subnet?.id, xdcParentNet.id, bridgeMode);
-  const selectedToken = bridgeViewData?.token;
 
   const lock = getLock(bridgeMode == 1 ? fromNetwork?.id : toNetwork?.id);
   const mint = getMint(bridgeMode == 1 ? toNetwork?.id : fromNetwork?.id);
+
+  const searchParentnetTokens = tokens.map((token) => {
+    return {
+      abi: mintABI as any,
+      address: mint as any,
+      functionName: "treasuryMapping",
+      args: [subnet?.id, token?.subnetToken],
+    };
+  });
+
+  const { data: reads0 } = useContractReads({
+    contracts: searchParentnetTokens,
+  });
+
+  for (const index in tokens) {
+    const token = tokens[index];
+    if (fromNetwork?.id === token.subnetChainId) {
+      token.selectedToken = token.subnetToken;
+    } else {
+      token.selectedToken = reads0?.[index]?.result as any;
+    }
+  }
+
+  console.log(tokens);
+
+  const selectedToken = bridgeViewData?.token;
 
   const { tokenBalance, allowance, parentnetToken } = useGetTokenDetails(
     selectedToken,
@@ -231,7 +256,7 @@ const Bridge = () => {
     if (bridgeMode == 1) {
       approve = createOperationObject(
         "Approve",
-        createOperationData(tokenABI, selectedToken?.originalToken, "approve", [
+        createOperationData(tokenABI, selectedToken?.selectedToken, "approve", [
           lock,
           2 ** 254,
         ]),
@@ -242,7 +267,7 @@ const Bridge = () => {
         createOperationData(lockABI, lock, "lock", [
           toNetwork?.id,
           mint,
-          selectedToken?.originalToken,
+          selectedToken?.selectedToken,
           BigInt(bridgeViewData.amount || 0) * BigInt(1e18),
           toAddress || address,
         ]),
@@ -262,7 +287,7 @@ const Bridge = () => {
         createOperationData(mintABI, mint, "burn", [
           toNetwork?.id,
           lock,
-          selectedToken?.originalToken,
+          selectedToken?.selectedToken,
           parentnetToken,
           BigInt(bridgeViewData.amount || 0) * BigInt(1e18),
           toAddress || address,
@@ -353,7 +378,7 @@ const Bridge = () => {
     buttonName: "Get test coin",
     data: {
       abi: tokenABI,
-      address: selectedToken?.originalToken,
+      address: selectedToken?.selectedToken,
       functionName: "mint",
       args: [address, "1000000000000000000000000"],
     },
@@ -369,7 +394,7 @@ const Bridge = () => {
   const submitRpcNameAndUrl = async (
     rpcName: string | undefined,
     rpcUrl: string | undefined,
-    selectLeftSide: boolean
+    selectLeftSide: boolean | undefined
   ) => {
     try {
       if (!rpcName) {
@@ -444,13 +469,13 @@ const useGetTokenDetails = (
     contracts: [
       {
         abi: tokenABI,
-        address: selectedToken?.originalToken,
+        address: selectedToken?.selectedToken,
         functionName: "balanceOf",
         args: [address] as any,
       },
       {
         abi: tokenABI,
-        address: selectedToken?.originalToken,
+        address: selectedToken?.selectedToken,
         functionName: "allowance",
         args: [address, lock] as any,
       },
@@ -458,11 +483,11 @@ const useGetTokenDetails = (
         abi: mintABI,
         address: parentnetMint,
         functionName: "treasuryMapping",
-        args: [subnet?.id, selectedToken?.originalToken],
+        args: [subnet?.id, selectedToken?.selectedToken],
       },
       {
         abi: tokenABI,
-        address: selectedToken?.originalToken,
+        address: selectedToken?.selectedToken,
         functionName: "decimals",
       },
     ],

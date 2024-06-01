@@ -91,7 +91,7 @@ const useGetTokenBalance = (
   const tokenBalanceReads = tokens?.map<OperationObject.Data>((token) => {
     return {
       abi: tokenABI,
-      address: token.originalToken,
+      address: token.selectedToken,
       functionName: "balanceOf",
       args: [address],
     };
@@ -114,7 +114,7 @@ const useGetTokenBalances = (
   const tokenDecimalsReads = tokens?.map<OperationObject.Data>((token) => {
     return {
       abi: tokenABI,
-      address: token.originalToken,
+      address: token.selectedToken,
       functionName: "decimals",
     };
   });
