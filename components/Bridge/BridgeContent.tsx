@@ -8,7 +8,7 @@ import { Section } from "./Section";
 import { SourceTargetNetworkSetting } from "./SourceTargetNetworkSetting";
 import Input from "../Input/Input";
 import { isAddress } from "viem";
-import { useNetwork } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 
 type BridgeContentProps = {
   bridgeViewData: BridgeViewData;
@@ -38,6 +38,8 @@ export function BridgeContent({
   const { chain } = useNetwork();
 
   const [amountMaxRange, setMaxRange] = useState(0);
+
+  const { address } = useAccount();
 
   useEffect(() => {
     setMaxRange(tokenBalance as number);
@@ -118,7 +120,7 @@ export function BridgeContent({
                 </div>
                 <div className="mt-2">
                   <Input
-                    placeholder="Enter address"
+                    placeholder={address}
                     value={toAddress}
                     onChange={(e) => {
                       setToAddress(e.target.value);
