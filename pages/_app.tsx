@@ -30,17 +30,25 @@ export default function App({ Component, pageProps }: any) {
     publicProvider(),
   ]);
 
-  const connectors = connectorsForWallets([
-    {
-      groupName: "Recommended",
-      wallets: [
-        metaMaskWallet({
-          chains,
-          projectId: "2a612b9a18e81ce3fda2f82787eb6a4a",
-        }),
-      ],
-    },
-  ]);
+  const { wallets } = getDefaultWallets({
+    appName: "Project",
+    chains,
+    projectId: "2a612b9a18e81ce3fda2f82787eb6a4a",
+  });
+
+  const connectors = connectorsForWallets([...wallets]);
+
+  // const connectors = connectorsForWallets([
+  //   {
+  //     groupName: "Recommended",
+  //     wallets: [
+  //       metaMaskWallet({
+  //         chains,
+  //         projectId: "2a612b9a18e81ce3fda2f82787eb6a4a",
+  //       }),
+  //     ],
+  //   },
+  // ]);
 
   const wagmiConfig = createConfig({
     autoConnect: true,

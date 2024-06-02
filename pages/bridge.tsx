@@ -368,7 +368,7 @@ const Bridge = () => {
           setShowSelectToken={setShowSelectToken}
         />
         <div className="card-body pb-8 gap-8">{cardBodyContent}</div>
-        <div className="text-center pb-10 text-sm">Powered by XDCZero</div>
+        <div className="text-center pb-10 text-sm">Powered by XDC Zero</div>
       </>
     );
   }
