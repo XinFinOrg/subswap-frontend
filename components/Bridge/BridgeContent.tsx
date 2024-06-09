@@ -1,14 +1,12 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { RiArrowDownSLine } from "react-icons/ri";
 import { BridgeViewData, OperationObject } from "../../pages/bridge";
-import RightArrowIcon from "../Images/RightArrowIcon";
 import Slider from "../Slider/Slider";
 import SubmitButton from "../SubmitButton";
 import { Section } from "./Section";
 import { SourceTargetNetworkSetting } from "./SourceTargetNetworkSetting";
 import Input from "../Input/Input";
-import { isAddress } from "viem";
-import { useNetwork } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 
 type BridgeContentProps = {
   bridgeViewData: BridgeViewData;
@@ -39,9 +37,13 @@ export function BridgeContent({
 
   const [amountMaxRange, setMaxRange] = useState(0);
 
+  const { address } = useAccount();
+
   useEffect(() => {
-    setMaxRange(tokenBalance as number);
+    setMaxRange((tokenBalance || 0) as number);
   }, [tokenBalance]);
+
+  const selectedToken = bridgeViewData?.token;
 
   return (
     <>
@@ -108,37 +110,31 @@ export function BridgeContent({
             </Section>
             <Section>
               <div className="flex flex-col w-full">
-                <div className="flex items-center">
-                  <div className="font-bold text-black/50 dark:text-light-grey text-sm">
-                    To address
+                <div className="collapse">
+                  <input type="checkbox" />
+                  <div className="collapse-title text-black/50 dark:text-light-grey text-sm">
+                    Click me to show/hide more options
                   </div>
-                  <div className="ml-3">
-                    <RightArrowIcon />
+                  <div className="collapse-content">
+                    <div className="flex items-center">
+                      <div className="font-bold text-black/50 dark:text-light-grey text-sm">
+                        Receiver
+                      </div>
+                    </div>
+                    <div className="mt-2">
+                      <Input
+                        placeholder={address}
+                        value={toAddress}
+                        onChange={(e) => {
+                          setToAddress(e.target.value);
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="mt-2">
-                  <Input
-                    placeholder="Enter address"
-                    value={toAddress}
-                    onChange={(e) => {
-                      setToAddress(e.target.value);
-                    }}
-                  />
                 </div>
               </div>
             </Section>
-            <div className="text-black/50 dark:text-grey-9/50">
-              <div className="flex justify-between">
-                <p>You will receive</p>
-                <p className="text-right font-bold">
-                  {formatBalance(bridgeViewData.amount)} token(s) A in mainnet
-                </p>
-              </div>
-              <div className="flex justify-between mt-2">
-                <p>Fee</p>
-                <p className="text-right font-bold">0 USD</p>
-              </div>
-            </div>
+
             {showApprove ? (
               <SubmitButton {...approve} />
             ) : (

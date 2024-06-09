@@ -25,15 +25,16 @@ interface Applications {
 }
 
 const applications: Applications = {
-  mints: { 551: "0xC4471D0567322deaC9a4422A007156e92ac9A103" },
-  locks: { 5173: "0x047695c6c781889F8955AbFaC6C99337C82b0C56" },
+  mints: { 551: "0xb694479532C6730783617ceFB3c843C149a73B61" },
+  locks: { 953: "0xb739EaB0eE7e657245581c2E69fB3A68ED277f9e" },
 };
 
 export interface CrossChainToken {
   name: string;
   subnetChainId: number;
   parentnetChainId: number;
-  originalToken: string;
+  subnetToken: string;
+  selectedToken: string;
   logo: string;
   // 1: only subnet to parentnet, 2: only parentnet to subnet, 3: both way
   mode: 1 | 2 | 3;
@@ -42,11 +43,12 @@ export interface CrossChainToken {
 const crossChainTokens: CrossChainToken[] = [
   {
     name: "Token A",
-    subnetChainId: 5173,
+    subnetChainId: 953,
     parentnetChainId: 551,
-    originalToken: "0xA9fA2724E5905bb24Ec989e39cfB508246461bD2",
+    subnetToken: "0x9ADb58BE55742cA8D32bB24aeE9A5eFe1419b916",
+    selectedToken: "",
     logo: "/vercel.svg",
-    mode: 1,
+    mode: 3,
   },
 ];
 
@@ -57,7 +59,7 @@ export const getTokens = (
 ) => {
   const tokens = [];
 
-  console.log(subnetChainId, parentnetChainId, bridgeMode);
+
 
   for (const token of crossChainTokens) {
     if (
@@ -69,7 +71,7 @@ export const getTokens = (
     }
   }
 
-  console.log(tokens);
+
 
   return tokens;
 };

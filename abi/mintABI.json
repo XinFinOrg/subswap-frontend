@@ -24,7 +24,7 @@
         },
         {
           "internalType": "address",
-          "name": "originalToken",
+          "name": "selectedToken",
           "type": "address"
         },
         {
@@ -52,7 +52,7 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "originalToken",
+          "name": "selectedToken",
           "type": "address"
         },
         {

@@ -1,11 +1,11 @@
 import Image from "next/image";
 import { BridgeViewData, NetworkInfo } from "../../pages/bridge";
 import { useState } from "react";
-import { getNetwork } from '../../config';
-import Spinner from '../Spinner/Spinner';
-import { useGlobalContext } from '../../context';
-import CoinIcon from '../Images/CoinIcon';
-import Input from '../Input/Input';
+import { getNetwork } from "../../config";
+import Spinner from "../Spinner/Spinner";
+import { useGlobalContext } from "../../context";
+import CoinIcon from "../Images/CoinIcon";
+import Input from "../Input/Input";
 
 type NetworkSelectProps = {
   storedNetworks: NetworkInfo[];
@@ -14,7 +14,8 @@ type NetworkSelectProps = {
   setStoredNetworks: React.Dispatch<React.SetStateAction<NetworkInfo[]>>;
   submitRpcNameAndUrl: (
     rpcName: string | undefined,
-    rpcUrl: string | undefined
+    rpcUrl: string | undefined,
+    selectLeftSide: boolean | undefined
   ) => Promise<void>;
   setShowSelectNetwork: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -39,8 +40,11 @@ export function NetworkSelect({
       setIsLoading(true);
 
       // if exists the same name one, don't add
-      if (storedNetworks.find((network) => network.name === networkName) !== undefined) {
-        alert('Network already exists, please use different name');
+      if (
+        storedNetworks.find((network) => network.name === networkName) !==
+        undefined
+      ) {
+        alert("Network already exists, please use different name");
         return;
       }
 
@@ -48,7 +52,11 @@ export function NetworkSelect({
         const newNetwork = { name: networkName, rpcUrl: networkRpcUrl };
 
         // set to state
-        await submitRpcNameAndUrl(networkName, networkRpcUrl);
+        await submitRpcNameAndUrl(
+          networkName,
+          networkRpcUrl,
+          bridgeViewData.selectLeftSide
+        );
         setStoredNetworks([newNetwork, ...storedNetworks]);
 
         // add to localstorage
@@ -59,8 +67,8 @@ export function NetworkSelect({
         localStorage.setItem("selectedNetwork", JSON.stringify(newNetwork));
 
         // reset input fields
-        setNetworkName('');
-        setNetworkRpcUrl('');
+        setNetworkName("");
+        setNetworkRpcUrl("");
 
         setShowSelectNetwork(false);
       }
@@ -94,20 +102,23 @@ export function NetworkSelect({
 
       {/* Add new network */}
       <div
-        className={`relative border border-section-border ${hasStoredNetworks ? "rounded-b-3xl" : "rounded-3xl"
-          }`}
+        className={`relative border border-section-border ${
+          hasStoredNetworks ? "rounded-b-3xl" : "rounded-3xl"
+        }`}
       >
         {/* Loading state */}
-        {isLoading && (
-          <Spinner text="Adding" />
-        )}
-        <div className={`px-4 pt-8 pb-4 rounded-3xl ${isLoading ? 'opacity-20' : ''}`}>
+        {isLoading && <Spinner text="Adding" />}
+        <div
+          className={`px-4 pt-8 pb-4 rounded-3xl ${
+            isLoading ? "opacity-20" : ""
+          }`}
+        >
           <SectionTitle title="Add new network" className="pl-3" />
           {/* set network name */}
           <div className="pt-6">
             <Input
               placeholder="Enter network name"
-              onChange={v => {
+              onChange={(v) => {
                 setNetworkName(v.target.value);
               }}
             />
@@ -117,7 +128,7 @@ export function NetworkSelect({
           <div className="pt-4">
             <Input
               placeholder="Enter new rpc URL"
-              onChange={v => {
+              onChange={(v) => {
                 setNetworkRpcUrl(v.target.value);
               }}
             />
@@ -126,10 +137,11 @@ export function NetworkSelect({
           {/* add network button */}
           <div className="pt-8">
             <button
-              className={`w-full rounded-full p-4 font-bold text-base ${hasAllDataToAddNewNetwork
-                ? "bg-primary text-white"
-                : "bg-button-disabled dark:bg-button-disabled-dark"
-                }`}
+              className={`w-full rounded-full p-4 font-bold text-base ${
+                hasAllDataToAddNewNetwork
+                  ? "bg-primary text-white"
+                  : "bg-button-disabled dark:bg-button-disabled-dark"
+              }`}
               disabled={!hasAllDataToAddNewNetwork}
               onClick={addNewNetwork}
             >
@@ -160,20 +172,23 @@ function NetworkSelectList({
   const [isLoading, setIsLoading] = useState(false);
 
   function isSelected(network: NetworkInfo) {
-    return network.name === bridgeViewData.fromNetwork?.name;
+    const selectLeftSide = bridgeViewData.selectLeftSide;
+    const selectName = selectLeftSide
+      ? bridgeViewData.fromNetwork?.name
+      : bridgeViewData.toNetwork?.name;
+    return network.name === selectName;
   }
 
   return (
     <div className="relative">
       {/* Loading state */}
-      {isLoading && (
-        <Spinner text="Switching" />
-      )}
+      {isLoading && <Spinner text="Switching" />}
 
       {/* Content */}
       <ul
-        className={`${className ? className : ""
-          } ${isLoading ? "opacity-20" : ""} rounded-3xl bg-light/10 max-h-[180px] overflow-y-auto relative`}
+        className={`${className ? className : ""} ${
+          isLoading ? "opacity-20" : ""
+        } rounded-3xl bg-light/10 max-h-[180px] overflow-y-auto relative`}
       >
         {networks.map((network, i) => (
           <NetworkSelectItem
@@ -212,18 +227,26 @@ function NetworkSelectItem({
 
   async function selectStoredNetwork(network: NetworkInfo) {
     try {
-      if (bridgeViewData.fromNetwork?.name === network.name) {
+      const selectLeftSide = bridgeViewData.selectLeftSide;
+      const selectName = selectLeftSide
+        ? bridgeViewData.fromNetwork?.name
+        : bridgeViewData.toNetwork?.name;
+      if (selectName === network.name) {
         setShowSelectNetwork(false);
         return;
       }
 
       setIsLoading(true);
-      const fromNetwork = await getNetwork(network.name, network.rpcUrl);
-      setBridgeViewData({ ...bridgeViewData, fromNetwork });
+      const selectNetwork = await getNetwork(network.name, network.rpcUrl);
+      if (selectLeftSide) {
+        setBridgeViewData({ ...bridgeViewData, fromNetwork: selectNetwork });
+      } else {
+        setBridgeViewData({ ...bridgeViewData, toNetwork: selectNetwork });
+      }
 
-      context.rpcs.push(fromNetwork);
+      context.rpcs.push(selectNetwork);
       setContext({
-        ...context
+        ...context,
       });
 
       localStorage.setItem("selectedNetwork", JSON.stringify(network));
@@ -239,7 +262,11 @@ function NetworkSelectItem({
   return (
     <li>
       <button
-        className={`${selected ? "dark:bg-blue-600 bg-blue-300" : "dark:bg-light/10 bg-light-blue-1"} p-4 flex w-full`}
+        className={`${
+          selected
+            ? "dark:bg-blue-600 bg-blue-300"
+            : "dark:bg-light/10 bg-light-blue-1"
+        } p-4 flex w-full`}
         onClick={() => selectStoredNetwork(network)}
       >
         <CoinIcon />
@@ -256,9 +283,7 @@ type SectionTitleProps = {
 
 function SectionTitle({ title, className }: SectionTitleProps) {
   return (
-    <div
-      className={`${className ? className : ""} text-xl font-bold`}
-    >
+    <div className={`${className ? className : ""} text-xl font-bold`}>
       {title}
     </div>
   );

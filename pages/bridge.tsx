@@ -33,6 +33,7 @@ export interface BridgeViewData {
   amount?: number;
   rpcName?: string;
   rpcUrl?: string;
+  selectLeftSide?: boolean;
 }
 
 export interface OperationObject {
@@ -73,6 +74,7 @@ const Bridge = () => {
   const [showSelectToken, setShowSelectToken] = useState(false);
   const [bridgeViewData, setBridgeViewData] = useState<BridgeViewData>({
     toNetwork: xdcParentNet,
+    selectLeftSide: true,
   });
   const [render, serRender] = useState(0);
   const [storedNetworks, setStoredNetworks] = useState<NetworkInfo[]>([]);
@@ -108,7 +110,8 @@ const Bridge = () => {
         if (parsedSelectedNetwork?.rpcUrl && parsedSelectedNetwork?.name) {
           await submitRpcNameAndUrl(
             parsedSelectedNetwork.name,
-            parsedSelectedNetwork.rpcUrl
+            parsedSelectedNetwork.rpcUrl,
+            true
           );
         }
       } catch (error) {
@@ -133,7 +136,7 @@ const Bridge = () => {
             return;
           }
 
-          await submitRpcNameAndUrl(rpcName, rpcUrl);
+          await submitRpcNameAndUrl(rpcName, rpcUrl, true);
 
           // set to localstorage and network list
           if (
@@ -163,24 +166,52 @@ const Bridge = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rpcUrl, rpcName]);
 
-  // console.log(bridgeViewData);
   const fromNetwork = bridgeViewData?.fromNetwork;
   const toNetwork = bridgeViewData?.toNetwork;
 
   const subnet = fromNetwork?.id === xdcParentNet.id ? toNetwork : fromNetwork;
   const bridgeMode = fromNetwork?.id === xdcParentNet.id ? 2 : 1;
   const tokens = getTokens(subnet?.id, xdcParentNet.id, bridgeMode);
-  const selectedToken = bridgeViewData?.token;
 
   const lock = getLock(bridgeMode == 1 ? fromNetwork?.id : toNetwork?.id);
   const mint = getMint(bridgeMode == 1 ? toNetwork?.id : fromNetwork?.id);
+
+  const searchParentnetTokens = tokens.map((token) => {
+    return {
+      abi: mintABI as any,
+      address: mint as any,
+      functionName: "treasuryMapping",
+      args: [subnet?.id, token?.subnetToken],
+    };
+  });
+
+  const { data: reads0 } = useContractReads({
+    contracts: searchParentnetTokens,
+  });
+
+  for (const index in tokens) {
+    const token = tokens[index];
+    if (fromNetwork?.id === token.subnetChainId) {
+      token.selectedToken = token.subnetToken;
+    } else {
+      token.selectedToken = reads0?.[index]?.result as any;
+    }
+  }
+
+  const selectedToken = bridgeViewData?.token;
+  let checkContract;
+  if (bridgeMode == 1) {
+    checkContract = lock;
+  } else if (bridgeMode == 2) {
+    checkContract = mint;
+  }
 
   const { tokenBalance, allowance, parentnetToken } = useGetTokenDetails(
     selectedToken,
     address,
     subnet,
     xdcParentNet.id,
-    lock,
+    checkContract,
     render
   );
 
@@ -223,12 +254,10 @@ const Bridge = () => {
     const lock = getLock(bridgeMode == 1 ? fromNetwork?.id : toNetwork?.id);
     const mint = getMint(bridgeMode == 1 ? toNetwork?.id : fromNetwork?.id);
 
-    console.log(bridgeViewData.amount);
-
     if (bridgeMode == 1) {
       approve = createOperationObject(
         "Approve",
-        createOperationData(tokenABI, selectedToken?.originalToken, "approve", [
+        createOperationData(tokenABI, selectedToken?.selectedToken, "approve", [
           lock,
           2 ** 254,
         ]),
@@ -239,7 +268,7 @@ const Bridge = () => {
         createOperationData(lockABI, lock, "lock", [
           toNetwork?.id,
           mint,
-          selectedToken?.originalToken,
+          selectedToken?.selectedToken,
           BigInt(bridgeViewData.amount || 0) * BigInt(1e18),
           toAddress || address,
         ]),
@@ -248,7 +277,7 @@ const Bridge = () => {
     } else if (bridgeMode == 2) {
       approve = createOperationObject(
         "Approve",
-        createOperationData(tokenABI, parentnetToken, "approve", [
+        createOperationData(tokenABI, selectedToken?.selectedToken, "approve", [
           mint,
           2 ** 254,
         ]),
@@ -259,8 +288,8 @@ const Bridge = () => {
         createOperationData(mintABI, mint, "burn", [
           toNetwork?.id,
           lock,
-          selectedToken?.originalToken,
-          parentnetToken,
+          selectedToken?.subnetToken,
+          selectedToken?.selectedToken,
           BigInt(bridgeViewData.amount || 0) * BigInt(1e18),
           toAddress || address,
         ]),
@@ -269,8 +298,6 @@ const Bridge = () => {
     } else {
       throw new Error("Invalid bridge mode");
     }
-
-    console.log(send);
 
     return { approve, send };
   }
@@ -341,7 +368,7 @@ const Bridge = () => {
           setShowSelectToken={setShowSelectToken}
         />
         <div className="card-body pb-8 gap-8">{cardBodyContent}</div>
-        <div className="text-center pb-10 text-sm">Powered by XDCZero</div>
+        <div className="text-center pb-10 text-sm">Powered by XDC Zero</div>
       </>
     );
   }
@@ -350,7 +377,7 @@ const Bridge = () => {
     buttonName: "Get test coin",
     data: {
       abi: tokenABI,
-      address: selectedToken?.originalToken,
+      address: selectedToken?.selectedToken,
       functionName: "mint",
       args: [address, "1000000000000000000000000"],
     },
@@ -362,10 +389,12 @@ const Bridge = () => {
   };
 
   const showApprove = allowance < Number((tokenBalance as any) * 1e18);
+  console.log(allowance, showApprove);
 
   const submitRpcNameAndUrl = async (
     rpcName: string | undefined,
-    rpcUrl: string | undefined
+    rpcUrl: string | undefined,
+    selectLeftSide: boolean | undefined
   ) => {
     try {
       if (!rpcName) {
@@ -378,20 +407,28 @@ const Bridge = () => {
         return;
       }
 
-      const fromNetwork = await getNetwork(rpcName, rpcUrl);
+      const selectNetwork = await getNetwork(rpcName, rpcUrl);
 
       // push fromNetwork to context rpcs
-      context.rpcs.push(fromNetwork);
+      context.rpcs.push(selectNetwork);
       setContext({
         ...context,
       });
 
       // set bridge view data
-      setBridgeViewData({
-        ...bridgeViewData,
-        fromNetwork,
-        customizeNetwork: false,
-      });
+      if (selectLeftSide) {
+        setBridgeViewData({
+          ...bridgeViewData,
+          fromNetwork: selectNetwork,
+          customizeNetwork: false,
+        });
+      } else {
+        setBridgeViewData({
+          ...bridgeViewData,
+          toNetwork: selectNetwork,
+          customizeNetwork: false,
+        });
+      }
     } catch (error) {
       throw new Error(
         "Fail to get network, please check if the rpc url is valid"
@@ -432,13 +469,13 @@ const useGetTokenDetails = (
     contracts: [
       {
         abi: tokenABI,
-        address: selectedToken?.originalToken,
+        address: selectedToken?.selectedToken,
         functionName: "balanceOf",
         args: [address] as any,
       },
       {
         abi: tokenABI,
-        address: selectedToken?.originalToken,
+        address: selectedToken?.selectedToken,
         functionName: "allowance",
         args: [address, lock] as any,
       },
@@ -446,11 +483,11 @@ const useGetTokenDetails = (
         abi: mintABI,
         address: parentnetMint,
         functionName: "treasuryMapping",
-        args: [subnet?.id, selectedToken?.originalToken],
+        args: [subnet?.id, selectedToken?.selectedToken],
       },
       {
         abi: tokenABI,
-        address: selectedToken?.originalToken,
+        address: selectedToken?.selectedToken,
         functionName: "decimals",
       },
     ],
@@ -458,7 +495,7 @@ const useGetTokenDetails = (
   });
 
   const tokenBalance = data?.[0]?.result;
-  console.log(tokenBalance);
+
   const allowance = data?.[1]?.result as number;
 
   const parentnetToken = data?.[2]?.result as any;
