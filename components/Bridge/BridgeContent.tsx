@@ -110,29 +110,31 @@ export function BridgeContent({
             </Section>
             <Section>
               <div className="flex flex-col w-full">
-                <div className="flex items-center">
-                  <div className="font-bold text-black/50 dark:text-light-grey text-sm">
-                    Receiver
+                <div className="collapse">
+                  <input type="checkbox" />
+                  <div className="collapse-title text-black/50 dark:text-light-grey text-sm">
+                    Click me to show/hide more options
                   </div>
-               
-                </div>
-                <div className="mt-2">
-                  <Input
-                    placeholder={address}
-                    value={toAddress}
-                    onChange={(e) => {
-                      setToAddress(e.target.value);
-                    }}
-                  />
+                  <div className="collapse-content">
+                    <div className="flex items-center">
+                      <div className="font-bold text-black/50 dark:text-light-grey text-sm">
+                        Receiver
+                      </div>
+                    </div>
+                    <div className="mt-2">
+                      <Input
+                        placeholder={address}
+                        value={toAddress}
+                        onChange={(e) => {
+                          setToAddress(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </Section>
-            <div className="text-black/50 dark:text-grey-9/50">
-              <div className="flex justify-between">
-                <p>Fee</p>
-                <p className="text-right font-bold">0 USD</p>
-              </div>
-            </div>
+
             {showApprove ? (
               <SubmitButton {...approve} />
             ) : (
