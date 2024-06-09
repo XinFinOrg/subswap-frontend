@@ -166,7 +166,6 @@ const Bridge = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rpcUrl, rpcName]);
 
-
   const fromNetwork = bridgeViewData?.fromNetwork;
   const toNetwork = bridgeViewData?.toNetwork;
 
@@ -199,16 +198,20 @@ const Bridge = () => {
     }
   }
 
-
-
   const selectedToken = bridgeViewData?.token;
+  let checkContract;
+  if (bridgeMode == 1) {
+    checkContract = lock;
+  } else if (bridgeMode == 2) {
+    checkContract = mint;
+  }
 
   const { tokenBalance, allowance, parentnetToken } = useGetTokenDetails(
     selectedToken,
     address,
     subnet,
     xdcParentNet.id,
-    lock,
+    checkContract,
     render
   );
 
@@ -251,8 +254,6 @@ const Bridge = () => {
     const lock = getLock(bridgeMode == 1 ? fromNetwork?.id : toNetwork?.id);
     const mint = getMint(bridgeMode == 1 ? toNetwork?.id : fromNetwork?.id);
 
-
-
     if (bridgeMode == 1) {
       approve = createOperationObject(
         "Approve",
@@ -276,7 +277,7 @@ const Bridge = () => {
     } else if (bridgeMode == 2) {
       approve = createOperationObject(
         "Approve",
-        createOperationData(tokenABI, parentnetToken, "approve", [
+        createOperationData(tokenABI, selectedToken?.selectedToken, "approve", [
           mint,
           2 ** 254,
         ]),
@@ -287,8 +288,8 @@ const Bridge = () => {
         createOperationData(mintABI, mint, "burn", [
           toNetwork?.id,
           lock,
+          selectedToken?.subnetToken,
           selectedToken?.selectedToken,
-          parentnetToken,
           BigInt(bridgeViewData.amount || 0) * BigInt(1e18),
           toAddress || address,
         ]),
@@ -297,7 +298,6 @@ const Bridge = () => {
     } else {
       throw new Error("Invalid bridge mode");
     }
-
 
     return { approve, send };
   }
@@ -389,6 +389,7 @@ const Bridge = () => {
   };
 
   const showApprove = allowance < Number((tokenBalance as any) * 1e18);
+  console.log(allowance, showApprove);
 
   const submitRpcNameAndUrl = async (
     rpcName: string | undefined,

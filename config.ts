@@ -25,8 +25,8 @@ interface Applications {
 }
 
 const applications: Applications = {
-  mints: { 551: "0x4f2DeBD7C3709C7C7898f2fB1937017827201520" },
-  locks: { 5173: "0xEA34885369cC31c673544Ac733759282dFbFC67D" },
+  mints: { 551: "0xb694479532C6730783617ceFB3c843C149a73B61" },
+  locks: { 953: "0xb739EaB0eE7e657245581c2E69fB3A68ED277f9e" },
 };
 
 export interface CrossChainToken {
@@ -43,9 +43,9 @@ export interface CrossChainToken {
 const crossChainTokens: CrossChainToken[] = [
   {
     name: "Token A",
-    subnetChainId: 8851,
+    subnetChainId: 953,
     parentnetChainId: 551,
-    subnetToken: "0xA9fA2724E5905bb24Ec989e39cfB508246461bD2",
+    subnetToken: "0x9ADb58BE55742cA8D32bB24aeE9A5eFe1419b916",
     selectedToken: "",
     logo: "/vercel.svg",
     mode: 3,

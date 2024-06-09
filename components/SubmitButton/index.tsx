@@ -17,6 +17,7 @@ const SubmitButton = (props: SubmitButtonProps) => {
   const [alertMessage, setAlertMessage] = useState("");
   const addRecentTransaction = useAddRecentTransaction();
   const { isConnected } = useAccount();
+  console.log(props?.data )
   const { data: tx, write } = useContractWrite({
     ...(props?.data as any),
     onError(error) {
