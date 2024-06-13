@@ -25,8 +25,8 @@ interface Applications {
 }
 
 const applications: Applications = {
-  mints: { 551: "0xb694479532C6730783617ceFB3c843C149a73B61" },
-  locks: { 953: "0xb739EaB0eE7e657245581c2E69fB3A68ED277f9e" },
+  mints: { 551: "0xBde6efD0F741ceB67864F68F6477544de5A596ca" },
+  locks: { 953: "0xf5C5f36541B5736722A2a58B3C8C73d1C64c0c6A" },
 };
 
 export interface CrossChainToken {
