@@ -32,7 +32,7 @@ To add your token to the UI token list, follow these steps:
      subnetChainId: 'network chainid your token in',
      parentnetChainId: 'your token support parentnet network chainid',
      subnetToken: 'your token subnet token address',
-     selectedToken: null, // no need to submit
+     selectedToken: "", // no need to submit
      logo: 'your token logo',
      mode: 1, // 1: only subnet to parentnet, 2: only parentnet to subnet, 3: both way
    }
@@ -54,7 +54,7 @@ Here's an example of how your token configuration should look:
   subnetChainId: '1234',
   parentnetChainId: '5678',
   subnetToken: '0xExampleTokenAddress',
-  selectedToken: null,
+  selectedToken: "",
   logo: 'https://example.com/token-logo.png',
   mode: 3, // Allows swapping both ways
 }
