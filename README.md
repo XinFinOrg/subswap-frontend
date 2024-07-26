@@ -33,7 +33,7 @@ To add your token to the UI token list, follow these steps:
      parentnetChainId: 'your token support parentnet network chainid',
      subnetToken: 'your token subnet token address',
      selectedToken: "", // no need to submit
-     logo: 'your token logo url',
+     logo: 'your token logo url', // it will show in the /public directory
      mode: 1, // 1: only subnet to parentnet, 2: only parentnet to subnet, 3: both way
    }
    ```
@@ -55,7 +55,7 @@ Here's an example of how your token configuration should look:
   parentnetChainId: '5678',
   subnetToken: '0xExampleTokenAddress',
   selectedToken: "",
-  logo: '/logo1.png',
+  logo: '/vercel.svg',
   mode: 3, // Allows swapping both ways
 }
 ```
