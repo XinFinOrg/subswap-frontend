@@ -24,7 +24,7 @@ To add your token to the UI token list, follow these steps:
 
 2. **Fork the Repository**: Fork the [XinFinOrg/subswap-frontend](https://github.com/XinFinOrg/subswap-frontend) repository.
 
-3. **Create a Pull Request (PR)**: Add your token information to the following section in the `config.ts` file:
+3. **Create a Pull Request (PR)**: Add your token information to the following section in the `config.ts` file `crossChainTokens`:
 
    ```typescript
    {
