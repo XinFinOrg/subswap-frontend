@@ -31,7 +31,7 @@ To add your token to the UI token list, follow these steps:
      name: 'your token name',
      subnetChainId: 'network chainid your token in',
      parentnetChainId: 'your token support parentnet network chainid',
-     subnetToken: 'your token subnet token address',
+     subnetToken: 'your token subnet token address to include 0x as a note',
      selectedToken: "", // no need to submit
      logo: 'your token logo url', // it will show in the /public directory
      mode: 1, // 1. Your Subnet -> XDC Mainnet 2. XDC Mainnet -> Your Subnet 3. Bi-directional. (Your subnet <-> XDC Mainnet)
