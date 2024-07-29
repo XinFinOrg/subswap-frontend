@@ -32,7 +32,6 @@ To add your token to the UI token list, follow these steps:
      subnetChainId: 'network chainid your token in',
      parentnetChainId: 'your token support parentnet network chainid',
      subnetToken: 'your token subnet token address to include 0x as a note',
-     selectedToken: "", // no need to submit
      logo: 'your token logo url', // it will show in the /public directory
      mode: 1, // 1. Your Subnet -> XDC Mainnet 2. XDC Mainnet -> Your Subnet 3. Bi-directional. (Your subnet <-> XDC Mainnet)
    ```
@@ -53,7 +52,6 @@ Here's an example of how your token configuration should look:
   subnetChainId: '1234',
   parentnetChainId: '5678',
   subnetToken: '0xExampleTokenAddress',
-  selectedToken: "",
   logo: '/vercel.svg',
   mode: 3, // Allows swapping both ways
 }
