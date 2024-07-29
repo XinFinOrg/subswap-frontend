@@ -34,8 +34,7 @@ To add your token to the UI token list, follow these steps:
      subnetToken: 'your token subnet token address',
      selectedToken: "", // no need to submit
      logo: 'your token logo url', // it will show in the /public directory
-     mode: 1, // 1: only subnet to parentnet, 2: only parentnet to subnet, 3: both way
-   }
+     mode: 1, // 1. Your Subnet -> XDC Mainnet 2. XDC Mainnet -> Your Subnet 3. Bi-directional. (Your subnet <-> XDC Mainnet)
    ```
 
 4. **Submit the PR**: Once you've made the changes, submit the PR for review and merge.
