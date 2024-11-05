@@ -4,18 +4,27 @@ export { default as tokenABI } from "./abi/tokenABI.json";
 export { default as lockABI } from "./abi/lockABI.json";
 export { default as mintABI } from "./abi/mintABI.json";
 
+const parentnet = {
+  chainid: 551,
+  url: "https://devnetstats.apothem.network/devnet",
+};
+
+const subnet = {
+  chainid: 953,
+};
+
 export const xdcParentNet: Chain = {
-  id: 551,
-  name: "XDC Devnet",
-  network: "XDC Devnet",
+  id: parentnet.chainid,
+  name: "XDC Parentnet",
+  network: "XDC Parentnet",
   nativeCurrency: {
     decimals: 18,
     name: "XDC",
     symbol: "XDC",
   },
   rpcUrls: {
-    public: { http: ["https://devnetstats.apothem.network/devnet"] },
-    default: { http: ["https://devnetstats.apothem.network/devnet"] },
+    public: { http: [parentnet.url] },
+    default: { http: [parentnet.url] },
   },
 };
 
@@ -25,8 +34,8 @@ interface Applications {
 }
 
 const applications: Applications = {
-  mints: { 551: "0x12f70272413eD247B1AEE55bf3e96f0f188b8749" },
-  locks: { 953: "0x24b6A8dE05DD19eDE107606aE8BE252f9600Ead9" },
+  mints: { [parentnet.chainid]: "0x12f70272413eD247B1AEE55bf3e96f0f188b8749" },
+  locks: { [subnet.chainid]: "0x24b6A8dE05DD19eDE107606aE8BE252f9600Ead9" },
 };
 
 export interface CrossChainToken {
@@ -43,8 +52,8 @@ export interface CrossChainToken {
 const crossChainTokens: CrossChainToken[] = [
   {
     name: "Token A",
-    subnetChainId: 953,
-    parentnetChainId: 551,
+    subnetChainId: subnet.chainid,
+    parentnetChainId: parentnet.chainid,
     subnetToken: "0x9ADb58BE55742cA8D32bB24aeE9A5eFe1419b916",
     selectedToken: "",
     logo: "/vercel.svg",
@@ -59,8 +68,6 @@ export const getTokens = (
 ) => {
   const tokens = [];
 
-
-
   for (const token of crossChainTokens) {
     if (
       token.subnetChainId === subnetChainId &&
@@ -70,8 +77,6 @@ export const getTokens = (
       tokens.push(token);
     }
   }
-
-
 
   return tokens;
 };
