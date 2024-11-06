@@ -4,10 +4,23 @@ export { default as tokenABI } from "./abi/tokenABI.json";
 export { default as lockABI } from "./abi/lockABI.json";
 export { default as mintABI } from "./abi/mintABI.json";
 
+//devnet
+// const parentnet = {
+//   chainid: 551,
+//   url: "https://devnetstats.apothem.network/devnet",
+// };
+
+// testnet
 const parentnet = {
-  chainid: 551,
-  url: "https://devnetstats.apothem.network/devnet",
+  chainid: 51,
+  url: "https://erpc.apothem.network/",
 };
+
+//mainnet
+// const parentnet = {
+//   chainid: 50,
+//   url: "https://rpc.xinfin.network",
+// };
 
 const subnet = {
   chainid: 953,
