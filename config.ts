@@ -1,4 +1,6 @@
 import { Chain } from "wagmi";
+// import { existsSync, readFileSync } from 'fs';
+import * as mountConfig from './subswap-frontend.config.json';
 
 export { default as tokenABI } from "./abi/tokenABI.json";
 export { default as lockABI } from "./abi/lockABI.json";
@@ -11,10 +13,10 @@ export { default as mintABI } from "./abi/mintABI.json";
 // };
 
 // testnet
-const parentnet = {
-  chainid: 51,
-  url: "https://erpc.apothem.network/",
-};
+// const parentnet = {
+//   chainid: 51,
+//   url: "https://erpc.apothem.network/",
+// };
 
 //mainnet
 // const parentnet = {
@@ -22,8 +24,13 @@ const parentnet = {
 //   url: "https://rpc.xinfin.network",
 // };
 
+const parentnet = {
+  chainid: Number(mountConfig.parentnetChainId),
+  url: mountConfig.parentnetUrl
+}
+
 const subnet = {
-  chainid: 953,
+  chainid: Number(mountConfig.subnetChainId)
 };
 
 export const xdcParentNet: Chain = {
@@ -46,11 +53,6 @@ interface Applications {
   locks: { [x: number]: string };
 }
 
-const applications: Applications = {
-  mints: { [parentnet.chainid]: "0x12f70272413eD247B1AEE55bf3e96f0f188b8749" },
-  locks: { [subnet.chainid]: "0x24b6A8dE05DD19eDE107606aE8BE252f9600Ead9" },
-};
-
 export interface CrossChainToken {
   name: string;
   subnetChainId: number;
@@ -62,17 +64,29 @@ export interface CrossChainToken {
   mode: 1 | 2 | 3;
 }
 
-const crossChainTokens: CrossChainToken[] = [
-  {
-    name: "Token A",
-    subnetChainId: subnet.chainid,
-    parentnetChainId: parentnet.chainid,
-    subnetToken: "0x9ADb58BE55742cA8D32bB24aeE9A5eFe1419b916",
-    selectedToken: "",
-    logo: "/vercel.svg",
-    mode: 3,
-  },
-];
+const applications: Applications = {
+  mints: { [parentnet.chainid]: mountConfig['parentnetApp'] }, //parentnet subswap addr
+  locks: { [subnet.chainid]: mountConfig['subnetApp'] }, //subnet subswap addr
+}
+
+
+const crossChainTokens: CrossChainToken[] = []
+for (let i = 0; i < mountConfig['tokens'].length; i++) {
+  const token = mountConfig['tokens'][i]
+  const mode = ('mode' in token) ? token['mode'] as CrossChainToken["mode"] : 3
+  
+  crossChainTokens.push(
+    {
+      name: token['name'],
+      subnetChainId: subnet.chainid,
+      parentnetChainId: parentnet.chainid,
+      subnetToken: token['address'],
+      selectedToken: "",
+      logo: "/vercel.svg",
+      mode: mode
+    }
+  )
+}  
 
 export const getTokens = (
   subnetChainId: number | undefined,
