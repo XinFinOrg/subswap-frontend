@@ -6,4 +6,4 @@ COPY . /app
 
 RUN yarn 
 
-ENTRYPOINT ["/bin/sh", "-c" , "yarn build && yarn start"]
+ENTRYPOINT ["/bin/sh", "-c" , "yarn build && yarn start -p 5216"]
